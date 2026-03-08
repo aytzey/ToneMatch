@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ToneMatch Analysis - Processing</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#b87332",
+                        "background-light": "#f8f7f6",
+                        "background-dark": "#1f1913",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased">
+<!-- Main Container -->
+<div class="relative flex h-auto min-h-screen w-full flex-col bg-background-light dark:bg-background-dark overflow-x-hidden">
+<!-- Header -->
+<header class="flex items-center bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md sticky top-0 z-50 p-4 justify-between">
+<div class="text-slate-900 dark:text-slate-100 flex size-12 shrink-0 items-center justify-start">
+<span class="material-symbols-outlined cursor-pointer">close</span>
+</div>
+<h2 class="text-slate-900 dark:text-slate-100 text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center pr-12 uppercase tracking-widest text-sm">ToneMatch AI</h2>
+</header>
+<main class="flex-1 max-w-xl mx-auto w-full px-4 pb-12">
+<!-- Portrait Container -->
+<div class="@container my-6">
+<div class="@[480px]:px-0">
+<div class="relative w-full aspect-[4/5] overflow-hidden rounded-xl shadow-2xl bg-slate-200 dark:bg-slate-800">
+<!-- Blurred User Portrait Placeholder -->
+<div class="absolute inset-0 bg-cover bg-center blur-xl scale-110 opacity-60" data-alt="Blurred professional portrait of a person for skin tone analysis" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuA8wz16KMzNEr6HW8Wti7cnBwwK3wVNnvVNUrD1PTuX2CCfnooox6QNCvUqLcf0bxwGiT-EtTrj1ciIkvfBZEWbGjBS_9jqTqWIhgsjc7heO_U-5zuVRlGr8oQxWlICZQ-lbph5JhhE7EAw0ZOY-jqMTUULIP4fy-yhwx4rESNbr2-D34g2Xta5kBuSr2aVpHV420oHStdTDYuYU9rjuTTXN6WPIdPjxEouRd88WMYh6qzWnmUtS_RMEYj9q9IyXIUm9lxNb2tGGA");'>
+</div>
+<!-- Scanning Overlay Effect -->
+<div class="absolute inset-0 bg-gradient-to-b from-transparent via-primary/10 to-transparent"></div>
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="px-6 py-3 bg-white/10 backdrop-blur-lg border border-white/20 rounded-full shadow-lg">
+<p class="text-white text-sm font-medium tracking-widest uppercase">Analyzing Profile</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Analysis Status -->
+<div class="text-center space-y-2 mb-8">
+<h3 class="text-slate-900 dark:text-slate-100 text-2xl font-bold leading-tight">Defining your palette</h3>
+<p class="text-slate-500 dark:text-slate-400 text-sm">Our AI is mapping your unique chromatic profile.</p>
+</div>
+<!-- Progress Card -->
+<div class="bg-white dark:bg-slate-900/50 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-800">
+<div class="flex flex-col gap-4 mb-8">
+<div class="flex gap-6 justify-between items-end">
+<p class="text-slate-900 dark:text-slate-100 text-base font-semibold leading-normal">Overall Progress</p>
+<p class="text-primary text-xl font-bold leading-normal">65%</p>
+</div>
+<div class="rounded-full bg-primary/10 h-2 w-full overflow-hidden">
+<div class="h-full rounded-full bg-primary transition-all duration-1000" style="width: 65%;"></div>
+</div>
+</div>
+<!-- Steps List -->
+<div class="space-y-1">
+<!-- Step 1: Complete -->
+<div class="grid grid-cols-[40px_1fr] items-start">
+<div class="flex flex-col items-center h-full">
+<div class="text-primary bg-primary/10 rounded-full p-1 flex items-center justify-center">
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1">check_circle</span>
+</div>
+<div class="w-[1.5px] bg-primary/20 h-8"></div>
+</div>
+<div class="pb-6 pt-1">
+<p class="text-slate-900 dark:text-slate-100 text-sm font-semibold">Analyzing skin undertones</p>
+<p class="text-primary text-xs font-medium uppercase tracking-tighter">Complete</p>
+</div>
+</div>
+<!-- Step 2: Complete -->
+<div class="grid grid-cols-[40px_1fr] items-start">
+<div class="flex flex-col items-center h-full">
+<div class="text-primary bg-primary/10 rounded-full p-1 flex items-center justify-center">
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1">check_circle</span>
+</div>
+<div class="w-[1.5px] bg-primary/20 h-8"></div>
+</div>
+<div class="pb-6 pt-1">
+<p class="text-slate-900 dark:text-slate-100 text-sm font-semibold">Evaluating facial contrast</p>
+<p class="text-primary text-xs font-medium uppercase tracking-tighter">Complete</p>
+</div>
+</div>
+<!-- Step 3: In Progress -->
+<div class="grid grid-cols-[40px_1fr] items-start">
+<div class="flex flex-col items-center h-full">
+<div class="text-primary flex items-center justify-center p-1">
+<span class="material-symbols-outlined text-2xl animate-pulse">radio_button_checked</span>
+</div>
+<div class="w-[1.5px] bg-slate-200 dark:bg-slate-700 h-8"></div>
+</div>
+<div class="pb-6 pt-1">
+<p class="text-slate-900 dark:text-slate-100 text-sm font-semibold">Matching seasonal palette colors</p>
+<p class="text-slate-400 dark:text-slate-500 text-xs font-medium uppercase tracking-tighter">In Progress</p>
+</div>
+</div>
+<!-- Step 4: Pending -->
+<div class="grid grid-cols-[40px_1fr] items-start">
+<div class="flex flex-col items-center h-full">
+<div class="text-slate-300 dark:text-slate-600 flex items-center justify-center p-1">
+<span class="material-symbols-outlined text-2xl">radio_button_unchecked</span>
+</div>
+</div>
+<div class="pt-1">
+<p class="text-slate-400 dark:text-slate-600 text-sm font-medium">Curating personalized recommendations</p>
+<p class="text-slate-300 dark:text-slate-700 text-xs font-medium uppercase tracking-tighter">Pending</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Disclaimer -->
+<div class="mt-8 text-center">
+<p class="text-slate-400 dark:text-slate-500 text-xs leading-relaxed max-w-xs mx-auto">
+                    We're processing your image locally to ensure your privacy. This usually takes less than 15 seconds.
+                </p>
+</div>
+</main>
+<!-- Footer Accent -->
+<footer class="p-8 flex justify-center opacity-30">
+<div class="flex gap-2">
+<div class="size-2 rounded-full bg-primary"></div>
+<div class="size-2 rounded-full bg-primary/40"></div>
+<div class="size-2 rounded-full bg-primary/20"></div>
+</div>
+</footer>
+</div>
+</body></html>

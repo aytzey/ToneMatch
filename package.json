@@ -1,0 +1,29 @@
+{
+  "name": "cilt_alt_tonu",
+  "version": "1.0.0",
+  "description": "ToneMatch mobile app product and technical design package",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "services/*"
+  ],
+  "main": "scripts/build_workbook.js",
+  "scripts": {
+    "build:workbook": "node scripts/build_workbook.js",
+    "ingest:catalog": "node scripts/ingest_catalog_feed.js",
+    "dev:mobile": "npm run dev --workspace mobile",
+    "typecheck:mobile": "npm run typecheck --workspace mobile",
+    "lint:mobile": "npm run lint --workspace mobile",
+    "dev:worker": "cd services/ai-worker && uvicorn app.main:app --reload --port 8080",
+    "test": "echo \"No automated tests defined\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "UNLICENSED",
+  "type": "commonjs",
+  "dependencies": {
+    "@react-native-async-storage/async-storage": "2.2.0",
+    "exceljs": "^4.4.0",
+    "expo-file-system": "~19.0.21"
+  }
+}

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&amp;family=Playfair+Display:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#b87332",
+                        "background-light": "#fdfaf6",
+                        "background-dark": "#1f1913",
+                        "charcoal": "#333333",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"],
+                        "serif": ["Playfair Display", "serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-charcoal dark:text-slate-100">
+<!-- Top Navigation -->
+<nav class="sticky top-0 z-50 flex items-center bg-background-light/90 dark:bg-background-dark/90 backdrop-blur-md px-4 py-4 border-b border-primary/10 justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">arrow_back</span>
+</div>
+<h1 class="font-serif italic text-2xl tracking-tight text-center flex-1">ToneMatch Editorial</h1>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary">bookmark</span>
+<span class="material-symbols-outlined text-primary">share</span>
+</div>
+</nav>
+<!-- Header Section -->
+<header class="px-6 pt-10 pb-6 text-center max-w-2xl mx-auto">
+<span class="text-primary font-semibold tracking-[0.2em] text-xs uppercase mb-3 block">Season: Deep Autumn</span>
+<h2 class="font-serif text-4xl md:text-5xl mb-4 leading-tight">The Occasion Guide</h2>
+<p class="text-charcoal/70 dark:text-slate-400 text-lg leading-relaxed">
+            Curated silhouettes and palettes specifically chosen to harmonize with your rich, warm, and dark undertones.
+        </p>
+</header>
+<main class="space-y-16 pb-32">
+<!-- Section 1: Office Power -->
+<section class="@container">
+<div class="px-6 mb-6">
+<h3 class="font-serif text-3xl mb-1">Office Power</h3>
+<p class="text-sm text-charcoal/60 dark:text-slate-400 uppercase tracking-widest">Commanding Neutrals</p>
+</div>
+<!-- Hero Look -->
+<div class="px-6 mb-8">
+<div class="relative group overflow-hidden rounded-xl aspect-[4/5] md:aspect-video shadow-xl">
+<div class="absolute inset-0 bg-center bg-cover transition-transform duration-700 group-hover:scale-105" data-alt="Woman wearing a deep forest green structured blazer with mahogany leather details" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBD5ZSuhl73NeezympCpJ0U-Qg-8rPuePWnspbrKyXg6nVIAlQ9c7c_Edp3mDyz5I8W-K3g1uS6fYxKPxawLf6vjnIZCQdWGJxJ990ZQIQyDyPNFe3qEh6bixQbXIfV_XCoLu44PNZ8mVV3Af6ihbqTfUJc9Vs4ZRnID19Mhe83C7Ahq7zB4cxlvQhkoQmbZ_L_gptUm-cpAODLsT4ORrFpWvlKPol7C3RzgcSZGQPExw41DLAI85IQRr680t2nAiu5bxNn9MycPw');"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+<div class="absolute bottom-6 left-6 right-6 flex justify-between items-end">
+<div class="text-white">
+<p class="text-xs font-bold tracking-widest uppercase opacity-80 mb-1">Featured Ensemble</p>
+<h4 class="text-2xl font-serif">The Structured Authority</h4>
+</div>
+<button class="bg-primary text-white px-6 py-3 rounded-full font-medium hover:bg-primary/90 transition-colors">
+                            Shop Look
+                        </button>
+</div>
+</div>
+</div>
+<!-- Product Scroll -->
+<div class="flex overflow-x-auto gap-4 px-6 no-scrollbar snap-x">
+<!-- Item 1 -->
+<div class="min-w-[180px] snap-start">
+<div class="aspect-[3/4] bg-white dark:bg-slate-800 rounded-lg overflow-hidden mb-3 border border-primary/5">
+<img class="w-full h-full object-cover" data-alt="Deep forest green tailored wool blazer" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAqBw1IY_LbyvqWmNc8cNab83uN_DswhtXs57xn9qXsvncB4VDRw9aCwArcESwpqK8UE9w03bvJiypaqRKleW_ExJf5hbKeVKRD8udNXPSaLNSp3XEGWjHaHQ7T_Xnd9TdPrROjU53NMh75Ew6zvwZ6CCGzhgM319eUZzoLIE5jGJCfT3adqIsM_HgaRUYw2LjzQ30ZDA2rSoM78z5rmtVnaR2ZWz6HgsJg2PgOrGoQMn-ASwR8ikxooGYzFPyrXMMAGiIZXehBxQ"/>
+</div>
+<p class="text-xs font-bold uppercase tracking-tighter">Forest Green Blazer</p>
+<p class="text-xs text-primary font-medium">$295</p>
+</div>
+<!-- Item 2 -->
+<div class="min-w-[180px] snap-start">
+<div class="aspect-[3/4] bg-white dark:bg-slate-800 rounded-lg overflow-hidden mb-3 border border-primary/5">
+<img class="w-full h-full object-cover" data-alt="Charcoal high-waisted wide-leg trousers" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDkiLZwkLkSBTrM2yw_SctYgQnxtEO5C6fl46Nidvr77jset42xXWfZ4ZRaG2mtMVSieD5UlIZZw77t2yB6KA73r30gWi6sU926_0t0yCXxElK4zhC6kawrf7DA-kn4CrATQOINEd43XKQcxEdbyXJbQzWDQnYnqDsaqpuCZjmIW8xDzxRSznrFyvr7RU01o5Ea7yYRk3dGNmFbloKbSyirxYzHYGwailnBXXUW8HHolk61X88_Cuvnd6EoqMtIM5GJlJIn60QTtA"/>
+</div>
+<p class="text-xs font-bold uppercase tracking-tighter">Charcoal Trousers</p>
+<p class="text-xs text-primary font-medium">$180</p>
+</div>
+<!-- Item 3 -->
+<div class="min-w-[180px] snap-start">
+<div class="aspect-[3/4] bg-white dark:bg-slate-800 rounded-lg overflow-hidden mb-3 border border-primary/5">
+<img class="w-full h-full object-cover" data-alt="Mahogany leather pumps" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA5uTwgarQmCe3hJb2zdsfg_x1Qqf-9wRwoymT4dRxfajSiyUVqOCQR512jRoYHwMmqDTgP6n5nZvHmNDnLhLdlCS2OzTdnHhIyqUM3Vj2-bPPoXGkQo9VgkbRK64QPCxJpg8HE8pHv0CPhBtzxhW7coTa03XvWPB6qCkAyDQDH9vb2WzKa7WkWVhPjRWS721InZ4qqcxzXWMv8Fgge5evW4-RcQf8yF6p9DPxn499aF0HTVTsp4BeP1DnDccwUp0Rlr4UkfD41Zw"/>
+</div>
+<p class="text-xs font-bold uppercase tracking-tighter">Mahogany Pumps</p>
+<p class="text-xs text-primary font-medium">$210</p>
+</div>
+</div>
+<!-- Why it Works -->
+<div class="mx-6 mt-8 p-5 bg-primary/5 border-l-4 border-primary rounded-r-lg">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-primary text-sm">auto_awesome</span>
+<span class="font-bold text-xs uppercase tracking-widest text-primary">Why it works</span>
+</div>
+<p class="text-sm italic font-serif leading-relaxed">
+                    "Deep Autumn glows in saturation. The forest green provides high contrast without the starkness of black, while mahogany accents pull out the warm copper tones in your eyes."
+                </p>
+</div>
+</section>
+<!-- Section 2: Golden Hour Date -->
+<section class="@container">
+<div class="px-6 mb-6">
+<h3 class="font-serif text-3xl mb-1">Golden Hour Date</h3>
+<p class="text-sm text-charcoal/60 dark:text-slate-400 uppercase tracking-widest">Luminous Silks</p>
+</div>
+<div class="px-6 mb-8">
+<div class="relative group overflow-hidden rounded-xl aspect-[4/5] md:aspect-video shadow-xl">
+<div class="absolute inset-0 bg-center bg-cover transition-transform duration-700 group-hover:scale-105" data-alt="Silk terracotta slip dress glowing in sunset light" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuB5qGi2ASzZhZ1oTooBnw-9BIpjnrh71UWX9vJ-QTXfeME5zHk4ETOQEj9KuCqhHSQqcPbvefpOgnL8pKA08dj95V_-g4pDpXxlm93Yb_zqH56666O1PxCbIls0LZ-8RCBngQ4iVUQJWbUIFngx9oKFRt1vbbnqEeR5J_8iUaKGyNPC58Yg8qPlrq3gQGgtFwJ1y6iam7eNfYWjLHMMuHQGMH2_mIeznh4r61rnQT9nJHmnFtOzROP8WjFptCCcUfFYizRiqci6EQ');"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+<div class="absolute bottom-6 left-6 right-6 flex justify-between items-end">
+<div class="text-white">
+<p class="text-xs font-bold tracking-widest uppercase opacity-80 mb-1">Evening Glow</p>
+<h4 class="text-2xl font-serif">Copper Silk Radiance</h4>
+</div>
+<button class="bg-primary text-white px-6 py-3 rounded-full font-medium hover:bg-primary/90 transition-colors">
+                            Shop Look
+                        </button>
+</div>
+</div>
+</div>
+<div class="flex overflow-x-auto gap-4 px-6 no-scrollbar snap-x">
+<div class="min-w-[180px] snap-start">
+<div class="aspect-[3/4] bg-white dark:bg-slate-800 rounded-lg overflow-hidden mb-3 border border-primary/5">
+<img class="w-full h-full object-cover" data-alt="Copper silk slip midi dress" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCyFBcEtpIns9pb3tz77NdfaiQNfImpV8xJ0OzrF9chLyHfUxih7LhoKKK6fsj9yoZLUA5m8p5P9ME5zZdF84VVUzgP1Z5ol1KFvBCahEmVH7phzwFl4EA24kaET85V7rCMB0eZSWHw1Z5tQKfKTKJbC87SLQFPX_buFX_MsIsmB1ROqoQPrT0g4gL8soFd4fsHzC84nTLi77kikQu6ZsyvhNuZVtysvevS-R3OhpsFQHs2CgkauFX2HSonHAvP619FO1rdD9FoZw"/>
+</div>
+<p class="text-xs font-bold uppercase tracking-tighter">Silk Slip Dress</p>
+<p class="text-xs text-primary font-medium">$240</p>
+</div>
+<div class="min-w-[180px] snap-start">
+<div class="aspect-[3/4] bg-white dark:bg-slate-800 rounded-lg overflow-hidden mb-3 border border-primary/5">
+<img class="w-full h-full object-cover" data-alt="Chunky gold hoop earrings" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC174it-FIPeVH0R2HxvwxqM7G1YAddwGlbfl0WRPtnmQC9wbnGVkcef5BpHGLP--gqg4Kz56MdOwC2uKIGdAg59_VgLLlcfrER2e8KWE--QCtxAAk6quKQSaYXK6FIkY182bljZZf_iIsNbauC43CaQ4oNQ3vMuDWn5Tf5DZSRgn4GvSiuk7_-2BcXt8z4LBE9mYULtTxXm3jHBehwUXZBSXNozyyw803U3R1LCyirvDokFzBE8if-IyBYtGg0OP14pCFliJCAow"/>
+</div>
+<p class="text-xs font-bold uppercase tracking-tighter">Gold Accessories</p>
+<p class="text-xs text-primary font-medium">$125</p>
+</div>
+<div class="min-w-[180px] snap-start">
+<div class="aspect-[3/4] bg-white dark:bg-slate-800 rounded-lg overflow-hidden mb-3 border border-primary/5">
+<img class="w-full h-full object-cover" data-alt="Nude terracotta strappy heels" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCDMwv-OqzsvpiH1DRhJM-ZrrSXdqF1joa1HVmRMNAkjSILjEhzn_YyhllRRbMjSiSgfqvkfyptb9GTuFhiCQoGL0juvzoe45oMaVAl5JKN1B916LxDAcoQeiYhR328agqTm3nU_pbpJeoy1LcWoMJcCfCmtiPUM7N0Umi5yAm2obmm4GEqk-EhrOiN-OcmiCqLTboa07A8CI5sZx9u7znyM0yL6qgHUnCxKnGC4bFzzxgSMdSBWpGE69facsA4KI1kjyPQQYhdFg"/>
+</div>
+<p class="text-xs font-bold uppercase tracking-tighter">Terracotta Heels</p>
+<p class="text-xs text-primary font-medium">$160</p>
+</div>
+</div>
+<div class="mx-6 mt-8 p-5 bg-primary/5 border-l-4 border-primary rounded-r-lg">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-primary text-sm">auto_awesome</span>
+<span class="font-bold text-xs uppercase tracking-widest text-primary">Why it works</span>
+</div>
+<p class="text-sm italic font-serif leading-relaxed">
+                    "Terracotta and copper are your 'power metals.' They mimic the natural warmth in your skin surface, making you appear lit from within under low-light settings."
+                </p>
+</div>
+</section>
+<!-- Section 3: Weekend Ease -->
+<section class="@container">
+<div class="px-6 mb-6">
+<h3 class="font-serif text-3xl mb-1">Weekend Ease</h3>
+<p class="text-sm text-charcoal/60 dark:text-slate-400 uppercase tracking-widest">Earthbound Textures</p>
+</div>
+<div class="px-6 mb-8">
+<div class="relative group overflow-hidden rounded-xl aspect-[4/5] md:aspect-video shadow-xl">
+<div class="absolute inset-0 bg-center bg-cover transition-transform duration-700 group-hover:scale-105" data-alt="Woman in mustard knit sweater and warm denim in a cozy cafe" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBjBGg6eApIReldUqeB8FFgqAwYIRZawJW4cKvE-_EWwBqrRnWFPEC4fLJMYgSGe3Fg5DfpfpYo2oM_sMm6jqvv_VJsEZIP-iUCEn95eqyJ8CDmHyymxMWUF6W0xr7_20gG8TgHkI2uhDd9m-YVfw9mhemILgou2XG0J534IQ_Gwsd1bdh3N4b1lM2BoKtsT4cpsa-Mcm6sOEnRllwJcMIDQqF_FM5U23lYx27v9en-zWZNwja0iESwts3cUvkmxlhIHo4HbSLaiA');"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+<div class="absolute bottom-6 left-6 right-6 flex justify-between items-end">
+<div class="text-white">
+<p class="text-xs font-bold tracking-widest uppercase opacity-80 mb-1">Casual Luxe</p>
+<h4 class="text-2xl font-serif">Mustard &amp; Tobacco</h4>
+</div>
+<button class="bg-primary text-white px-6 py-3 rounded-full font-medium hover:bg-primary/90 transition-colors">
+                            Shop Look
+                        </button>
+</div>
+</div>
+</div>
+<div class="flex overflow-x-auto gap-4 px-6 no-scrollbar snap-x">
+<div class="min-w-[180px] snap-start">
+<div class="aspect-[3/4] bg-white dark:bg-slate-800 rounded-lg overflow-hidden mb-3 border border-primary/5">
+<img class="w-full h-full object-cover" data-alt="Chunky mustard yellow knit sweater" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB6FeFUQQeIA8C_r9tyl1eWXhWvulk0QZ3XGK1LAkuEcpl-DvhcLX74Mns_HIr1JsBLq9wbi9ugM37-rk_X2aEF_HbGToS1Ko_D4ZQ7GPWi0I5-PRSQZ80kQufF5PyLdXmw8QtSwEYWQ5uOKe_Bk6jyGs7OlvF9LHJrVkYXpxu9YuZmhQ7KZfMuCXXdEGXdaime6luParWI9vSzXy-N9Fl9cUo27tIKC1K_Oy7g9DBTxYgeoJWThNrXu7OSsWElRE8imYayJ-VX6g"/>
+</div>
+<p class="text-xs font-bold uppercase tracking-tighter">Mustard Knit</p>
+<p class="text-xs text-primary font-medium">$110</p>
+</div>
+<div class="min-w-[180px] snap-start">
+<div class="aspect-[3/4] bg-white dark:bg-slate-800 rounded-lg overflow-hidden mb-3 border border-primary/5">
+<img class="w-full h-full object-cover" data-alt="Deep indigo warm denim jeans" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7Nj5839_IXBdszezxqIZMqZ784wpYeerfkaRwRE-BOjSvzq3SmCswgvBZdClnVJg1uypv-QuHP7mdCSjZk2mBxdHnTfiq6maBJBW0dmgMdCAyDxqoJGuz-VqRWFX3b-MxVWqDin3MmwkFEl1ReVXIl97xUn5-qnUAHqIfNZu_A9WH2QcSK1hrj6Fzlh4ZVWQSIZspdVUau_f7Y3Hk0AqjyDEhueGggRwygv-7DlPldqZ-MA0-pdrxqnqZiDPrTumlZuEzfnR0KQ"/>
+</div>
+<p class="text-xs font-bold uppercase tracking-tighter">Warm Denim</p>
+<p class="text-xs text-primary font-medium">$145</p>
+</div>
+<div class="min-w-[180px] snap-start">
+<div class="aspect-[3/4] bg-white dark:bg-slate-800 rounded-lg overflow-hidden mb-3 border border-primary/5">
+<img class="w-full h-full object-cover" data-alt="Tobacco leather Chelsea boots" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBTOe1tIdBo-gDtuDSdAYQxhF24MU6jmAA_qQnOa9FC5KKh1gU_4wxiHKC4a-kJbnzIivajbdqnA4tXr7DNfT5PVagGSJWzcpM15nZ5rLCrQDS-Czr4uUZqeVexE7nXyNF2aIFA1CsA92JtGn4uMIxwsnX9AQ4LzBteMi9VIBSa0LtaAXh1_IDhQKOIangrOx82mqoyeNNc7-kpyPdrmwM4Q1WrdC_IFGiRwQVh6qL-a-3cqQDqO-MRrHda3N38n6gwdIfkFB3_Mw"/>
+</div>
+<p class="text-xs font-bold uppercase tracking-tighter">Tobacco Boots</p>
+<p class="text-xs text-primary font-medium">$225</p>
+</div>
+</div>
+<div class="mx-6 mt-8 p-5 bg-primary/5 border-l-4 border-primary rounded-r-lg">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-primary text-sm">auto_awesome</span>
+<span class="font-bold text-xs uppercase tracking-widest text-primary">Why it works</span>
+</div>
+<p class="text-sm italic font-serif leading-relaxed">
+                    "Weekend dressing shouldn't be washed out. Mustard provides that earthy pop, while warm indigo denim acts as a much better base for your palette than light or icy blues."
+                </p>
+</div>
+</section>
+</main>
+<!-- Bottom Navigation Bar -->
+<div class="fixed bottom-0 left-0 right-0 z-50 bg-background-light/95 dark:bg-background-dark/95 border-t border-primary/10 px-4 pb-6 pt-3 backdrop-blur-lg">
+<div class="flex justify-between items-center max-w-md mx-auto">
+<a class="flex flex-col items-center gap-1 group" href="#">
+<span class="material-symbols-outlined text-charcoal/40 group-hover:text-primary">explore</span>
+<span class="text-[10px] font-bold uppercase tracking-tighter text-charcoal/40 group-hover:text-primary">Explore</span>
+</a>
+<a class="flex flex-col items-center gap-1 group" href="#">
+<span class="material-symbols-outlined text-primary fill-[1]">style</span>
+<span class="text-[10px] font-bold uppercase tracking-tighter text-primary">Guide</span>
+</a>
+<a class="flex flex-col items-center gap-1 group" href="#">
+<span class="material-symbols-outlined text-charcoal/40 group-hover:text-primary">inventory_2</span>
+<span class="text-[10px] font-bold uppercase tracking-tighter text-charcoal/40 group-hover:text-primary">Wardrobe</span>
+</a>
+<a class="flex flex-col items-center gap-1 group" href="#">
+<span class="material-symbols-outlined text-charcoal/40 group-hover:text-primary">person</span>
+<span class="text-[10px] font-bold uppercase tracking-tighter text-charcoal/40 group-hover:text-primary">Profile</span>
+</a>
+</div>
+</div>
+</body></html>

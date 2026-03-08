@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Noto+Sans:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#b87332",
+                        "background-light": "#f8f7f6",
+                        "background-dark": "#1f1913",
+                        "accent-warm": "#f1ede9",
+                        "border-muted": "#e4dbd3",
+                        "text-charcoal": "#191410",
+                        "text-muted": "#8d7258"
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<title>ToneMatch - Quick Check</title>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-text-charcoal antialiased">
+<div class="relative flex h-auto min-h-screen w-full flex-col bg-background-light dark:bg-background-dark group/design-root overflow-x-hidden max-w-md mx-auto shadow-2xl">
+<!-- TopAppBar -->
+<header class="flex items-center bg-background-light dark:bg-background-dark p-4 pb-2 justify-between sticky top-0 z-10 border-b border-border-muted/30">
+<button aria-label="Go back" class="text-text-charcoal dark:text-slate-100 flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-accent-warm transition-colors">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h2 class="text-text-charcoal dark:text-slate-100 text-lg font-bold leading-tight tracking-tight flex-1 text-center pr-10">Quick Check</h2>
+</header>
+<main class="flex flex-col p-4 gap-6">
+<!-- Upload/Preview Area -->
+<section class="flex flex-col items-center gap-6 rounded-xl border-2 border-dashed border-border-muted dark:border-primary/30 px-6 py-12 bg-white/50 dark:bg-white/5 transition-all">
+<div class="flex max-w-[480px] flex-col items-center gap-4 text-center">
+<div class="size-16 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-2">
+<span class="material-symbols-outlined text-4xl">add_a_photo</span>
+</div>
+<div class="space-y-1">
+<p class="text-text-charcoal dark:text-slate-100 text-xl font-bold leading-tight tracking-tight">Upload Product Photo</p>
+<p class="text-text-muted dark:text-slate-400 text-sm font-normal leading-normal">Take a photo or upload an image to analyze the color match against your Deep Autumn profile.</p>
+</div>
+</div>
+<button class="flex min-w-[160px] cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-lg h-12 px-6 bg-primary text-white text-sm font-bold leading-normal tracking-wide shadow-md hover:bg-primary/90 transition-all">
+<span class="material-symbols-outlined text-[20px]">upload</span>
+<span class="truncate">Upload Image</span>
+</button>
+</section>
+<!-- Analysis Result Section -->
+<section class="@container">
+<div class="flex flex-col gap-4 rounded-xl border border-border-muted bg-white dark:bg-background-dark/50 p-5 shadow-sm">
+<div class="flex items-center justify-between">
+<div class="flex flex-col gap-1">
+<span class="text-xs font-bold uppercase tracking-widest text-primary/80">Analysis Result</span>
+<div class="flex items-center gap-2">
+<span class="size-3 rounded-full bg-green-500"></span>
+<h3 class="text-text-charcoal dark:text-slate-100 text-xl font-bold leading-tight">Match Status: Good Fit</h3>
+</div>
+</div>
+<div class="size-12 rounded-lg bg-accent-warm flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">verified</span>
+</div>
+</div>
+<p class="text-text-muted dark:text-slate-300 text-base font-normal leading-relaxed border-t border-border-muted/40 pt-4">
+                        This muted olive aligns perfectly with your <span class="font-bold text-text-charcoal dark:text-slate-100">Deep Autumn</span> undertones. It harmonizes with your natural warmth and adds sophisticated depth.
+                    </p>
+</div>
+</section>
+<!-- Suggested Usage -->
+<section>
+<h3 class="text-text-charcoal dark:text-slate-100 tracking-tight text-lg font-bold leading-tight pb-4">Suggested Usage</h3>
+<div class="grid grid-cols-3 gap-3">
+<div class="flex flex-col items-center gap-2 p-3 rounded-xl bg-accent-warm dark:bg-primary/10 border border-primary/5">
+<span class="material-symbols-outlined text-primary">face</span>
+<span class="text-[10px] font-bold uppercase text-center text-text-muted dark:text-slate-400">Best near face</span>
+</div>
+<div class="flex flex-col items-center gap-2 p-3 rounded-xl bg-accent-warm dark:bg-primary/10 border border-primary/5">
+<span class="material-symbols-outlined text-primary">layers</span>
+<span class="text-[10px] font-bold uppercase text-center text-text-muted dark:text-slate-400">Great as layer</span>
+</div>
+<div class="flex flex-col items-center gap-2 p-3 rounded-xl bg-background-light dark:bg-background-dark border border-border-muted opacity-50">
+<span class="material-symbols-outlined text-text-muted">straighten</span>
+<span class="text-[10px] font-bold uppercase text-center text-text-muted">Bottom pieces</span>
+</div>
+</div>
+</section>
+<!-- Action Buttons -->
+<footer class="flex flex-col gap-3 pt-4 mt-auto">
+<button class="flex w-full cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-xl h-14 px-4 bg-primary text-white text-base font-bold leading-normal tracking-wide shadow-lg active:scale-[0.98] transition-all">
+<span class="material-symbols-outlined">inventory_2</span>
+<span class="truncate">Save to Wardrobe</span>
+</button>
+<button class="flex w-full cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-xl h-14 px-4 bg-white dark:bg-background-dark border-2 border-primary/20 text-primary text-base font-bold leading-normal tracking-wide hover:bg-accent-warm transition-all">
+<span class="material-symbols-outlined">search</span>
+<span class="truncate">See similar better matches</span>
+</button>
+</footer>
+</main>
+<!-- Mock spacing for bottom navigation if any -->
+<div class="h-8"></div>
+</div>
+</body></html>

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;family=Playfair+Display:ital,wght@0,400..900;1,400..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#b87332",
+                        "background-light": "#f8f7f6",
+                        "background-dark": "#1f1913",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"],
+                        "serif": ["Playfair Display", "serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style>
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen flex items-center justify-center p-4">
+<!-- Social Media Shareable Card Container -->
+<div class="relative w-full max-w-[420px] aspect-[9/16] bg-[#fdfcfb] dark:bg-[#1a1612] rounded-xl overflow-hidden shadow-2xl border border-primary/10 flex flex-col">
+<!-- Top Navigation / Brand Bar -->
+<div class="flex items-center justify-between p-6 z-10">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-2xl">flare</span>
+<span class="font-bold tracking-widest uppercase text-xs text-primary/80">ToneMatch</span>
+</div>
+<div class="flex gap-4">
+<button class="text-slate-900 dark:text-slate-100">
+<span class="material-symbols-outlined">share</span>
+</button>
+<button class="text-slate-900 dark:text-slate-100">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+</div>
+<!-- Main Content Area -->
+<div class="flex-1 px-6 flex flex-col items-center gap-6">
+<!-- Hero Portrait Section -->
+<div class="relative w-full aspect-[4/5] rounded-xl overflow-hidden shadow-xl border-4 border-white dark:border-slate-800">
+<img class="w-full h-full object-cover" data-alt="Elegant portrait of a woman with warm skin tones and dark hair" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBpipF0Hf1FjuvmA8R3f69lzP9k1E2pmDzXMsjCmAAxCVt67t-l4fDcVCh-1i1bpb9SoRgwFwrCRp8hvXAxsGaPS1qyojFTd77UYGU5hFpkVYd6NgbzX055ydqQlmUIX_TvlGr067CKBNSoLGFz2Diy-zdOeeg9X4nSkKnFSUrH2xOdbsfQhJetAxb4tZ2XNNXVdzJkPXKC2PhqHAo1LTpduPGl6QFwjDHMFhqq0jj9uAtRuK5tfDwkQObgccfZc6wGPrgZYd7Lmw"/>
+<!-- Confidence Badge -->
+<div class="absolute top-4 right-4 glass-effect px-3 py-1.5 rounded-full border border-white/20 shadow-sm">
+<div class="flex flex-col items-center">
+<span class="text-[10px] font-bold uppercase tracking-tighter text-primary/80 leading-none">Match Score</span>
+<span class="text-lg font-extrabold text-primary">98%</span>
+</div>
+</div>
+</div>
+<!-- Title & Description -->
+<div class="text-center space-y-2">
+<h1 class="font-serif text-4xl italic text-slate-800 dark:text-slate-50">Deep Autumn</h1>
+<div class="h-[1px] w-12 bg-primary/40 mx-auto"></div>
+<p class="text-sm font-medium text-slate-500 dark:text-slate-400 uppercase tracking-[0.2em]">Signature Palette</p>
+</div>
+<!-- Palette Display -->
+<div class="flex w-full justify-between items-center px-4">
+<div class="flex -space-x-2">
+<div class="size-12 rounded-full border-2 border-white dark:border-[#1a1612] bg-[#b87332]" title="Copper"></div>
+<div class="size-12 rounded-full border-2 border-white dark:border-[#1a1612] bg-[#cc4e3c]" title="Terracotta"></div>
+<div class="size-12 rounded-full border-2 border-white dark:border-[#1a1612] bg-[#355e3b]" title="Hunter Green"></div>
+<div class="size-12 rounded-full border-2 border-white dark:border-[#1a1612] bg-[#cc7722]" title="Ochre"></div>
+<div class="size-12 rounded-full border-2 border-white dark:border-[#1a1612] bg-[#5d2e1f]" title="Deep Espresso"></div>
+</div>
+<div class="text-right">
+<p class="text-[10px] uppercase font-bold text-slate-400">Seasonal Essence</p>
+<p class="text-xs font-bold text-primary">Rich &amp; Earthy</p>
+</div>
+</div>
+<!-- Attribute Pills -->
+<div class="flex flex-wrap justify-center gap-2">
+<div class="flex items-center gap-1.5 px-3 py-1 rounded-full border border-primary/20 bg-primary/5">
+<span class="material-symbols-outlined text-[16px] text-primary">thermometer</span>
+<span class="text-[11px] font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">Warm Undertone</span>
+</div>
+<div class="flex items-center gap-1.5 px-3 py-1 rounded-full border border-primary/20 bg-primary/5">
+<span class="material-symbols-outlined text-[16px] text-primary">circle</span>
+<span class="text-[11px] font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">High Contrast</span>
+</div>
+<div class="flex items-center gap-1.5 px-3 py-1 rounded-full border border-primary/20 bg-primary/5">
+<span class="material-symbols-outlined text-[16px] text-primary">water_drop</span>
+<span class="text-[11px] font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">Rich Saturation</span>
+</div>
+</div>
+<!-- Why it works summary -->
+<div class="bg-primary/5 p-4 rounded-xl border border-primary/10 mx-2">
+<p class="text-center text-[13px] leading-relaxed italic text-slate-600 dark:text-slate-400">
+                    "Rich, earthy tones balance your golden warmth and bring out the intensity in your eyes."
+                </p>
+</div>
+</div>
+<!-- Footer / CTA -->
+<div class="p-8 flex flex-col items-center gap-3">
+<div class="flex items-center gap-4 bg-white dark:bg-slate-800 p-3 rounded-xl border border-primary/20 shadow-sm w-full">
+<div class="size-12 bg-slate-100 dark:bg-slate-700 rounded p-1 flex items-center justify-center shrink-0">
+<!-- Fake QR Code Pattern -->
+<div class="w-full h-full bg-slate-900 dark:bg-slate-100 opacity-80" style="mask-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCI+PHBhdGggZD0iTTIgMmgydjJIMlptNCAwaDJ2Mkg2Wm00IDBoMnYySDEwWm00IDBoMnYySDE0Wm00IDBoMnYySDE4Wm0yIDJoMnYySDIwWiIvPjwvc3ZnPg=='); mask-repeat: repeat;"></div>
+</div>
+<div class="flex flex-col">
+<span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Discover Your Color</span>
+<span class="text-sm font-bold text-primary">tonematch.app</span>
+</div>
+<div class="ml-auto">
+<span class="material-symbols-outlined text-slate-400">arrow_forward_ios</span>
+</div>
+</div>
+</div>
+<!-- Bottom Navigation Bar Component Reuse -->
+<div class="flex gap-2 border-t border-primary/10 bg-[#fdfcfb] dark:bg-[#1a1612] px-4 pb-6 pt-2">
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-slate-400" href="#">
+<div class="flex h-8 items-center justify-center">
+<span class="material-symbols-outlined">home</span>
+</div>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-slate-400" href="#">
+<div class="flex h-8 items-center justify-center">
+<span class="material-symbols-outlined">search</span>
+</div>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 rounded-full text-primary" href="#">
+<div class="flex h-8 items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">photo_camera</span>
+</div>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-slate-400" href="#">
+<div class="flex h-8 items-center justify-center">
+<span class="material-symbols-outlined">favorite</span>
+</div>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-slate-400" href="#">
+<div class="flex h-8 items-center justify-center">
+<span class="material-symbols-outlined">person</span>
+</div>
+</a>
+</div>
+</div>
+</body></html>

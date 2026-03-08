@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#b87332",
+                        "background-light": "#f8f7f6",
+                        "background-dark": "#1f1913",
+                        "charcoal": "#191410",
+                        "warm-neutral": "#8d7258",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<title>ToneMatch Comparison</title>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-charcoal dark:text-slate-100 min-h-screen">
+<div class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden max-w-md mx-auto shadow-2xl bg-background-light">
+<!-- Header -->
+<div class="flex items-center bg-background-light p-4 pb-2 justify-between border-b border-primary/10">
+<div class="text-charcoal flex size-12 shrink-0 items-center">
+<span class="material-symbols-outlined">arrow_back</span>
+</div>
+<div class="flex flex-col items-center">
+<h2 class="text-charcoal text-xl font-extrabold tracking-tighter uppercase">ToneMatch</h2>
+<span class="text-[10px] tracking-[0.2em] text-warm-neutral font-bold uppercase -mt-1">Digital Atelier</span>
+</div>
+<div class="flex w-12 items-center justify-end">
+<button class="flex cursor-pointer items-center justify-center rounded-lg h-10 w-10 bg-primary/10 text-primary">
+<span class="material-symbols-outlined text-[20px]">share</span>
+</button>
+</div>
+</div>
+<!-- Main Content Area: Editorial Magazine Style -->
+<main class="flex-1 p-4 flex flex-col gap-6">
+<!-- Summary Title -->
+<div class="text-center space-y-1">
+<div class="inline-flex items-center gap-1.5 px-3 py-1 bg-primary/10 rounded-full mb-2">
+<span class="material-symbols-outlined text-primary text-sm font-bold">verified</span>
+<span class="text-primary text-xs font-bold uppercase tracking-wider">Match Score 98%</span>
+</div>
+<h1 class="text-3-xl font-extrabold text-charcoal tracking-tight leading-tight px-4">Your Seasonal Essence:<br/><span class="text-primary">Rich &amp; Radiant</span></h1>
+<p class="text-warm-neutral text-sm font-medium italic">Deep Autumn Palette Selection</p>
+</div>
+<!-- Comparison Cards Container -->
+<div class="space-y-4">
+<!-- Before Card -->
+<div class="relative group overflow-hidden rounded-xl border border-warm-neutral/20 shadow-sm">
+<div class="w-full aspect-[4/3] bg-center bg-no-repeat bg-cover grayscale-[0.2]" data-alt="Woman wearing a cool bright blue sweater looking pale" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBFgXQE9KfIyN0Oq8quqmdHWN8mJoBaTHXYw42gjKjh-hZJsUpkGgmM_2HT21T47ze5HDvR4h10PwBy40qg1EDXneWCypZ1gLQhB3dM6uFzISI8V2kVPh7t4Lx9ydKkFNLn6OxzwgZhSvbJ6YO4RmG-c-HwkXC3qkf0hjscXL5A6h5vcTRtear_M2OjgreyTEf4KbouHA6WS5zwc7u5jU_CPb-Wo8QQHjnmHfQITEKMV9bEr3hU2S_KAhnIpuuEZUCpGM84o12IMg");'>
+<div class="absolute inset-0 bg-blue-900/10 mix-blend-multiply"></div>
+</div>
+<div class="absolute top-4 left-4 bg-charcoal/80 backdrop-blur-md px-3 py-1 rounded-full flex items-center gap-2">
+<span class="material-symbols-outlined text-red-400 text-sm">cancel</span>
+<span class="text-white text-[10px] font-bold uppercase tracking-widest">Muted &amp; Cool (Wrong)</span>
+</div>
+<div class="absolute bottom-0 inset-x-0 p-4 bg-gradient-to-t from-charcoal/60 to-transparent">
+<p class="text-white/80 text-xs italic leading-snug">The cool blue undertone creates a sallow effect and washes out your natural warmth.</p>
+</div>
+</div>
+<!-- Separation Line with Icon -->
+<div class="flex items-center gap-4 py-2">
+<div class="h-px flex-1 bg-primary/20"></div>
+<div class="bg-primary text-white p-2 rounded-full shadow-lg">
+<span class="material-symbols-outlined text-[20px] leading-none">auto_awesome</span>
+</div>
+<div class="h-px flex-1 bg-primary/20"></div>
+</div>
+<!-- After Card -->
+<div class="relative group overflow-hidden rounded-xl border-2 border-primary shadow-xl ring-4 ring-primary/5">
+<div class="w-full aspect-[4/3] bg-center bg-no-repeat bg-cover" data-alt="Woman wearing a warm copper copper top glowing skin" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBIinhn-NueUAA9RTCdhtY7YmDy0t2Gz7v7DTdCzeq57EJztZM0OGl0Nmf6eibkvyMV1vLNXumZ3TKTXIlXG1uHzojvhg0CY16WejICT2O1l9Dx9gibo9EGqytjWhf3yQHmyjo6WahWpKQk3UQdvsM-YYbndFb7Xz6aUi8TbOVSIWnntbC4MjI_2UK9ONhpvm3N73L9AAExtWxE2WzKas5JtyPXZZt_hhN8PcSSLOq_MnRd8JTNODrx89WeWyFy52bTBWloWeQoUQ");'>
+<div class="absolute inset-0 bg-primary/20 mix-blend-color"></div>
+</div>
+<div class="absolute top-4 left-4 bg-primary px-3 py-1 rounded-full flex items-center gap-2 shadow-lg">
+<span class="material-symbols-outlined text-white text-sm">check_circle</span>
+<span class="text-white text-[10px] font-bold uppercase tracking-widest">Deep &amp; Warm (Right)</span>
+</div>
+<div class="absolute bottom-0 inset-x-0 p-4 bg-gradient-to-t from-primary/90 to-transparent">
+<p class="text-white text-xs font-medium leading-snug">Copper tones harmonize with your melanin levels, creating a luminous, healthy glow.</p>
+</div>
+</div>
+</div>
+<!-- Analysis Detail Grid -->
+<div class="grid grid-cols-2 gap-4 mt-2">
+<div class="p-4 bg-warm-neutral/5 rounded-xl border border-warm-neutral/10">
+<h3 class="text-[10px] uppercase tracking-widest text-warm-neutral font-bold mb-1">Undertone</h3>
+<p class="text-charcoal font-bold">Golden-Copper</p>
+</div>
+<div class="p-4 bg-warm-neutral/5 rounded-xl border border-warm-neutral/10">
+<h3 class="text-[10px] uppercase tracking-widest text-warm-neutral font-bold mb-1">Contrast</h3>
+<p class="text-charcoal font-bold">High/Rich</p>
+</div>
+</div>
+<!-- Call to Action -->
+<div class="pt-4 pb-8">
+<button class="w-full bg-primary text-white font-bold py-4 rounded-xl shadow-lg shadow-primary/20 flex items-center justify-center gap-2 active:scale-95 transition-transform">
+<span>Unlock Your Full Palette</span>
+<span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+</main>
+<!-- Navigation Bar -->
+<div class="mt-auto flex gap-2 border-t border-primary/10 bg-background-light px-4 pb-6 pt-2">
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-warm-neutral/60" href="#">
+<div class="flex h-8 items-center justify-center">
+<span class="material-symbols-outlined">home</span>
+</div>
+<p class="text-[10px] font-bold uppercase tracking-tighter">Home</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-primary" href="#">
+<div class="flex h-8 items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">scan_delete</span>
+</div>
+<p class="text-[10px] font-bold uppercase tracking-tighter">Analysis</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-warm-neutral/60" href="#">
+<div class="flex h-8 items-center justify-center">
+<span class="material-symbols-outlined">palette</span>
+</div>
+<p class="text-[10px] font-bold uppercase tracking-tighter">Palettes</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-warm-neutral/60" href="#">
+<div class="flex h-8 items-center justify-center">
+<span class="material-symbols-outlined">person</span>
+</div>
+<p class="text-[10px] font-bold uppercase tracking-tighter">Profile</p>
+</a>
+</div>
+</div>
+</body></html>

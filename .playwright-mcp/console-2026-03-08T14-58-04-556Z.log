@@ -1,0 +1,26 @@
+[     147ms] [WARNING] "shadow*" style props are deprecated. Use "boxShadow". @ http://localhost:8086/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:23689
+[   20061ms] [WARNING] props.pointerEvents is deprecated. Use style.pointerEvents @ http://localhost:8086/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:23689
+[ 2392030ms] Error: UnableToResolveError Unable to resolve module expo-file-system/legacy/FileSystem from /home/aytzey/Desktop/Easy_money_tests/cilt_alt_tonu/apps/mobile/src/lib/gemini.ts: expo-file-system/legacy/FileSystem could not be found within the project or in these directories:
+  ../../node_modules
+  ../../node_modules
+[0m [90m 2 |[39m   [33mEncodingType[39m[33m,[39m
+ [90m 3 |[39m   readAsStringAsync[33m,[39m
+[31m[1m>[22m[39m[90m 4 |[39m } [36mfrom[39m [32m"expo-file-system/legacy/FileSystem"[39m[33m;[39m
+ [90m   |[39m         [31m[1m^[22m[39m
+ [90m 5 |[39m
+ [90m 6 |[39m [36mimport[39m type { [33mClothingCheck[39m[33m,[39m [33mStyleExperience[39m } [36mfrom[39m [32m"@/src/types/tonematch"[39m[33m;[39m
+ [90m 7 |[39m[0m
+    at showCompileError (http://localhost:8086/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:98518:19)
+    at HMRClient.<anonymous> (http://localhost:8086/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:98438:13)
+    at HMRClient.emit (http://localhost:8086/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:98769:31)
+    at HMRClient._ws.onmessage (http://localhost:8086/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:98584:18)
+[ 2479750ms] [ERROR] WebSocket connection to 'ws://localhost:8086/message' failed:  @ http://localhost:8086/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:100230
+[ 2479750ms] [ERROR] WebSocket connection to 'ws://localhost:8086/hot' failed:  @ http://localhost:8086/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:98554
+[ 2480250ms] [WARNING] Cannot connect to Metro.
+ 
+ Try the following to fix the issue:
+ - Ensure the Metro dev server is running and available on the same network as this device
+ 
+ URL: localhost:8086
+ 
+ Error: undefined @ http://localhost:8086/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable:98477

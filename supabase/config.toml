@@ -1,0 +1,47 @@
+project_id = "tone-match"
+
+[api]
+enabled = true
+port = 55321
+schemas = ["public", "storage", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 55322
+shadow_port = 55320
+major_version = 17
+
+[studio]
+enabled = true
+port = 55323
+
+[functions.create-upload]
+verify_jwt = false
+
+[functions.finalize-analysis]
+verify_jwt = false
+
+[functions.privacy-delete-account]
+verify_jwt = false
+
+[functions.finalize-wardrobe-item]
+verify_jwt = false
+
+[functions.export-account-data]
+verify_jwt = false
+
+[functions.quick-check]
+verify_jwt = false
+
+[functions.prepare-merchant-click]
+verify_jwt = false
+
+[functions.report-merchant-click]
+verify_jwt = false
+
+[functions.revenuecat-webhook]
+verify_jwt = false
+
+[functions.ingest-catalog-feed]
+verify_jwt = false

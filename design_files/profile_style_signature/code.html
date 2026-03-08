@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#b87332",
+                        "background-light": "#f8f7f6",
+                        "background-dark": "#1f1913",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Manrope', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 antialiased font-display">
+<div class="relative flex min-h-screen w-full flex-col max-w-md mx-auto bg-background-light dark:bg-background-dark shadow-2xl">
+<!-- Header -->
+<div class="flex items-center bg-background-light dark:bg-background-dark p-6 justify-between sticky top-0 z-10">
+<h2 class="text-slate-900 dark:text-slate-100 text-xl font-bold leading-tight tracking-tight flex-1">Profile</h2>
+<div class="flex items-center justify-end">
+<button class="flex items-center justify-center rounded-full h-10 w-10 bg-slate-200/50 dark:bg-slate-800/50 text-slate-900 dark:text-slate-100">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</div>
+</div>
+<!-- Hero Section: User Avatar & Signature -->
+<div class="flex px-6 py-4 @container">
+<div class="flex w-full flex-col gap-6 items-center">
+<div class="relative">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full h-32 w-32 ring-4 ring-primary/20" data-alt="Professional portrait of a stylish woman with warm undertones" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDqlAP98eqWFcIulSZ6jMczIZHAb95xAjbn26y4A6KjFvwZ69YwH3WG5XyvQ7VnnI8ntsr7za7PjBDtR7Sz-FDn93ErmYSunS2afbrzxtSj6lZ6fWgxv83fzzPH4EG-3WfL0FMxEjYJ6yZzHRDd9-sZev6a4ynAHhD3i1ge5H_xowHCmJ0K0siJ5AwqAwXOxyKMvgM79Yqv5gG5A52v927dVK6jZk-FO06fIT7IOYcDsr96pq5-0GoqC5kmIN-pOyh7buUuGDFMRg");'>
+</div>
+<div class="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-primary text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full whitespace-nowrap">
+                        Verified Palette
+                    </div>
+</div>
+<div class="flex flex-col items-center justify-center text-center">
+<p class="text-slate-900 dark:text-slate-100 text-2xl font-extrabold leading-tight">Alex Rivers</p>
+<div class="mt-2 inline-flex items-center gap-1.5 px-3 py-1 bg-primary/10 border border-primary/20 rounded-full">
+<span class="material-symbols-outlined text-primary text-sm">palette</span>
+<p class="text-primary text-sm font-semibold leading-none">Deep Autumn Enthusiast</p>
+</div>
+<p class="mt-2 text-slate-500 dark:text-slate-400 text-xs font-medium uppercase tracking-tighter italic">Member since Sep 2023</p>
+</div>
+</div>
+</div>
+<!-- Subscription Card -->
+<div class="px-6 py-4">
+<div class="flex items-stretch justify-between gap-4 rounded-xl bg-slate-900 dark:bg-primary/10 p-5 shadow-lg border border-primary/20 overflow-hidden relative">
+<!-- Decorative element -->
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary/20 blur-3xl -mr-16 -mt-16 rounded-full"></div>
+<div class="flex flex-col justify-between gap-4 z-10">
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">workspace_premium</span>
+<p class="text-white dark:text-primary text-lg font-bold leading-tight">ToneMatch Plus</p>
+</div>
+<p class="text-slate-400 dark:text-slate-300 text-sm font-normal leading-normal">Your personal color consultant is active.</p>
+</div>
+<button class="flex h-10 px-5 items-center justify-center rounded-lg bg-primary text-white text-sm font-bold tracking-wide w-fit transition-all active:scale-95">
+                        Manage Plan
+                    </button>
+</div>
+<div class="w-24 h-24 bg-center bg-no-repeat bg-cover rounded-lg z-10 opacity-80" data-alt="Abstract copper and earth tone textures" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCEtGyEPZqQVC0TrWKZHT3MfpCKQufF2_D_rON5yX1hB9UduQTmRGStu6A0Gsbf9_sh2rR7zUEUrjhZKGqWGntBPZri5pjisyCmI49rhdDDrt1aCy7WV1CGT4uv-Ydp3QrkFnUc_1amtcG8LQalJsEyxx1Jv8bUAYE85fXMdVti210c735b42qOPO0VazIW69HqEn07ikFjBb3x7c7x4n6trRgoZ_7BCX02Cb3ajUu88agVbdChNr_LTbe-6fw1PKE8ACfnl9R3BQ");'></div>
+</div>
+</div>
+<!-- Account Settings -->
+<div class="px-6 py-2">
+<h3 class="text-slate-900 dark:text-slate-100 text-sm font-bold uppercase tracking-widest py-4 border-b border-slate-200/50 dark:border-slate-800/50">Account Experience</h3>
+<div class="flex flex-col">
+<a class="flex items-center justify-between py-4 group" href="#">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-slate-400 group-hover:text-primary transition-colors">notifications</span>
+<span class="text-slate-700 dark:text-slate-300 font-medium">Notifications</span>
+</div>
+<span class="material-symbols-outlined text-slate-300">chevron_right</span>
+</a>
+<a class="flex items-center justify-between py-4 group" href="#">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-slate-400 group-hover:text-primary transition-colors">translate</span>
+<span class="text-slate-700 dark:text-slate-300 font-medium">Language</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-xs text-slate-400">English (US)</span>
+<span class="material-symbols-outlined text-slate-300">chevron_right</span>
+</div>
+</a>
+<a class="flex items-center justify-between py-4 group border-b border-slate-200/50 dark:border-slate-800/50" href="#">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-slate-400 group-hover:text-primary transition-colors">contact_support</span>
+<span class="text-slate-700 dark:text-slate-300 font-medium">Support Center</span>
+</div>
+<span class="material-symbols-outlined text-slate-300">chevron_right</span>
+</a>
+</div>
+</div>
+<!-- Data & Privacy -->
+<div class="px-6 py-2 mb-20">
+<h3 class="text-slate-900 dark:text-slate-100 text-sm font-bold uppercase tracking-widest py-4">Data &amp; Privacy</h3>
+<div class="bg-primary/5 rounded-xl p-4 mb-4 border border-primary/10">
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary text-xl">shield_person</span>
+<div>
+<p class="text-slate-800 dark:text-slate-200 text-sm font-bold mb-1">Privacy &amp; Trust</p>
+<p class="text-slate-500 dark:text-slate-400 text-xs leading-relaxed">Your biometric data and color profiles are encrypted and never sold to third parties.</p>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-1">
+<button class="flex items-center gap-3 py-3 text-slate-600 dark:text-slate-400 text-sm font-medium hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-lg">download</span>
+                    Export My Color Data
+                </button>
+<button class="flex items-center gap-3 py-3 text-red-600/70 text-sm font-medium hover:text-red-600 transition-colors">
+<span class="material-symbols-outlined text-lg">no_accounts</span>
+                    Delete Account
+                </button>
+</div>
+</div>
+<!-- Bottom Navigation Bar -->
+<div class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md border-t border-slate-200/50 dark:border-slate-800/50 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md px-4 pb-6 pt-3 z-50">
+<div class="flex justify-between items-center max-w-xs mx-auto">
+<a class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">home</span>
+<p class="text-[10px] font-bold uppercase tracking-widest">Home</p>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">auto_awesome_motion</span>
+<p class="text-[10px] font-bold uppercase tracking-widest">Matches</p>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">explore</span>
+<p class="text-[10px] font-bold uppercase tracking-widest">Explore</p>
+</a>
+<a class="flex flex-col items-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">person</span>
+<p class="text-[10px] font-bold uppercase tracking-widest">Profile</p>
+</a>
+</div>
+</div>
+</div>
+</body></html>

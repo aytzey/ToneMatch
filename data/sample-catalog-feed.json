@@ -1,0 +1,108 @@
+{
+  "sourceFeed": "merchant-demo",
+  "deactivateMissing": false,
+  "mode": "manual-seed",
+  "requestMeta": {
+    "origin": "local-sample"
+  },
+  "items": [
+    {
+      "externalId": "wm-001",
+      "title": "Warm stone utility jacket",
+      "category": "Outerwear",
+      "description": "Stone utility layer built for softer warm and olive wardrobes.",
+      "merchantName": "Northline Studio",
+      "merchantUrl": "https://example.com/merchant-demo/wm-001",
+      "imageUrl": "https://images.example.com/wm-001.jpg",
+      "priceAmount": 118,
+      "currencyCode": "USD",
+      "toneLabels": ["Warm Neutral", "Olive Soft"],
+      "contrastLabels": ["Low Contrast", "Medium Contrast"],
+      "colorFamilyTags": ["muted neutral"],
+      "occasionTags": ["discover", "casual"],
+      "genderTargets": ["unisex"],
+      "isPremium": false,
+      "inventoryStatus": "in_stock",
+      "metadata": {
+        "material": "cotton twill",
+        "affiliateNetwork": "demo"
+      }
+    },
+    {
+      "externalId": "wm-002",
+      "title": "Ink structured overshirt",
+      "category": "Outerwear",
+      "description": "Dense ink overshirt for brighter cooler profiles.",
+      "merchantName": "Northline Studio",
+      "merchantUrl": "https://example.com/merchant-demo/wm-002",
+      "imageUrl": "https://images.example.com/wm-002.jpg",
+      "priceAmount": 138,
+      "currencyCode": "USD",
+      "toneLabels": ["Cool Bright"],
+      "contrastLabels": ["High Contrast"],
+      "colorFamilyTags": ["cool crisp"],
+      "occasionTags": ["discover", "office"],
+      "genderTargets": ["unisex"],
+      "isPremium": true,
+      "inventoryStatus": "low_stock",
+      "metadata": {
+        "material": "wool blend",
+        "affiliateNetwork": "demo"
+      }
+    },
+    {
+      "externalId": "wm-003",
+      "title": "Moss camp collar shirt",
+      "category": "Top",
+      "description": "Grounded moss shirt that supports olive undertones.",
+      "merchantName": "Field Atlas",
+      "merchantUrl": "https://example.com/merchant-demo/wm-003",
+      "imageUrl": "https://images.example.com/wm-003.jpg",
+      "priceAmount": 58,
+      "currencyCode": "USD",
+      "toneLabels": ["Olive Soft"],
+      "contrastLabels": ["Low Contrast", "Medium Contrast"],
+      "colorFamilyTags": ["olive muted"],
+      "occasionTags": ["discover", "casual"],
+      "genderTargets": ["unisex"],
+      "isPremium": false,
+      "inventoryStatus": "in_stock"
+    },
+    {
+      "externalId": "wm-004",
+      "title": "Berry structured knit",
+      "category": "Occasion",
+      "description": "Structured berry knit that keeps cool skin from looking flat.",
+      "merchantName": "Field Atlas",
+      "merchantUrl": "https://example.com/merchant-demo/wm-004",
+      "imageUrl": "https://images.example.com/wm-004.jpg",
+      "priceAmount": 89,
+      "currencyCode": "USD",
+      "toneLabels": ["Cool Bright"],
+      "contrastLabels": ["Low Contrast", "Medium Contrast"],
+      "colorFamilyTags": ["cool crisp"],
+      "occasionTags": ["discover", "occasion"],
+      "genderTargets": ["unisex"],
+      "isPremium": true,
+      "inventoryStatus": "in_stock"
+    },
+    {
+      "externalId": "wm-005",
+      "title": "Forest merino layer",
+      "category": "Occasion",
+      "description": "Forest merino layer that reads refined on warmer and olive profiles.",
+      "merchantName": "Common Form",
+      "merchantUrl": "https://example.com/merchant-demo/wm-005",
+      "imageUrl": "https://images.example.com/wm-005.jpg",
+      "priceAmount": 92,
+      "currencyCode": "USD",
+      "toneLabels": ["Warm Neutral", "Olive Soft"],
+      "contrastLabels": ["Medium Contrast", "High Contrast"],
+      "colorFamilyTags": ["olive muted"],
+      "occasionTags": ["discover", "occasion"],
+      "genderTargets": ["unisex"],
+      "isPremium": true,
+      "inventoryStatus": "in_stock"
+    }
+  ]
+}

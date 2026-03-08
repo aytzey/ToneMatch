@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#b87332",
+                        "background-light": "#f8f7f6",
+                        "background-dark": "#1f1913",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased">
+<div class="relative flex h-screen w-full flex-col overflow-hidden">
+<!-- Header -->
+<header class="flex items-center justify-between px-6 py-4 z-20 bg-background-light/80 backdrop-blur-md">
+<button class="flex items-center justify-center size-10 rounded-full hover:bg-primary/10 transition-colors">
+<span class="material-symbols-outlined text-slate-900">close</span>
+</button>
+<h1 class="text-lg font-bold tracking-tight text-slate-900 uppercase">ToneMatch AI</h1>
+<button class="flex items-center justify-center size-10 rounded-full hover:bg-primary/10 transition-colors">
+<span class="material-symbols-outlined text-slate-900">help_outline</span>
+</button>
+</header>
+<!-- Main Camera View Area -->
+<main class="relative flex-1 flex flex-col items-center justify-center overflow-hidden">
+<!-- Simulated Camera Feed Background -->
+<div class="absolute inset-0 z-0 bg-slate-200">
+<img alt="Front-facing camera view of a person" class="w-full h-full object-cover grayscale-[0.2]" data-alt="Front-facing camera view of a woman's face in natural lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuChOg1XcWbdb3z0gtGEO0X3e_VyzKYV0V8LqWe4FozBh_o0S2ZTQ1e6KO7xDPSg_-hr0tlFIzYPn25rA0Thzx9heXRT10G40FPNqZi_1KySSvtFQzeajy1by0rIvYTLjiyyj5-q7vhocCRtLCLzyon609thrEu5hmRUsC-ysJjBj4QSHslRncDbtxS7B9eKrXdtnYpQWprRtx-k5MTAeY4bk5yG4eOyujYR4sQEz8ViWXGP7ktwlEhHhVNj8FhKa7U9m9QsFFCXNg"/>
+</div>
+<!-- Overlay Face Guide -->
+<div class="relative z-10 w-full h-full flex flex-col items-center justify-center pointer-events-none">
+<!-- SVG Face Silhouette Overlay -->
+<div class="absolute inset-0 flex items-center justify-center">
+<svg class="w-72 h-96 text-primary/40" fill="none" viewbox="0 0 200 250" xmlns="http://www.w3.org/2000/svg">
+<path d="M100 20C60 20 30 50 30 100C30 160 60 230 100 230C140 230 170 160 170 100C170 50 140 20 100 20Z" stroke="currentColor" stroke-dasharray="8 8" stroke-width="2"></path>
+<path d="M60 90C65 90 70 85 70 80C70 75 65 70 60 70C55 70 50 75 50 80C50 85 55 90 60 90Z" stroke="currentColor" stroke-width="1.5"></path>
+<path d="M140 90C145 90 150 85 150 80C150 75 145 70 140 70C135 70 130 75 130 80C130 85 135 90 140 90Z" stroke="currentColor" stroke-width="1.5"></path>
+<path d="M85 170C95 180 105 180 115 170" stroke="currentColor" stroke-linecap="round" stroke-width="1.5"></path>
+</svg>
+</div>
+<!-- Instruction Labels -->
+<div class="absolute bottom-32 left-0 right-0 px-8 flex flex-col items-center gap-4 text-center pointer-events-auto">
+<div class="bg-white/10 backdrop-blur-xl border border-white/20 px-6 py-4 rounded-2xl shadow-2xl max-w-xs">
+<h3 class="text-white text-lg font-bold mb-1">Position your face in the frame</h3>
+<p class="text-white/80 text-sm font-medium leading-tight">Ensure your features align with the guide for high accuracy.</p>
+</div>
+</div>
+</div>
+<!-- Lighting & Tips Indicators (Side) -->
+<div class="absolute right-6 top-1/2 -translate-y-1/2 flex flex-col gap-6 z-20">
+<div class="flex flex-col items-center gap-1 group">
+<div class="size-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/30 text-white">
+<span class="material-symbols-outlined">wb_sunny</span>
+</div>
+<span class="text-[10px] font-bold text-white uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">Light</span>
+</div>
+<div class="flex flex-col items-center gap-1 group">
+<div class="size-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/30 text-white">
+<span class="material-symbols-outlined">eyeglasses</span>
+</div>
+<span class="text-[10px] font-bold text-white uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">No Lens</span>
+</div>
+<div class="flex flex-col items-center gap-1 group">
+<div class="size-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/30 text-white">
+<span class="material-symbols-outlined">face_retouching_off</span>
+</div>
+<span class="text-[10px] font-bold text-white uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">Natural</span>
+</div>
+</div>
+</main>
+<!-- Capture Controls -->
+<div class="relative z-30 bg-background-light px-8 py-8 flex items-center justify-between shadow-[0_-8px_30px_rgb(0,0,0,0.05)]">
+<button class="flex flex-col items-center gap-2 text-slate-600 hover:text-primary transition-colors">
+<div class="size-12 rounded-full border-2 border-slate-200 flex items-center justify-center">
+<span class="material-symbols-outlined">photo_library</span>
+</div>
+<span class="text-xs font-bold uppercase tracking-wider">Library</span>
+</button>
+<button class="group relative flex items-center justify-center">
+<div class="absolute inset-0 bg-primary/20 rounded-full scale-125 animate-pulse"></div>
+<div class="size-20 rounded-full border-4 border-primary flex items-center justify-center bg-white shadow-xl transition-transform active:scale-90">
+<div class="size-14 rounded-full bg-primary flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-3xl">photo_camera</span>
+</div>
+</div>
+</button>
+<button class="flex flex-col items-center gap-2 text-slate-600 hover:text-primary transition-colors">
+<div class="size-12 rounded-full border-2 border-slate-200 flex items-center justify-center">
+<span class="material-symbols-outlined">flip_camera_ios</span>
+</div>
+<span class="text-xs font-bold uppercase tracking-wider">Flip</span>
+</button>
+</div>
+<!-- Guidance Banner -->
+<div class="bg-primary px-4 py-2 flex items-center justify-center gap-3">
+<span class="material-symbols-outlined text-white text-sm">info</span>
+<p class="text-white text-[11px] font-bold uppercase tracking-[0.1em]">Natural light is best • Remove glasses and filters</p>
+</div>
+<!-- Bottom Navigation Bar Component -->
+<div class="flex gap-2 border-t border-slate-200 bg-background-light px-4 pb-3 pt-2">
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-slate-400" href="#">
+<div class="flex h-8 items-center justify-center">
+<span class="material-symbols-outlined">home</span>
+</div>
+<p class="text-xs font-medium leading-normal tracking-[0.015em]">Home</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-primary" href="#">
+<div class="flex h-8 items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">camera</span>
+</div>
+<p class="text-xs font-medium leading-normal tracking-[0.015em]">Scan</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-slate-400" href="#">
+<div class="flex h-8 items-center justify-center">
+<span class="material-symbols-outlined">palette</span>
+</div>
+<p class="text-xs font-medium leading-normal tracking-[0.015em]">Palettes</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-slate-400" href="#">
+<div class="flex h-8 items-center justify-center">
+<span class="material-symbols-outlined">person</span>
+</div>
+<p class="text-xs font-medium leading-normal tracking-[0.015em]">Profile</p>
+</a>
+</div>
+</div>
+</body></html>

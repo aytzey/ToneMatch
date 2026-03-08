@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ToneMatch - Scan Review</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&amp;family=Playfair+Display:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#b87332",
+                        "background-light": "#f8f7f6",
+                        "background-dark": "#1f1913",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"],
+                        "serif": ["Playfair Display", "serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .active-icon {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased">
+<div class="relative flex min-h-screen w-full flex-col max-w-md mx-auto overflow-x-hidden border-x border-primary/10 shadow-2xl">
+<!-- Header -->
+<header class="flex items-center bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md sticky top-0 z-50 p-4 border-b border-primary/10 justify-between">
+<button class="text-slate-900 dark:text-slate-100 flex size-10 items-center justify-center rounded-full hover:bg-primary/10 transition-colors">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h2 class="font-serif text-xl italic font-bold leading-tight tracking-tight flex-1 text-center pr-10">Scan Review</h2>
+</header>
+<main class="flex-1 overflow-y-auto">
+<!-- Selfie Preview Section -->
+<div class="@container p-4">
+<div class="relative w-full aspect-[3/4] overflow-hidden rounded-xl shadow-inner border border-primary/10">
+<div class="absolute inset-0 bg-center bg-no-repeat bg-cover" data-alt="High quality selfie of a woman with natural lighting" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCGXEj65R1j3-A7LYfU4eWYCiQ72yQ2D0eEcvnnYfJ3CYU79gV_5ZIZ95T6wBD2DeJwYh_N3hSGxuaZULJ8EkwCSI-Zb8_iA7-yv7C_9KnWdqfrNCSutLeWVqEHXSG8j9ojFGCoXDAMw9c9S-DbBQ8Y3CKK-gtbnU03b9s5QcyXJV_VwDnmA_2zuzrNliVZ8R2vJeS96dAdHlFZwHniRVy7BazFvcQZARUvn7mb2gHNW_sbFvS9MfZ_weeRmcL3Zss7mWPUVV0jIg");'>
+</div>
+<!-- Quality Status Badge -->
+<div class="absolute bottom-4 left-4 right-4">
+<div class="bg-white/90 dark:bg-slate-900/90 backdrop-blur px-4 py-3 rounded-lg flex items-center justify-between shadow-lg border border-primary/20">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-green-600 active-icon">check_circle</span>
+<div>
+<p class="text-[10px] uppercase tracking-widest font-bold text-primary/70">Status</p>
+<p class="text-sm font-bold text-slate-900 dark:text-slate-100">High Quality</p>
+</div>
+</div>
+<span class="bg-green-100 text-green-800 text-[10px] font-bold px-2 py-1 rounded-full uppercase">Good to go</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Quality Check Points -->
+<div class="px-6 py-4">
+<h4 class="font-serif text-lg italic text-slate-900 dark:text-slate-100 mb-4">Quality Check</h4>
+<div class="space-y-3">
+<div class="flex items-center gap-3">
+<div class="flex size-6 items-center justify-center rounded-full bg-primary/10 text-primary">
+<span class="material-symbols-outlined !text-sm">light_mode</span>
+</div>
+<p class="text-sm text-slate-600 dark:text-slate-400">Natural lighting detected</p>
+</div>
+<div class="flex items-center gap-3">
+<div class="flex size-6 items-center justify-center rounded-full bg-primary/10 text-primary">
+<span class="material-symbols-outlined !text-sm">visibility</span>
+</div>
+<p class="text-sm text-slate-600 dark:text-slate-400">Features clearly visible</p>
+</div>
+<div class="flex items-center gap-3">
+<div class="flex size-6 items-center justify-center rounded-full bg-primary/10 text-primary">
+<span class="material-symbols-outlined !text-sm">auto_fix_off</span>
+</div>
+<p class="text-sm text-slate-600 dark:text-slate-400">No filters applied</p>
+</div>
+</div>
+</div>
+<!-- CTA Actions -->
+<div class="px-6 pt-6 pb-12 flex flex-col gap-3">
+<button class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 rounded-xl shadow-lg transition-all active:scale-[0.98]">
+                    Analyze Now
+                </button>
+<button class="w-full bg-transparent hover:bg-primary/5 text-slate-600 dark:text-slate-400 font-semibold py-3 rounded-xl transition-colors flex items-center justify-center gap-2 border border-slate-200 dark:border-slate-800">
+<span class="material-symbols-outlined !text-lg">replay</span>
+                    Retake Photo
+                </button>
+</div>
+</main>
+<!-- Bottom Navigation Bar -->
+<nav class="flex gap-2 border-t border-primary/10 bg-background-light dark:bg-background-dark px-4 pb-8 pt-2">
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined active-icon">photo_camera</span>
+<p class="text-[10px] font-bold uppercase tracking-wider">Scan</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined">history</span>
+<p class="text-[10px] font-bold uppercase tracking-wider">History</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined">person</span>
+<p class="text-[10px] font-bold uppercase tracking-wider">Profile</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined">settings</span>
+<p class="text-[10px] font-bold uppercase tracking-wider">Settings</p>
+</a>
+</nav>
+</div>
+</body></html>

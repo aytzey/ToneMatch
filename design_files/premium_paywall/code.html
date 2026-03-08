@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#b87332",
+                        "background-light": "#f8f7f6",
+                        "background-dark": "#1f1913",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Manrope', sans-serif; }
+        .editorial-gradient {
+            background: linear-gradient(180deg, rgba(248, 247, 246, 0) 0%, rgba(248, 247, 246, 1) 100%);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
+<div class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden">
+<!-- Header / Close -->
+<div class="flex items-center p-4 pb-2 justify-between sticky top-0 z-10 bg-background-light/80 backdrop-blur-md dark:bg-background-dark/80">
+<div class="text-slate-900 dark:text-slate-100 flex size-10 shrink-0 items-center justify-center cursor-pointer">
+<span class="material-symbols-outlined">close</span>
+</div>
+<h2 class="text-slate-900 dark:text-slate-100 text-sm font-bold tracking-[0.2em] uppercase flex-1 text-center">Membership</h2>
+<div class="size-10"></div> <!-- Spacer for centering -->
+</div>
+<!-- Premium Hero Section -->
+<div class="@container">
+<div class="px-4 py-2">
+<div class="relative flex flex-col justify-end overflow-hidden rounded-xl min-h-[320px] bg-slate-200 dark:bg-slate-800" data-alt="Soft focused fashion fabrics in warm beige and camel tones" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBRfnHZc419Q_GFn63R8X6bdjd6GvFxws11bYL8hGuXMYtRhHgCk-rc7Wjat5T3y0oMJwSrvtU7qQRnG5Bg4fUrZBoIn_hQ1mWkPaIwvNtB19xE3S-WRVkbopHZJQeR9jv4wknx3LmfeI1heyXPhVwO9-QMzR60ju31D-EHHctoniCo1o8yqh5RIP_HlrB6ZR2k1er9c8HeeiGxpriYCd-gJn-6juv8Fp5lxpYMbyYh6a8mdh5-2OkpPQIXnuYdmgT6McSGcPBhKg"); background-size: cover; background-position: center;'>
+<div class="absolute inset-0 bg-gradient-to-t from-background-light via-transparent to-transparent dark:from-background-dark"></div>
+<div class="relative flex flex-col p-6 gap-2">
+<span class="text-primary text-xs font-bold tracking-widest uppercase">The Science of Style</span>
+<h1 class="text-slate-900 dark:text-slate-100 text-4xl font-light leading-tight">Elevate Your <br/><span class="font-bold italic">Visual Identity</span></h1>
+</div>
+</div>
+</div>
+</div>
+<div class="px-6 py-8 space-y-2 text-center">
+<h2 class="text-slate-900 dark:text-slate-100 text-2xl font-bold leading-tight">Master your palette</h2>
+<p class="text-slate-600 dark:text-slate-400 text-base leading-relaxed max-w-xs mx-auto">Access professional-grade seasonal analysis and personalized styling insights.</p>
+</div>
+<!-- Benefits List -->
+<div class="px-6 pb-10">
+<div class="grid grid-cols-1 gap-6">
+<div class="flex items-start gap-4">
+<div class="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+<span class="material-symbols-outlined">all_inclusive</span>
+</div>
+<div>
+<h4 class="text-slate-900 dark:text-slate-100 font-bold text-sm uppercase tracking-wide">Unlimited color checks</h4>
+<p class="text-slate-500 dark:text-slate-400 text-sm">Analyze every outfit, fabric, and makeup swatch without limits.</p>
+</div>
+</div>
+<div class="flex items-start gap-4">
+<div class="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+<span class="material-symbols-outlined">contrast</span>
+</div>
+<div>
+<h4 class="text-slate-900 dark:text-slate-100 font-bold text-sm uppercase tracking-wide">Advanced Contrast Analysis</h4>
+<p class="text-slate-500 dark:text-slate-400 text-sm">Deep dive into value and chroma matching for your specific skin undertones.</p>
+</div>
+</div>
+<div class="flex items-start gap-4">
+<div class="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+<span class="material-symbols-outlined">smart_toy</span>
+</div>
+<div>
+<h4 class="text-slate-900 dark:text-slate-100 font-bold text-sm uppercase tracking-wide">Personal Stylist AI Chat</h4>
+<p class="text-slate-500 dark:text-slate-400 text-sm">24/7 access to your digital concierge for instant fashion advice.</p>
+</div>
+</div>
+<div class="flex items-start gap-4">
+<div class="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+<span class="material-symbols-outlined">auto_awesome</span>
+</div>
+<div>
+<h4 class="text-slate-900 dark:text-slate-100 font-bold text-sm uppercase tracking-wide">Exclusive Trend Reports</h4>
+<p class="text-slate-500 dark:text-slate-400 text-sm">Stay ahead with monthly palettes curated for your unique seasonal type.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Plan Comparison -->
+<div class="px-4 pb-12 space-y-4">
+<h3 class="px-2 text-slate-400 text-[10px] font-bold uppercase tracking-[0.3em]">Select your experience</h3>
+<div class="flex flex-col gap-3">
+<!-- Free Plan -->
+<div class="flex items-center justify-between p-5 rounded-xl border border-primary/10 bg-background-light dark:bg-background-dark/40">
+<div class="flex flex-col">
+<span class="text-slate-900 dark:text-slate-100 font-bold">Free</span>
+<span class="text-slate-500 text-xs">Essential features</span>
+</div>
+<div class="text-slate-900 dark:text-slate-100 font-bold text-xl">$0</div>
+</div>
+<!-- Plus Plan (Featured) -->
+<div class="relative flex items-center justify-between p-5 rounded-xl border-2 border-primary bg-primary/5 shadow-lg">
+<div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest">
+                        Most Popular
+                    </div>
+<div class="flex flex-col">
+<span class="text-slate-900 dark:text-slate-100 font-bold">ToneMatch Plus</span>
+<span class="text-slate-500 text-xs italic">Annual billing</span>
+</div>
+<div class="flex flex-col items-end">
+<div class="text-slate-900 dark:text-slate-100 font-black text-xl leading-none">$9.99</div>
+<span class="text-slate-500 text-[10px] uppercase">per month</span>
+</div>
+</div>
+<!-- Pro Plan -->
+<div class="flex items-center justify-between p-5 rounded-xl border border-primary/10 bg-background-light dark:bg-background-dark/40">
+<div class="flex flex-col">
+<span class="text-slate-900 dark:text-slate-100 font-bold text-lg">Pro</span>
+<span class="text-slate-500 text-xs">For fashion professionals</span>
+</div>
+<div class="flex flex-col items-end">
+<div class="text-slate-900 dark:text-slate-100 font-bold text-xl leading-none">$19.99</div>
+<span class="text-slate-500 text-[10px] uppercase">per month</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Sticky Bottom Action Area -->
+<div class="sticky bottom-0 p-6 pt-2 bg-gradient-to-t from-background-light via-background-light to-transparent dark:from-background-dark dark:via-background-dark border-t border-primary/5">
+<button class="w-full bg-primary text-white py-4 rounded-xl font-bold text-base tracking-wide shadow-xl active:scale-[0.98] transition-transform">
+                Start 7-Day Free Trial
+            </button>
+<p class="text-center text-slate-400 text-[11px] mt-4 leading-relaxed px-4">
+                After the trial, ToneMatch Plus is $119.99/year. Cancel anytime in your account settings.
+            </p>
+<div class="flex justify-center gap-6 mt-6 pb-2">
+<a class="text-primary/70 text-[12px] font-medium hover:text-primary transition-colors" href="#">Restore Purchase</a>
+<span class="text-slate-300 dark:text-slate-700">|</span>
+<a class="text-primary/70 text-[12px] font-medium hover:text-primary transition-colors" href="#">Terms of Service</a>
+<span class="text-slate-300 dark:text-slate-700">|</span>
+<a class="text-primary/70 text-[12px] font-medium hover:text-primary transition-colors" href="#">Privacy</a>
+</div>
+</div>
+<div class="h-8"></div>
+</div>
+</body></html>

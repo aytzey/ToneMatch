@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#b87332",
+                        "background-light": "#fdfbf7",
+                        "background-dark": "#1f1913",
+                        "charcoal": "#333333",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-charcoal dark:text-slate-100">
+<div class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden">
+<!-- Header Nav -->
+<div class="flex items-center bg-background-light dark:bg-background-dark p-4 justify-between sticky top-0 z-50 border-b border-primary/10">
+<div class="text-charcoal dark:text-slate-100 flex size-10 shrink-0 items-center justify-center">
+<span class="material-symbols-outlined">menu</span>
+</div>
+<h2 class="text-charcoal dark:text-slate-100 text-lg font-extrabold tracking-widest uppercase flex-1 text-center">ToneMatch</h2>
+<div class="flex w-10 items-center justify-end">
+<button class="text-charcoal dark:text-slate-100">
+<span class="material-symbols-outlined">shopping_bag</span>
+</button>
+</div>
+</div>
+<!-- Hero Section -->
+<div class="@container">
+<div class="px-0 py-0">
+<div class="relative flex flex-col justify-end overflow-hidden min-h-[420px] bg-slate-200" data-alt="Elegant gift box with silk ribbons on a neutral background" style='background-image: linear-gradient(to top, rgba(31, 25, 19, 0.8) 0%, rgba(31, 25, 19, 0) 60%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuDP9jxtt-FSUheZBoJ9ejJYMjcKqZNTR1YCZZ4jRoFF8H1iQInb6tbBJPlPqFlPwqgsl2YrFHZYx0O7mQDTETNihXyVG4R8MSX-6kGmRINTYdCeWZEkdyqMJ-6k9sutDK_VOdmYoYHP91-iAxwRynTBgqsw4ymqAwVThw6lXbgeNXbA7k_MWN2cdAfNOlsLZh6iaaOKdZwgsAl8ZHrti8GGPT_w9xS6tb-FHDIO8n1PmOxMcSEen7q1OziqbQLZlJ6vETLMjdMe7w"); background-size: cover; background-position: center;'>
+<div class="flex flex-col p-6 gap-2">
+<h1 class="text-white text-4xl font-light tracking-tight">The Art of <span class="font-bold italic">Giving</span></h1>
+<p class="text-white/90 text-sm max-w-xs leading-relaxed">Choose gifts that harmonize with their natural palette and elevate their everyday elegance.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Tone Selection - Horizontal Scroll -->
+<div class="py-6">
+<div class="flex items-center justify-between px-6 mb-4">
+<h3 class="text-charcoal dark:text-slate-100 text-sm font-bold uppercase tracking-widest">Shop by Tone</h3>
+<span class="text-primary text-xs font-semibold">View All Palette Types</span>
+</div>
+<div class="flex gap-3 overflow-x-auto px-6 no-scrollbar">
+<button class="flex-none px-5 py-2 rounded-full bg-primary text-white text-xs font-bold uppercase tracking-wider">Deep Autumn</button>
+<button class="flex-none px-5 py-2 rounded-full bg-primary/10 text-charcoal dark:text-slate-100 text-xs font-bold uppercase tracking-wider border border-primary/20">Cool Winter</button>
+<button class="flex-none px-5 py-2 rounded-full bg-primary/10 text-charcoal dark:text-slate-100 text-xs font-bold uppercase tracking-wider border border-primary/20">Warm Spring</button>
+<button class="flex-none px-5 py-2 rounded-full bg-primary/10 text-charcoal dark:text-slate-100 text-xs font-bold uppercase tracking-wider border border-primary/20">Light Summer</button>
+</div>
+</div>
+<!-- Curated Gift Sets -->
+<div class="px-6 space-y-10 pb-24">
+<!-- Gift Card 1 -->
+<div class="group">
+<div class="relative aspect-[4/5] rounded-xl overflow-hidden mb-4 shadow-xl">
+<img alt="Luxury silk scarf and gold jewelry" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="Luxury silk scarf and gold jewelry on a warm stone surface" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBzHOgkhK5g2DI66N8nsBpKCYECyiKdX-OCXNFPbRYSwiXXS9nb1Ymr04Sck8DCqIOpFz_lTcIrp92i-xNTqnfDaU_kf5ZCo7qux7-NgMbo9C9BGGboLiXDgv66Rc5GYxVxwXraYJ-I6crTR5HbyT3VsAS0n7GhtNrvhvEQFjHCgprjMhhlLJEC8Wf4tgeXuSO24UeN3L5HfVRGp7MLbe2ngky9m6pAwdoLXEr8wrFraU9XVFd2KkRnJNpkEC63RXIIV3WWwU6geg"/>
+<div class="absolute top-4 left-4 bg-white/90 backdrop-blur px-3 py-1 rounded text-[10px] font-bold uppercase tracking-tighter text-charcoal">Recommended for Deep Autumn</div>
+</div>
+<div class="flex justify-between items-start mb-2">
+<div>
+<h4 class="text-xl font-bold text-charcoal dark:text-slate-100">The Silk &amp; Gold Set</h4>
+<p class="text-primary font-medium">$245.00</p>
+</div>
+<button class="size-10 flex items-center justify-center rounded-full bg-primary/10 text-primary">
+<span class="material-symbols-outlined">favorite</span>
+</button>
+</div>
+<div class="bg-primary/5 rounded-lg p-4 border-l-4 border-primary">
+<p class="text-xs uppercase font-bold text-primary mb-1">Why it works</p>
+<p class="text-sm text-charcoal/80 dark:text-slate-300 italic leading-relaxed">
+                        "Deep Autumn tones thrive in high-contrast warmth. The burnt ochre silk and 24k gold accents echo the rich, earthy undertones of this seasonal profile."
+                    </p>
+</div>
+</div>
+<!-- Gift Card 2 -->
+<div class="group opacity-90">
+<div class="relative aspect-[4/5] rounded-xl overflow-hidden mb-4 shadow-xl">
+<img alt="Cashmere sweater and silver watch" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="Grey cashmere sweater and minimalist silver watch" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDNxbVahScUXpiLar7sDb1Qzem_WHuGqPZ6WbvET8fDbwJ6g4QQ-ox6WafV7VRDxnOQc7gTgZHeLQdlJKHBJSXPDkoQi_deDJVUhmP4mdwcvZ5_gX5Sz8O1XuDuiXk3gZqWtWbuz_LbFFYKwyktYk5QK1pD9LKEaNGV9fUdyIJzos4nVwMZU2Vtqc96bdcOe05I_kg56sWJYF9nCMaGH4H-FgVzCPAKW8LlUQ94DDufGrVYOU-Agu1qrY7AdSsViPGY6xsWPnsguA"/>
+<div class="absolute top-4 left-4 bg-white/90 backdrop-blur px-3 py-1 rounded text-[10px] font-bold uppercase tracking-tighter text-charcoal">Recommended for Cool Winter</div>
+</div>
+<div class="flex justify-between items-start mb-2">
+<div>
+<h4 class="text-xl font-bold text-charcoal dark:text-slate-100">The Cashmere &amp; Silver Set</h4>
+<p class="text-primary font-medium">$380.00</p>
+</div>
+<button class="size-10 flex items-center justify-center rounded-full bg-primary/10 text-primary">
+<span class="material-symbols-outlined">favorite</span>
+</button>
+</div>
+<div class="bg-primary/5 rounded-lg p-4 border-l-4 border-slate-400">
+<p class="text-xs uppercase font-bold text-slate-500 mb-1">Why it works</p>
+<p class="text-sm text-charcoal/80 dark:text-slate-300 italic leading-relaxed">
+                        "Cool Winter requires crisp, cool-toned neutrals. This slate cashmere paired with brushed silver provides the icy clarity needed to brighten a Winter's complexion."
+                    </p>
+</div>
+</div>
+</div>
+<!-- Bottom Navigation Bar -->
+<div class="fixed bottom-0 left-0 right-0 z-50 flex gap-2 border-t border-primary/10 bg-background-light dark:bg-background-dark px-4 pb-6 pt-2">
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-charcoal/50 dark:text-slate-500" href="#">
+<div class="flex h-8 items-center justify-center">
+<span class="material-symbols-outlined">home</span>
+</div>
+<p class="text-[10px] font-bold uppercase tracking-widest">Home</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-primary" href="#">
+<div class="flex h-8 items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">explore</span>
+</div>
+<p class="text-[10px] font-bold uppercase tracking-widest">Discover</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-charcoal/50 dark:text-slate-500" href="#">
+<div class="flex h-8 items-center justify-center">
+<span class="material-symbols-outlined">favorite</span>
+</div>
+<p class="text-[10px] font-bold uppercase tracking-widest">Saved</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-charcoal/50 dark:text-slate-500" href="#">
+<div class="flex h-8 items-center justify-center">
+<span class="material-symbols-outlined">person</span>
+</div>
+<p class="text-[10px] font-bold uppercase tracking-widest">Profile</p>
+</a>
+</div>
+</div>
+</body></html>

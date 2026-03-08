@@ -1,0 +1,50 @@
+{
+  "expo": {
+    "name": "ToneMatch",
+    "slug": "tone-match",
+    "scheme": "tonematch",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "resizeMode": "contain",
+      "backgroundColor": "#F5EFE8"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.tonematch.app",
+      "infoPlist": {
+        "NSCameraUsageDescription": "ToneMatch uses the camera to analyze your undertone and generate outfit guidance.",
+        "NSPhotoLibraryUsageDescription": "ToneMatch uses your photo library so you can upload a selfie for style analysis."
+      }
+    },
+    "android": {
+      "package": "com.tonematch.app",
+      "permissions": [
+        "CAMERA"
+      ]
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "ToneMatch uses the camera to analyze your undertone and generate outfit guidance."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "ToneMatch uses your library so you can choose a selfie for analysis."
+        }
+      ],
+      "expo-font"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}

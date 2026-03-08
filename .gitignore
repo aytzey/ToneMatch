@@ -1,0 +1,16 @@
+node_modules
+.DS_Store
+.expo
+.turbo
+dist
+build
+.env
+.env.*
+!.env.example
+coverage
+artifacts/*.log
+services/ai-worker/.venv
+apps/mobile/.expo
+apps/mobile/.env.local
+supabase/.branches
+.runtime

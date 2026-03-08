@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#b87332",
+              "background-light": "#f8f7f6",
+              "background-dark": "#1f1913",
+              "charcoal": "#191410",
+              "muted-taupe": "#8d7258"
+            },
+            fontFamily: {
+              "display": ["Manrope", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<title>ToneMatch Dashboard</title>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-charcoal dark:text-slate-100">
+<div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
+<!-- Header -->
+<header class="flex items-center bg-background-light dark:bg-background-dark p-4 justify-between sticky top-0 z-10 border-b border-primary/10">
+<div class="text-charcoal dark:text-slate-100 flex size-10 items-center justify-center">
+<span class="material-symbols-outlined">menu</span>
+</div>
+<h2 class="text-charcoal dark:text-slate-100 text-lg font-extrabold leading-tight tracking-tight flex-1 text-center uppercase">ToneMatch</h2>
+<div class="flex size-10 items-center justify-end">
+<button class="flex items-center justify-center rounded-full bg-primary/10 p-2 text-primary">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+</div>
+</header>
+<main class="flex-1 pb-24">
+<!-- Hero Section -->
+<div class="p-4">
+<div class="relative bg-cover bg-center flex flex-col items-stretch justify-end rounded-xl pt-[160px] overflow-hidden shadow-lg group" data-alt="Soft editorial fashion model in neutral tones" style='background-image: linear-gradient(0deg, rgba(25, 20, 16, 0.8) 0%, rgba(25, 20, 16, 0) 60%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuBDFxENQcl0XFBqwN3eidZnJ2kVL8yjqM6z_vYbxsq1h3E5a4-wkjWQ2r7jCi4jnLjChfJqVD6UUbWDjrlZPDMeI_1B0TP2H1giiD6zzwSog3-0BcHwr7jDpBsl-O7SHSkPLSUqoImaM_p6PSbzTg6g_tfyrHnBR3sfXPHqotIbCsVZsGA5e2yuECtodLpvHBLeyXjRD1TFvHPtWVRpWmVOogtnIA4PeG4cfGZWkTgfKVxfyDMGx2-3iafg6tu-j6RQAHaIpNoQNw");'>
+<div class="flex w-full flex-col gap-1 p-5">
+<p class="text-primary font-bold text-xs uppercase tracking-widest">Today for you</p>
+<h1 class="text-white tracking-tight text-2xl font-bold leading-tight">Morning, Alex. Ready for your palette?</h1>
+<div class="mt-2 flex items-center gap-2">
+<span class="h-1 w-12 bg-primary rounded-full"></span>
+<p class="text-slate-200 text-xs font-medium uppercase tracking-tighter">New Season Guide Available</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Last Analysis Summary -->
+<div class="px-4 py-2">
+<h3 class="text-charcoal dark:text-slate-100 text-sm font-bold uppercase tracking-wider mb-3">Last Analysis</h3>
+<div class="flex items-center gap-4 rounded-xl bg-white dark:bg-background-dark/50 p-4 border border-primary/5 shadow-sm">
+<div class="flex flex-col gap-1 flex-1">
+<p class="text-charcoal dark:text-slate-100 text-base font-bold leading-tight">Deep Autumn Palette</p>
+<p class="text-muted-taupe text-xs font-medium">Analyzed 2 days ago • 98% Match</p>
+<div class="flex gap-1 mt-2">
+<div class="h-6 w-6 rounded-full bg-[#4a2c2a] border border-white/20"></div>
+<div class="h-6 w-6 rounded-full bg-[#b87332] border border-white/20"></div>
+<div class="h-6 w-6 rounded-full bg-[#5d6146] border border-white/20"></div>
+<div class="h-6 w-6 rounded-full bg-[#d9b382] border border-white/20"></div>
+<div class="h-6 w-6 rounded-full flex items-center justify-center bg-slate-100 text-[10px] text-muted-taupe">+12</div>
+</div>
+</div>
+<div class="w-24 h-24 bg-center bg-cover rounded-lg border border-primary/10" data-alt="Close up of fabric textures in autumn colors" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCxSx-jaKYnpaP4-mW3g_KJoNPuZy28lZ_X2rdKNAKvkN0oaMIUxoKKntzje2ZuNlsoLrOa3jioGNsd15erO6eAWrFBOCI9wlQSL8_2TZkTJmO6iHBnCVDOY2AJGEpXboTYbo249VXTzei2jXi9IUt5CnDhPZQj6Xo25l7bmW6STivljAx17G28obFtsBBGPG2ALA3L-yX_ZxYoO1gj4b47TzzuvP8UMy7c9Pg5nONKO6zlzsVOtD_o4PBeWxPZhRqJMJ9lzaCoIw");'></div>
+</div>
+</div>
+<!-- Quick Actions Grid -->
+<div class="p-4 grid grid-cols-3 gap-3">
+<button class="flex flex-col items-center justify-center gap-2 rounded-xl bg-primary p-4 text-white shadow-md shadow-primary/20">
+<span class="material-symbols-outlined text-2xl">photo_camera</span>
+<span class="text-[10px] font-bold uppercase tracking-tight text-center leading-none">New Scan</span>
+</button>
+<button class="flex flex-col items-center justify-center gap-2 rounded-xl bg-white dark:bg-slate-800 p-4 text-charcoal dark:text-slate-100 border border-primary/10">
+<span class="material-symbols-outlined text-2xl text-primary">shopping_bag</span>
+<span class="text-[10px] font-bold uppercase tracking-tight text-center leading-none">Quick Check</span>
+</button>
+<button class="flex flex-col items-center justify-center gap-2 rounded-xl bg-white dark:bg-slate-800 p-4 text-charcoal dark:text-slate-100 border border-primary/10">
+<span class="material-symbols-outlined text-2xl text-primary">auto_awesome</span>
+<span class="text-[10px] font-bold uppercase tracking-tight text-center leading-none">Trends</span>
+</button>
+</div>
+<!-- Occasion Recommendations -->
+<div class="py-2">
+<div class="px-4 flex justify-between items-center mb-3">
+<h3 class="text-charcoal dark:text-slate-100 text-sm font-bold uppercase tracking-wider">Occasions</h3>
+<a class="text-primary text-xs font-bold uppercase" href="#">See All</a>
+</div>
+<div class="flex gap-4 overflow-x-auto px-4 no-scrollbar pb-4">
+<!-- Office -->
+<div class="flex-shrink-0 w-40 flex flex-col gap-2">
+<div class="h-48 w-full rounded-xl bg-cover bg-center border border-primary/5" data-alt="Professional office attire in neutral tones" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCA9Um3Pa-D63SaxYTnxBb31TgYtDFYTQ7OWeeRInRClm7IiT5pfvsYLtBfaV5H1GVmgRpjLW3fX3eFmQFKsIvCH2jRFAfoQrLZ686CWlXpXSHMQjNMQ9EH0H9xQs-KO7LAJJuKTYsK4K0ieTvCS-PwCDKwEPf6giIf7i6yO1ylUGusAicQMLZUWv5yQYXrCSnmhHXls1IknwoAOf0nIK0UeXZCQUW8DAjspL1WMjbsob3It_e9K4omFXbz19bYHqH15LE3F2WaxQ");'></div>
+<p class="text-xs font-bold uppercase tracking-wide text-center">The Office</p>
+</div>
+<!-- Date Night -->
+<div class="flex-shrink-0 w-40 flex flex-col gap-2">
+<div class="h-48 w-full rounded-xl bg-cover bg-center border border-primary/5" data-alt="Elegant evening wear for date night" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDeZAj1-Bi40MW_GuBpSoHlHzqGQ_EHw8SFWbb6OJGV02bPCbwOZdfRsCx8MB3nvT8Gi508QKgu4XJHenLZJieuqbQ4wz7obR8rTkiCH7kl01NSLSk4HrdfLu649u3qnBDVgj5fKgWgY_7D6F4bFSiMyC2O4Oy38ybhkDmAi2R6z7B6HgDqXohJR-A43ErkpQGBlQgL4kKOE4BVMv4sB1ogYj2sHO3DFSGDTIFNNKLgD7zl8-ISmT_UJxKtBlMowo5s8GQl2up-JA");'></div>
+<p class="text-xs font-bold uppercase tracking-wide text-center">Date Night</p>
+</div>
+<!-- Weekend -->
+<div class="flex-shrink-0 w-40 flex flex-col gap-2">
+<div class="h-48 w-full rounded-xl bg-cover bg-center border border-primary/5" data-alt="Casual comfortable weekend outfit" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBX1nk80vpvU4PqLV9CRgqwBItPNgeJNOCG9LUpGImlh1whHBY24OemzNwNZ0D8zm0-K1pmkld1-E3z6tU5sAHDVLbWVQKL2Y2kwvIzpVxNUb5MyDrlZMB__m3oMzgFh6aGZq2w9TOtqJ1vHwzld0uYbeOhZAymfuYSGJ3GQFYrtWOyS1ehDiSgkuRnBDH8k1Drw9VQRMeuXcKB1eTnJeUXAqz0kDnxKGoDuxH3ztMndhccXbaPDS6F6b3dcEvO8yGknTq1ZS5a7w");'></div>
+<p class="text-xs font-bold uppercase tracking-wide text-center">Weekend</p>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 left-0 right-0 flex border-t border-primary/10 bg-background-light dark:bg-background-dark px-4 pb-6 pt-3 z-20">
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">home</span>
+<p class="text-[10px] font-bold uppercase tracking-widest">Home</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-muted-taupe" href="#">
+<span class="material-symbols-outlined">checkroom</span>
+<p class="text-[10px] font-bold uppercase tracking-widest">Wardrobe</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-muted-taupe" href="#">
+<span class="material-symbols-outlined">explore</span>
+<p class="text-[10px] font-bold uppercase tracking-widest">Explore</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-muted-taupe" href="#">
+<span class="material-symbols-outlined">person</span>
+<p class="text-[10px] font-bold uppercase tracking-widest">Profile</p>
+</a>
+</nav>
+</div>
+<style>
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</body></html>

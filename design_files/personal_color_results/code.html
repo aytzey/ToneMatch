@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;family=Playfair+Display:ital,wght@0,700;1,700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#b87332",
+                        "background-light": "#f8f7f6",
+                        "background-dark": "#1f1913",
+                        "charcoal": "#2d2926",
+                        "ecru": "#f1ede9",
+                        "rust": "#9b4722",
+                        "olive": "#555d3e",
+                        "forest": "#2d3b2d",
+                        "lavender": "#b4b1d1",
+                        "cool-blue": "#8da3b8"
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"],
+                        "serif": ["Playfair Display", "serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased">
+<div class="relative flex min-h-screen w-full flex-col max-w-md mx-auto border-x border-primary/10 shadow-2xl bg-background-light dark:bg-background-dark">
+<!-- Header -->
+<header class="sticky top-0 z-10 flex items-center bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md p-4 justify-between border-b border-primary/10">
+<div class="text-slate-900 dark:text-slate-100 flex size-10 items-center justify-center rounded-full hover:bg-primary/10 cursor-pointer">
+<span class="material-symbols-outlined">arrow_back</span>
+</div>
+<h2 class="text-slate-900 dark:text-slate-100 text-sm font-bold uppercase tracking-widest flex-1 text-center">Analysis Report</h2>
+<div class="flex w-10 items-center justify-end">
+<button class="flex items-center justify-center rounded-full size-10 hover:bg-primary/10 transition-colors">
+<span class="material-symbols-outlined text-slate-900 dark:text-slate-100">share</span>
+</button>
+</div>
+</header>
+<!-- Profile Result Hero -->
+<main class="flex-1 overflow-y-auto">
+<div class="flex p-6 flex-col items-center text-center gap-6">
+<div class="relative">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full h-40 w-40 ring-4 ring-primary/20 shadow-xl" data-alt="Close up portrait of a person with warm skin tones and dark hair" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBomMIgFr8RHjzNGywU0B6xOGUgTSepy-Tc3x1jrEyi5fhQdT1NnpntNPJK5e5Qj4PmatLl5CDVYYYLf75RnL3DWQ38V8GoRMGy-EkW2-yScu2leOtYrPoB1E2DdUTuVt5Drt_GRm6WNXb-W8sLyI9Ahsa50f2euuVjWtyEHbDGWw4n0NOPTPmHKmulIOUKxbQ8A_kygxCGM73I8BxAvvCyksrIZTuZ1xBbj5glmUkjhG5Vpu9HIJ3x100smQ2nwpVz2RzjABrXUw");'></div>
+<div class="absolute -bottom-2 right-0 left-0 flex justify-center">
+<span class="bg-primary text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-tighter shadow-lg">98% Match</span>
+</div>
+</div>
+<div class="space-y-2 pt-2">
+<p class="text-primary text-xs font-extrabold uppercase tracking-[0.2em]">Your Signature Palette</p>
+<h1 class="text-slate-900 dark:text-slate-100 text-4xl font-serif italic font-bold leading-tight">Autumn Warm /</h1>
+<h1 class="text-slate-900 dark:text-slate-100 text-4xl font-serif italic font-bold leading-tight -mt-2">Deep Contrast</h1>
+</div>
+</div>
+<!-- Why this works Section -->
+<div class="px-4 pb-6">
+<div class="flex flex-col gap-4 rounded-xl border border-primary/10 bg-ecru dark:bg-charcoal/30 p-6 shadow-sm">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">auto_awesome</span>
+<p class="text-slate-900 dark:text-slate-100 text-sm font-bold uppercase tracking-wider">Why this works for you</p>
+</div>
+<p class="text-charcoal dark:text-slate-300 text-base font-normal leading-relaxed">
+                        Your skin features rich golden undertones and a high level of contrast between your eyes and hair. These earthy, saturated tones harmonize with your natural vibrancy, creating a radiant and sophisticated aesthetic.
+                    </p>
+<a class="text-xs font-extrabold uppercase tracking-widest flex items-center gap-2 text-primary mt-2 group" href="#">
+                        Dive into the theory
+                        <span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</a>
+</div>
+</div>
+<!-- Color Swatches: Best on You -->
+<section class="px-4 pb-8">
+<div class="flex items-center justify-between mb-4 px-2">
+<h3 class="text-slate-900 dark:text-slate-100 text-lg font-bold tracking-tight">Best on you</h3>
+<span class="text-[10px] font-bold text-primary uppercase tracking-tighter">Primary Tones</span>
+</div>
+<div class="grid grid-cols-3 gap-3">
+<div class="flex flex-col gap-2">
+<div class="aspect-square rounded-xl bg-rust shadow-inner"></div>
+<p class="text-[10px] font-bold uppercase text-center tracking-tighter text-slate-500">Rust</p>
+</div>
+<div class="flex flex-col gap-2">
+<div class="aspect-square rounded-xl bg-olive shadow-inner"></div>
+<p class="text-[10px] font-bold uppercase text-center tracking-tighter text-slate-500">Deep Olive</p>
+</div>
+<div class="flex flex-col gap-2">
+<div class="aspect-square rounded-xl bg-forest shadow-inner"></div>
+<p class="text-[10px] font-bold uppercase text-center tracking-tighter text-slate-500">Forest Green</p>
+</div>
+</div>
+</section>
+<!-- Color Swatches: Use with Care -->
+<section class="px-4 pb-12">
+<div class="flex items-center justify-between mb-4 px-2">
+<h3 class="text-slate-900 dark:text-slate-100 text-lg font-bold tracking-tight">Use with care</h3>
+<span class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Cool Tones</span>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<div class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 dark:border-slate-800">
+<div class="size-10 shrink-0 rounded-lg bg-cool-blue"></div>
+<p class="text-[10px] font-bold uppercase tracking-tighter text-slate-500">Cool Blue</p>
+</div>
+<div class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 dark:border-slate-800">
+<div class="size-10 shrink-0 rounded-lg bg-lavender"></div>
+<p class="text-[10px] font-bold uppercase tracking-tighter text-slate-500">Lavender</p>
+</div>
+</div>
+</section>
+<!-- Action Buttons -->
+<div class="px-4 pb-8 space-y-3">
+<button class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined">shopping_bag</span>
+<span class="uppercase tracking-widest text-sm">Shop your tones</span>
+</button>
+<button class="w-full border-2 border-primary/20 hover:bg-primary/5 text-primary font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-all">
+<span class="material-symbols-outlined">bookmark_add</span>
+<span class="uppercase tracking-widest text-sm">Save palette</span>
+</button>
+</div>
+</main>
+<!-- Navigation Bar -->
+<nav class="flex gap-2 border-t border-primary/10 bg-background-light dark:bg-background-dark px-4 pb-6 pt-3">
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined">home</span>
+<p class="text-[10px] font-bold uppercase tracking-tighter">Home</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined">photo_camera</span>
+<p class="text-[10px] font-bold uppercase tracking-tighter">Scan</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">palette</span>
+<p class="text-[10px] font-bold uppercase tracking-tighter">Palette</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined">person</span>
+<p class="text-[10px] font-bold uppercase tracking-tighter">Profile</p>
+</a>
+</nav>
+</div>
+</body></html>

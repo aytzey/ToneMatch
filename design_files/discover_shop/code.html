@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ToneMatch - Discover</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;family=Playfair+Display:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#b87332",
+                        "background-light": "#f8f7f6",
+                        "background-dark": "#1f1913",
+                        "charcoal": "#2d2926",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"],
+                        "serif": ["Playfair Display", "serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-charcoal dark:text-slate-100 antialiased">
+<div class="max-w-md mx-auto min-h-screen flex flex-col bg-background-light dark:bg-background-dark relative pb-24">
+<!-- Header -->
+<header class="pt-8 px-5">
+<div class="flex items-center justify-between mb-6">
+<h1 class="font-serif text-4xl italic font-bold text-charcoal dark:text-slate-100">Discover</h1>
+<button class="w-10 h-10 flex items-center justify-center rounded-full border border-primary/20 bg-white dark:bg-slate-800 shadow-sm">
+<span class="material-symbols-outlined text-primary">tune</span>
+</button>
+</div>
+<div class="relative group">
+<div class="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-primary/60 text-xl">search</span>
+</div>
+<input class="w-full bg-white dark:bg-slate-800 border border-primary/10 rounded-xl py-4 pl-12 pr-4 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all shadow-sm placeholder:text-slate-400" placeholder="Search products or styles" type="text"/>
+</div>
+</header>
+<!-- Filter Pills -->
+<div class="flex gap-2 px-5 py-6 overflow-x-auto no-scrollbar">
+<button class="flex items-center gap-1.5 px-4 py-2 rounded-full bg-primary text-white text-sm font-medium whitespace-nowrap">
+                Color Family <span class="material-symbols-outlined text-sm">expand_more</span>
+</button>
+<button class="flex items-center gap-1.5 px-4 py-2 rounded-full border border-primary/20 bg-white dark:bg-slate-800 text-charcoal dark:text-slate-200 text-sm font-medium whitespace-nowrap">
+                Category <span class="material-symbols-outlined text-sm">expand_more</span>
+</button>
+<button class="flex items-center gap-1.5 px-4 py-2 rounded-full border border-primary/20 bg-white dark:bg-slate-800 text-charcoal dark:text-slate-200 text-sm font-medium whitespace-nowrap">
+                Budget <span class="material-symbols-outlined text-sm">expand_more</span>
+</button>
+</div>
+<!-- Today For You Hero -->
+<section class="px-5 mb-8">
+<div class="flex items-baseline justify-between mb-4">
+<h2 class="font-serif text-2xl font-bold">Today For You</h2>
+<span class="text-primary text-xs font-bold tracking-widest uppercase">Deep Autumn</span>
+</div>
+<div class="relative rounded-2xl overflow-hidden aspect-[4/5] shadow-xl group">
+<img alt="Warm editorial fashion look" class="w-full h-full object-cover" data-alt="Editorial fashion photography of a warm autumn outfit" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAmg-cAJE4Dh_beFo6t_oeXx4Nv3WS9m7SW5aQ6n1_8c3f3y5ZsQb3AjC2DixbkFnxNFZMAuCLfAH0O07qiULV6n-p4ebOFyMJm6clF3VC1QgcU9cCy0qXWcA7KuXURG0cAbdujKWAYxQ_K4WZh-3Hl3xeUxnArCEcIw3HFs_vo5N6g425v2-Ev1IpFuBX0E2p8zO8DA2jLBTi-modVcZHpu2fGuRRuWgVofUlCkScSm6PXbf3VAa3OhqKs31p-DEpcdYH7yXWfyw"/>
+<div class="absolute inset-0 bg-gradient-to-t from-charcoal/80 via-transparent to-transparent"></div>
+<div class="absolute bottom-0 left-0 p-6 w-full">
+<p class="text-primary font-bold text-xs uppercase tracking-widest mb-2">Look of the day</p>
+<h3 class="text-white font-serif text-3xl mb-2">The Copper Hour</h3>
+<p class="text-white/80 text-sm leading-relaxed max-w-[80%]">Curated textures in burnt sienna and espresso to complement your rich undertones.</p>
+</div>
+</div>
+</section>
+<!-- Occasions - Scrolling Shelf -->
+<section class="mb-10">
+<div class="px-5 flex items-center justify-between mb-4">
+<h2 class="font-serif text-2xl font-bold">Occasions</h2>
+<a class="text-primary text-sm font-semibold" href="#">View All</a>
+</div>
+<div class="flex gap-4 px-5 overflow-x-auto no-scrollbar">
+<!-- The Office -->
+<div class="min-w-[160px] flex flex-col gap-3">
+<div class="aspect-square rounded-xl overflow-hidden border border-primary/10 shadow-sm">
+<img alt="Smart office attire" class="w-full h-full object-cover" data-alt="Smart casual office outfit flat lay" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBpqTTIY1rOq3-4I_NIbxZ2e2Vr8zos-8Z6gvvuTP88-dLlQ5yr_zkcT8i1Q2YreedxvefQmvyRZI40VcfWsnUbCc5jgI119UvtMy-UZNcBdF8cQopk-fD72c5BfCasTenG_MChQAh-gu8dVq6dI_MeLGnD3ZEMd933w_PE89cqw1TrjB9clg9uJBsebIbYeoEMPAkFKWwOYamY-UaEmWRYh41CIIW49Z0zBN3FMhRrAMxY3hI7H4Ljd0uU6JB4-CUuUdzXWASPrw"/>
+</div>
+<div>
+<p class="font-bold text-sm">The Office</p>
+<p class="text-slate-500 text-xs">12 Styles found</p>
+</div>
+</div>
+<!-- Date Night -->
+<div class="min-w-[160px] flex flex-col gap-3">
+<div class="aspect-square rounded-xl overflow-hidden border border-primary/10 shadow-sm">
+<img alt="Date night fashion" class="w-full h-full object-cover" data-alt="Elegant evening wear date night outfit" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBbLOp_crpFPG0VFnZbgQmtqZiBWy7QVkyrAUBK7FxT0nfpU1rK--DFAFkuXre41Pb_bKSTBo3Ydr7wKCSpNscOmnY5VJlcEu-U0OLpxCluhkC0CIa0jUi5MRQ1fG0FzxPTYnZ2V8cBrSyAIEfnyDhWWN8XctpPAnKNpSReviAZCyfZWRl_Fn8z6-OI4VNV7oGBW0cZnUZl1rPKAWNbzfmG7wH9k15n_GZyA-YtW5U10yMop7K6_GjOXzr0o53os7Kexp4Z6T1vkg"/>
+</div>
+<div>
+<p class="font-bold text-sm">Date Night</p>
+<p class="text-slate-500 text-xs">8 Styles found</p>
+</div>
+</div>
+<!-- Smart Casual -->
+<div class="min-w-[160px] flex flex-col gap-3">
+<div class="aspect-square rounded-xl overflow-hidden border border-primary/10 shadow-sm">
+<img alt="Smart casual look" class="w-full h-full object-cover" data-alt="Modern smart casual everyday wear clothing" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDscNoZ_Be_Qa_5ZJbre929hRxPtlNMG72iK93z5knaMqXifQAdj7OcHuHDuVbf3hNADRi8qTjldr68nnCxtH1ibQUr8Mxq6Ro6t94cpGu2yZBH5X5ysHcL_NQ1roKDj2gwulLi2pwMCU8WljmJlmWXW6iIlIOAiz7r0l7HbgjAktGDk1ln4L0NYWuytx-7LekWydW8lBS2H7TgXT4FVovFpwncISpWicKcMe9vW4kP4PeMoW0N9jrZ38aRTqlhAiRuN1D-OgGn7Q"/>
+</div>
+<div>
+<p class="font-bold text-sm">Smart Casual</p>
+<p class="text-slate-500 text-xs">24 Styles found</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Product Grid - Minimalist Cards -->
+<section class="px-5 mb-10">
+<h2 class="font-serif text-2xl font-bold mb-6">Trending Picks</h2>
+<div class="grid grid-cols-2 gap-x-4 gap-y-8">
+<!-- Product 1 -->
+<div class="flex flex-col gap-2">
+<div class="relative aspect-[3/4] rounded-xl overflow-hidden bg-background-light border border-primary/5">
+<img alt="Product" class="w-full h-full object-cover" data-alt="Luxury wool coat in deep rust color" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD654sAtxrcek4L4nNUYVpaF08n_XlyMpQazMJZvJnOJ6tCOOoV-6l20bIZtlUmMMHJe6Emb0ODyYCWxCjicPhFS-pG-qq75-2xDfCBDKXmrBuh2ZPy4rOZad-Fh4uur5z3BJ0zkGTV9TY3S0WNlRgxkf6bXiFrc6UFEVmYkQBwHYiWzAYdWgEL1qLpmg21L_nqIeKQx5MTgOh0f45X6qxwL4js0kOsO54UIW7vauBibc6TaszB-RDEznkVLxgST5BCovgasl--qw"/>
+<button class="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-full bg-white/90 backdrop-blur-sm text-charcoal">
+<span class="material-symbols-outlined text-lg">favorite</span>
+</button>
+</div>
+<div class="px-1">
+<p class="text-xs text-primary font-bold flex items-center gap-1 mb-1">
+<span class="material-symbols-outlined text-[14px]">verified</span> Matches your undertone
+                        </p>
+<h4 class="text-sm font-semibold truncate">Wool Blend Overcoat</h4>
+<p class="text-sm text-slate-500">$289.00</p>
+</div>
+</div>
+<!-- Product 2 -->
+<div class="flex flex-col gap-2">
+<div class="relative aspect-[3/4] rounded-xl overflow-hidden bg-background-light border border-primary/5">
+<img alt="Product" class="w-full h-full object-cover" data-alt="Premium silk shirt in deep forest green" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-9s_qcc4LLZhgWledOuMR7NdM1QwG3h3rUav6T2nQPCSgvF4q5D8uS_JxWAMoYZCqV430sj0bSFhCgXW9GHx7Q09DETnFGyRvb3BKE21BTrykCEPFY_IX5LqQTaO-nF0fYMX1o-0tjvYuOucRnclteIEiWIdKGrgTqm7y7j5EcPLa-cqNqp0uotVcdcpeaqYq8Mbu-TLLCp2FSOl4-KCmAw3HXt5emJO6PgQ-LDvd9TXxDAVN87HXAXH9jiBalVGmELC2SNBw6A"/>
+<button class="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-full bg-white/90 backdrop-blur-sm text-charcoal">
+<span class="material-symbols-outlined text-lg">favorite</span>
+</button>
+</div>
+<div class="px-1">
+<p class="text-xs text-primary font-bold flex items-center gap-1 mb-1">
+<span class="material-symbols-outlined text-[14px]">verified</span> Perfect for Autumns
+                        </p>
+<h4 class="text-sm font-semibold truncate">Silk Essential Shirt</h4>
+<p class="text-sm text-slate-500">$145.00</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-t border-primary/10 px-6 py-3 pb-8 flex justify-between items-center z-50">
+<a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="text-[10px] font-bold uppercase tracking-tighter">Home</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined font-variation-fill">explore</span>
+<span class="text-[10px] font-bold uppercase tracking-tighter">Discover</span>
+</a>
+<div class="relative -top-4">
+<button class="w-14 h-14 bg-primary rounded-full flex items-center justify-center text-white shadow-lg shadow-primary/30 border-4 border-background-light dark:border-background-dark">
+<span class="material-symbols-outlined text-3xl">photo_camera</span>
+</button>
+<span class="absolute -bottom-5 left-1/2 -translate-x-1/2 text-[10px] font-bold uppercase tracking-tighter text-slate-400">Scan</span>
+</div>
+<a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined">checkroom</span>
+<span class="text-[10px] font-bold uppercase tracking-tighter">Wardrobe</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="text-[10px] font-bold uppercase tracking-tighter">Profile</span>
+</a>
+</nav>
+</div>
+</body></html>

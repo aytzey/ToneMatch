@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#b87332",
+                        "background-light": "#f8f7f6",
+                        "background-dark": "#1f1913",
+                        "charcoal": "#1a1a1a",
+                        "stone": "#e5e1dc"
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<title>ToneMatch Wardrobe</title>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-charcoal dark:text-slate-100">
+<div class="relative flex min-h-screen w-full flex-col max-w-md mx-auto bg-background-light dark:bg-background-dark shadow-2xl overflow-x-hidden">
+<!-- Header -->
+<header class="sticky top-0 z-50 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md px-6 py-4 flex items-center justify-between border-b border-stone dark:border-primary/20">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-2xl">temp_preferences_custom</span>
+<h1 class="text-xl font-extrabold tracking-tight uppercase italic">ToneMatch</h1>
+</div>
+<div class="flex gap-4">
+<button class="material-symbols-outlined text-charcoal dark:text-slate-100">search</button>
+<div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center border border-primary/30">
+<span class="material-symbols-outlined text-primary text-sm">person</span>
+</div>
+</div>
+</header>
+<!-- Profile Section -->
+<section class="px-6 py-6">
+<div class="flex items-end justify-between mb-2">
+<div>
+<p class="text-[10px] uppercase tracking-[0.2em] font-bold text-primary mb-1">Current Palette</p>
+<h2 class="text-3xl font-bold leading-none">Deep Autumn</h2>
+</div>
+<div class="flex -space-x-2">
+<div class="w-6 h-6 rounded-full bg-[#5d1c1c] border-2 border-background-light"></div>
+<div class="w-6 h-6 rounded-full bg-[#8b4513] border-2 border-background-light"></div>
+<div class="w-6 h-6 rounded-full bg-[#b87332] border-2 border-background-light"></div>
+<div class="w-6 h-6 rounded-full bg-[#2e3b23] border-2 border-background-light"></div>
+</div>
+</div>
+<p class="text-sm text-charcoal/60 dark:text-slate-400 max-w-[80%]">Warm, rich tones with high saturation. Avoid pastels and cool grays.</p>
+</section>
+<!-- Quick Actions -->
+<section class="px-6 pb-8 flex gap-3">
+<button class="flex-1 flex items-center justify-center gap-2 bg-primary text-white py-3 rounded-xl font-bold text-sm transition-transform active:scale-95 shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-lg">add_circle</span>
+                Add Item
+            </button>
+<button class="flex-1 flex items-center justify-center gap-2 bg-charcoal text-white dark:bg-stone dark:text-charcoal py-3 rounded-xl font-bold text-sm transition-transform active:scale-95">
+<span class="material-symbols-outlined text-lg">auto_fix</span>
+                Build Outfit
+            </button>
+</section>
+<!-- Tabs -->
+<nav class="px-6 mb-6">
+<div class="flex gap-6 border-b border-stone dark:border-primary/10 overflow-x-auto no-scrollbar">
+<a class="pb-3 border-b-2 border-primary text-charcoal dark:text-slate-100 font-bold text-sm whitespace-nowrap" href="#">Top Picks</a>
+<a class="pb-3 border-b-2 border-transparent text-charcoal/40 dark:text-slate-500 font-bold text-sm whitespace-nowrap" href="#">Recently Added</a>
+<a class="pb-3 border-b-2 border-transparent text-charcoal/40 dark:text-slate-500 font-bold text-sm whitespace-nowrap" href="#">Outerwear</a>
+<a class="pb-3 border-b-2 border-transparent text-charcoal/40 dark:text-slate-500 font-bold text-sm whitespace-nowrap" href="#">Knitwear</a>
+</div>
+</nav>
+<!-- Main Catalog Content -->
+<main class="flex-1 px-6 pb-32">
+<!-- Grid Layout -->
+<div class="grid grid-cols-2 gap-x-4 gap-y-8">
+<!-- Item 1 -->
+<div class="flex flex-col gap-3 group">
+<div class="relative aspect-[3/4] rounded-xl overflow-hidden bg-stone dark:bg-primary/5">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110" data-alt="Warm terracotta wool coat against light background" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAyrZM-vCAXV0Sry6O6oM8MKV_-S-v7i2eLL5YMhiWDnuaL5HQVfx-SF0go0Zq8rpX3P1utmD0EFtmxoup4IzDWGgNtx51nltj6pFjKOwr4aLyKH9rysFmrFt3uE1GjC-jxPQWVzdLY0EVyklQws2fuqw_LpjW_G_WgKgROxk3yArQ1HIg6cBXCc-ifhAYFEJ6n7ev2Qg6u3dJe-t9_t2JqRI64LU7Wqqq86o94cQEBF-ALxWkUBF7PD3vukdScdy-D6xNZQ6HEBQ')"></div>
+<div class="absolute top-2 right-2 bg-white/90 dark:bg-charcoal/90 backdrop-blur-sm px-2 py-1 rounded-lg">
+<p class="text-[10px] font-black text-primary italic">98% FIT</p>
+</div>
+</div>
+<div>
+<h3 class="font-bold text-sm leading-tight mb-1">Terracotta Overcoat</h3>
+<div class="flex flex-wrap gap-1 mb-2">
+<span class="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase">Earth Tone</span>
+<span class="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase">Wool</span>
+</div>
+<p class="text-[11px] leading-relaxed text-charcoal/60 dark:text-slate-400 italic">"The undertone perfectly complements your skin's golden warmth."</p>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="flex flex-col gap-3 group">
+<div class="relative aspect-[3/4] rounded-xl overflow-hidden bg-stone dark:bg-primary/5">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110" data-alt="Deep forest green silk blouse texture" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDrGvabhlUaCBBFoJL6dSVYTalB81Pc0UFoNhITf69uLiEmBsnbxBnnMruRdWbFqgo64FYv1YalfzQ054aANi4Vd6T4QJ4TY83dxvIAeXqGh5mTz8_iIafDpKF2faz3P47gYQNekevN8UwqTluhG6JmLuA-lyfkiQzPX_ydhtzYKA0Ft0-bMSSsEIk8irnnKznUwfABk-iFbVLT6QunGvfdRn7i_hclwYRUctG4MH_KzQULmHgdpNnG6ylKN7XIKDFqzD1j9LqfEw')"></div>
+<div class="absolute top-2 right-2 bg-white/90 dark:bg-charcoal/90 backdrop-blur-sm px-2 py-1 rounded-lg">
+<p class="text-[10px] font-black text-primary italic">92% FIT</p>
+</div>
+</div>
+<div>
+<h3 class="font-bold text-sm leading-tight mb-1">Hunter Silk Blouse</h3>
+<div class="flex flex-wrap gap-1 mb-2">
+<span class="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase">Deep Green</span>
+<span class="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase">Silk</span>
+</div>
+<p class="text-[11px] leading-relaxed text-charcoal/60 dark:text-slate-400 italic">"Rich saturation balances your contrast level beautifully."</p>
+</div>
+</div>
+<!-- Item 3 -->
+<div class="flex flex-col gap-3 group col-span-2 mt-4">
+<div class="relative aspect-[16/9] rounded-xl overflow-hidden bg-stone dark:bg-primary/5">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105" data-alt="Charcoal ribbed knit sweater on a hanger" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCixo-VuzC9O5LYrtATLtpkBv13KjgmNXFW9YZSr3AHRw_ik7vwdARxuMekmIX4a4w1A185DiqDpv2hrGTKDd3daJbfrqSvBiZYEHdGy-qTltv1U1HUz6kWx0H0QzumV61QMZzxp1dOWjsQdG4mKnZOamg1Ptbn0gUNYeyVo9Ci4bwzBhvChIKOlIqGSBTGNhGjJnd_ESJcSrTITg1-0p2C0QoDgLDzfR8RGqW_80KLrL583VkQkYXCKZ_rl_ZP0mz-NF5q133BXg')"></div>
+<div class="absolute top-4 left-4 bg-charcoal/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/10">
+<p class="text-[10px] font-bold text-white uppercase tracking-widest">Borderline Match</p>
+</div>
+<div class="absolute bottom-4 right-4 bg-primary px-3 py-1.5 rounded-lg">
+<p class="text-[10px] font-black text-white italic">74% FIT</p>
+</div>
+</div>
+<div>
+<div class="flex justify-between items-start">
+<div>
+<h3 class="font-bold text-base leading-tight mb-1">Ribbed Charcoal Knit</h3>
+<div class="flex flex-wrap gap-1">
+<span class="px-2 py-0.5 rounded-full bg-stone dark:bg-white/10 text-charcoal dark:text-slate-100 text-[10px] font-bold uppercase">Neutral</span>
+</div>
+</div>
+</div>
+<p class="text-xs mt-2 leading-relaxed text-charcoal/60 dark:text-slate-400">
+<span class="font-bold text-charcoal dark:text-slate-200 block mb-1">Styling Tip:</span>
+                            This cool-toned gray may wash you out. Pair with a copper necklace or a burnt orange scarf to bring warmth back to your face.
+                        </p>
+</div>
+</div>
+<!-- Item 4 -->
+<div class="flex flex-col gap-3 group">
+<div class="relative aspect-[3/4] rounded-xl overflow-hidden bg-stone dark:bg-primary/5">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110" data-alt="Indigo denim pants detailed shot" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCwaFSKoyjet0vwIKJjPFjaXEo5AybGYtyp2xaF2v-RdvMmFljWeBPYPV-MYVNSjD1rA2xzLCHKV88vLSz2z9BP46waGjPrGC_IqPZQxbErzps_QZBikPeFfubqMmKmUPxL375mjR4nmaIH95JxvvbyWadO8SlMSLfYe0Y4B_3EoPmpORkhtKBu-PsWxYF7de1ZR1OEoyw17XkS5FL_Ojdk709jA3FDR0AFUov4frYWgm079YZaWVgvAX9LJEwgYuR5B1km0G-FCg')"></div>
+<div class="absolute top-2 right-2 bg-white/90 dark:bg-charcoal/90 backdrop-blur-sm px-2 py-1 rounded-lg">
+<p class="text-[10px] font-black text-primary italic">88% FIT</p>
+</div>
+</div>
+<div>
+<h3 class="font-bold text-sm leading-tight mb-1">Raw Indigo Denim</h3>
+<div class="flex flex-wrap gap-1 mb-2">
+<span class="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase">Blue-Black</span>
+</div>
+<p class="text-[11px] leading-relaxed text-charcoal/60 dark:text-slate-400 italic">"The dark wash provides the necessary weight for Deep Autumn style."</p>
+</div>
+</div>
+<!-- Item 5 -->
+<div class="flex flex-col gap-3 group">
+<div class="relative aspect-[3/4] rounded-xl overflow-hidden bg-stone dark:bg-primary/5">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110" data-alt="Ochre yellow button down shirt" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBhBMYwsLuBUwUeUSx9c4y9fxqg-PA9DjbyWZZC_dZmKTzVeaQM0coG6Kakg9rh557_PYfiu_8GN6Qbmrlo4u29q7TskX41SteOKGfJc5L4LVo8FUjB8SjU8VLKnsGGdmp_Su4YmObWKPf0wDtWUZ3n5-0Xck0Obtvd56wAnbmbY28J6WWyk4TG-mSzGLKKsh0sLzxQGGinxoswdVV-ckx9giaBRXHuf5YkT61tHbWzSPxHxCT6HgCBRL2TnqSLv-puizzg78JYxQ')"></div>
+<div class="absolute top-2 right-2 bg-white/90 dark:bg-charcoal/90 backdrop-blur-sm px-2 py-1 rounded-lg">
+<p class="text-[10px] font-black text-primary italic">96% FIT</p>
+</div>
+</div>
+<div>
+<h3 class="font-bold text-sm leading-tight mb-1">Ochre Linen Shirt</h3>
+<div class="flex flex-wrap gap-1 mb-2">
+<span class="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase">Golden</span>
+</div>
+<p class="text-[11px] leading-relaxed text-charcoal/60 dark:text-slate-400 italic">"A cornerstone color for your seasonal archetype."</p>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation Bar -->
+<footer class="fixed bottom-0 left-0 right-0 max-w-md mx-auto z-50">
+<div class="bg-background-light/90 dark:bg-background-dark/95 backdrop-blur-lg border-t border-stone dark:border-primary/20 px-6 py-4 pb-8 flex justify-between items-center">
+<a class="flex flex-col items-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined fill-1">checkroom</span>
+<span class="text-[10px] font-bold uppercase tracking-widest">Wardrobe</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-charcoal/40 dark:text-slate-500 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">palette</span>
+<span class="text-[10px] font-bold uppercase tracking-widest">Palettes</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-charcoal/40 dark:text-slate-500 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">camera_enhance</span>
+<span class="text-[10px] font-bold uppercase tracking-widest">Analyze</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-charcoal/40 dark:text-slate-500 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">auto_stories</span>
+<span class="text-[10px] font-bold uppercase tracking-widest">Studio</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-charcoal/40 dark:text-slate-500 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-[10px] font-bold uppercase tracking-widest">Settings</span>
+</a>
+</div>
+</footer>
+</div>
+<style>
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .fill-1 {
+            font-variation-settings: 'FILL' 1;
+        }
+    </style>
+</body></html>
