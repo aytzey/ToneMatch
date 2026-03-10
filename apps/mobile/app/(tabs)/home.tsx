@@ -13,21 +13,39 @@ import {
 import { MaterialIcons } from "@expo/vector-icons";
 
 import { Screen } from "@/src/components/screen";
+import { hexForColorName } from "@/src/lib/color-name-hex";
 import { useAuth } from "@/src/features/auth/use-auth";
+import { useAnalysisHistory } from "@/src/features/style/use-analysis-history";
 import { useStyleProfile } from "@/src/features/style/use-style-profile";
 import { palette } from "@/src/theme/palette";
 import { radius, spacing } from "@/src/theme/spacing";
 import { type } from "@/src/theme/type";
 
+function relativeDate(dateStr?: string): string {
+  if (!dateStr) return "";
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.floor(diff / 60_000);
+  if (mins < 1) return "Just now";
+  if (mins < 60) return `${mins}m ago`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  if (days === 1) return "Yesterday";
+  if (days < 7) return `${days} days ago`;
+  const weeks = Math.floor(days / 7);
+  return weeks === 1 ? "1 week ago" : `${weeks} weeks ago`;
+}
+
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const OCCASION_CARD_WIDTH = 160;
 
-const SWATCH_COLORS = [
+const DEFAULT_SWATCH_COLORS = [
   palette.swatch1,
   palette.swatch2,
   palette.swatch3,
   palette.swatch4,
 ];
+
 
 const OCCASIONS = [
   {
@@ -50,14 +68,27 @@ const OCCASIONS = [
 export default function HomeScreen() {
   const { user } = useAuth();
   const { data } = useStyleProfile();
+  const { data: history } = useAnalysisHistory();
 
-  const displayName = user?.user_metadata?.display_name ?? "Alex";
+  const displayName =
+    user?.user_metadata?.display_name ??
+    user?.email?.split("@")[0] ??
+    "there";
   const firstName = displayName.split(" ")[0];
 
   const analysisTitle = data?.summary?.title ?? "Deep Autumn Palette";
   const confidence = data?.confidence
     ? `${Math.round(data.confidence * 100)}%`
     : "98%";
+
+  const swatchColors =
+    data?.palette?.core && data.palette.core.length > 0
+      ? data.palette.core.slice(0, 4).map((name) => hexForColorName(name))
+      : DEFAULT_SWATCH_COLORS;
+  const extraColorCount =
+    data?.palette?.core && data.palette.core.length > 4
+      ? data.palette.core.length - 4
+      : 0;
 
   return (
     <Screen scrollable contentContainerStyle={styles.scrollContent}>
@@ -124,19 +155,24 @@ export default function HomeScreen() {
           <View style={styles.analysisLeft}>
             <Text style={styles.analysisTitle}>{analysisTitle}</Text>
             <Text style={styles.analysisSub}>
-              Analyzed 2 days ago {"\u2022"} {confidence} Match
+              {history?.[0]?.createdAt
+                ? `Analyzed ${relativeDate(history[0].createdAt)}`
+                : "Latest analysis"}{" "}
+              {"\u2022"} {confidence} Match
             </Text>
 
             <View style={styles.swatchRow}>
-              {SWATCH_COLORS.map((color) => (
+              {swatchColors.map((color, i) => (
                 <View
-                  key={color}
+                  key={`${color}-${i}`}
                   style={[styles.swatch, { backgroundColor: color }]}
                 />
               ))}
-              <View style={styles.swatchMore}>
-                <Text style={styles.swatchMoreText}>+12</Text>
-              </View>
+              {extraColorCount > 0 && (
+                <View style={styles.swatchMore}>
+                  <Text style={styles.swatchMoreText}>+{extraColorCount}</Text>
+                </View>
+              )}
             </View>
           </View>
 

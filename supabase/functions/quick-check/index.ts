@@ -2,30 +2,14 @@ import { createClient } from "jsr:@supabase/supabase-js@2";
 
 import { resolveRequestUser } from "../_shared/auth.ts";
 import { corsHeaders } from "../_shared/cors.ts";
+import {
+  openrouterConfigured,
+  downloadImageAsBase64,
+  analyzeClothingWithAI,
+} from "../_shared/openrouter.ts";
 
 type QuickCheckPayload = {
   assetId: string;
-};
-
-type WorkerQuickCheckResponse = {
-  ok: boolean;
-  result: {
-    label: string;
-    score: number;
-    confidence: number;
-    best_use: string;
-    reason: string;
-    color_family: string;
-    clothing_check?: {
-      visible_colors: string[];
-      garment_type: string;
-      position: string;
-      verdict: string;
-      explanation: string;
-      suggestion: string;
-      score: number;
-    } | null;
-  };
 };
 
 function fallbackQuickCheck(seed: string) {
@@ -67,8 +51,6 @@ Deno.serve(async (request) => {
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
   const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
   const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-  const workerUrl = Deno.env.get("AI_WORKER_URL");
-  const workerSecret = Deno.env.get("AI_WORKER_SHARED_SECRET");
 
   if (!supabaseUrl || !supabaseAnonKey || !serviceRoleKey) {
     return new Response(JSON.stringify({ error: "Missing Supabase environment variables" }), {
@@ -106,36 +88,49 @@ Deno.serve(async (request) => {
     });
   }
 
-  // Fetch user's style profile so the worker can evaluate clothing fit
+  // Fetch user's style profile so we can evaluate clothing fit
   const { data: profile } = await adminClient
     .from("style_profiles")
     .select("undertone_label, contrast_label, palette_json, avoid_colors_json")
     .eq("user_id", user.id)
     .maybeSingle();
 
-  let result = fallbackQuickCheck(asset.storage_path);
+  let result: {
+    label: string;
+    score: number;
+    confidence: number;
+    best_use: string;
+    reason: string;
+    color_family: string;
+    clothing_check?: {
+      visible_colors: string[];
+      garment_type: string;
+      position: string;
+      verdict: string;
+      explanation: string;
+      suggestion: string;
+      score: number;
+    } | null;
+  } = fallbackQuickCheck(asset.storage_path);
 
-  if (workerUrl && workerSecret) {
-    const workerResponse = await fetch(`${workerUrl}/jobs/quick-check`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-shared-secret": workerSecret,
-      },
-      body: JSON.stringify({
-        asset_id: asset.id,
-        bucket: asset.bucket,
-        storage_path: asset.storage_path,
+  if (openrouterConfigured) {
+    try {
+      const { base64, mimeType } = await downloadImageAsBase64(
+        adminClient,
+        asset.bucket,
+        asset.storage_path,
+      );
+
+      const aiResult = await analyzeClothingWithAI(base64, mimeType, {
         undertone_label: profile?.undertone_label ?? "",
         contrast_label: profile?.contrast_label ?? "",
-        palette_json: profile?.palette_json ?? {},
-        avoid_colors_json: profile?.avoid_colors_json ?? [],
-      }),
-    });
+        palette_json: (profile?.palette_json as Record<string, unknown>) ?? {},
+        avoid_colors_json: Array.isArray(profile?.avoid_colors_json) ? profile.avoid_colors_json : [],
+      });
 
-    if (workerResponse.ok) {
-      const workerPayload = (await workerResponse.json()) as WorkerQuickCheckResponse;
-      result = workerPayload.result;
+      result = aiResult;
+    } catch (aiError) {
+      console.error("OpenRouter clothing analysis failed, using fallback:", aiError);
     }
   }
 

@@ -144,9 +144,22 @@ export async function persistMockAnalysis(
     .update({ status: "completed" })
     .eq("id", sessionId);
 
+  // Selfie no longer needed — delete from storage
+  const { data: assetRow } = await adminClient
+    .from("photo_assets")
+    .select("bucket, storage_path")
+    .eq("id", assetId)
+    .single();
+
+  if (assetRow) {
+    await adminClient.storage
+      .from(assetRow.bucket)
+      .remove([assetRow.storage_path]);
+  }
+
   await adminClient
     .from("photo_assets")
-    .update({ status: "completed" })
+    .update({ status: "deleted", retention_delete_after: new Date().toISOString() })
     .eq("id", assetId);
 
   return { accepted: true, mode: "function-fallback" };

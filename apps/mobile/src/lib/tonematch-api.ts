@@ -1,13 +1,14 @@
 import type { ImagePickerAsset } from "expo-image-picker";
 
+import { compressForAnalysis, compressForWardrobe } from "@/src/lib/image-compress";
 import { mockStyleProfile, wardrobeItems as previewWardrobeItems } from "@/src/features/style/mock-data";
 import { backendConfigured, supabaseConfig } from "@/src/lib/env";
 import {
   analyzeClothing,
   analyzeSelfie,
-  geminiConfigured,
+  openrouterConfigured,
   selfieResultToStyleExperience,
-} from "@/src/lib/gemini";
+} from "@/src/lib/openrouter";
 import { supabase } from "@/src/lib/supabase";
 import { useAppStore } from "@/src/store/app-store";
 import { loadProfile, saveProfile } from "@/src/store/profile-store";
@@ -60,11 +61,11 @@ type ReportMerchantClickResponse = {
 /*  Backend helpers                                                    */
 /* ------------------------------------------------------------------ */
 
-async function invokeEdgeFunction<TResponse>(functionName: string, body?: unknown) {
+async function invokeEdgeFunction<TResponse>(functionName: string, body?: unknown, timeoutMs = 60_000) {
   const { data: { session } } = await supabase.auth.getSession();
 
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 15000);
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
   const response = await fetch(`${supabaseConfig.url}/functions/v1/${functionName}`, {
     method: "POST",
@@ -114,8 +115,8 @@ async function isBackendReachable(): Promise<boolean> {
   }
 }
 
-function useGeminiFallback(): boolean {
-  return geminiConfigured;
+function useOpenRouterFallback(): boolean {
+  return openrouterConfigured;
 }
 
 /* ------------------------------------------------------------------ */
@@ -131,25 +132,27 @@ export async function uploadAndAnalyzeSelfie(asset: ImagePickerAsset) {
     }
   }
 
-  /* Gemini direct analysis */
-  if (useGeminiFallback()) {
+  /* OpenRouter direct analysis */
+  if (useOpenRouterFallback()) {
     const result = await analyzeSelfie(asset.uri);
     const profile = selfieResultToStyleExperience(result, "plus");
     await saveProfile(profile);
 
     return {
-      sessionId: `gemini-${Date.now()}`,
-      mode: "gemini",
+      sessionId: `openrouter-${Date.now()}`,
+      mode: "openrouter",
     };
   }
 
-  throw new Error("No backend or Gemini API available for analysis.");
+  throw new Error("No backend or OpenRouter API available for analysis.");
 }
 
-async function uploadAndAnalyzeViaBackend(asset: ImagePickerAsset) {
+async function uploadAndAnalyzeViaBackend(rawAsset: ImagePickerAsset) {
+  const asset = await compressForAnalysis(rawAsset);
+
   const createUpload = await invokeEdgeFunction<CreateUploadResponse>("create-upload", {
-    fileName: asset.fileName ?? `selfie-${Date.now()}.jpg`,
-    contentType: asset.mimeType ?? "image/jpeg",
+    fileName: rawAsset.fileName ?? `selfie-${Date.now()}.jpg`,
+    contentType: "image/jpeg",
     kind: "selfie",
   });
 
@@ -185,8 +188,8 @@ async function uploadAndAnalyzeViaBackend(asset: ImagePickerAsset) {
 /* ------------------------------------------------------------------ */
 
 export async function pollAnalysisSession(sessionId: string, timeoutMs = 45_000) {
-  /* Gemini sessions are already complete */
-  if (sessionId.startsWith("gemini-")) {
+  /* OpenRouter sessions are already complete */
+  if (sessionId.startsWith("openrouter-")) {
     return {
       id: sessionId,
       status: "completed",
@@ -235,7 +238,7 @@ export async function pollAnalysisSession(sessionId: string, timeoutMs = 45_000)
 /* ------------------------------------------------------------------ */
 
 export async function fetchStyleExperience(userId?: string | null): Promise<StyleExperience | null> {
-  /* Check locally stored Gemini profile first */
+  /* Check locally stored profile first */
   const stored = await loadProfile();
   if (stored) return stored;
 
@@ -319,8 +322,8 @@ async function fetchStyleExperienceFromBackend(userId: string): Promise<StyleExp
     confidence: averageConfidence(Number(profileResponse.data.undertone_confidence ?? 0), Number(profileResponse.data.contrast_confidence ?? 0)),
     plan: planResponse.data?.plan ?? "free",
     summary: {
-      title: profileResponse.data.fit_explanation ?? "Yeni stil profilin hazir.",
-      description: coreColors.length > 0 ? `Core palette: ${coreColors.join(", ")}` : "Ilk analiz sonucundan sonra personal palette burada olusacak.",
+      title: `${profileResponse.data.undertone_label} / ${profileResponse.data.contrast_label}`,
+      description: profileResponse.data.fit_explanation ?? "Yeni stil profilin hazir.",
     },
     focusItems: buildFocusItems(coreColors, avoidColors),
     palette: { core: coreColors, avoid: avoidColors.map(String) },
@@ -341,8 +344,8 @@ export async function runQuickCheck(asset: ImagePickerAsset): Promise<QuickCheck
     }
   }
 
-  /* Gemini direct clothing analysis */
-  if (useGeminiFallback()) {
+  /* OpenRouter direct clothing analysis */
+  if (useOpenRouterFallback()) {
     const stored = await loadProfile();
     const profile = stored
       ? {
@@ -361,7 +364,7 @@ export async function runQuickCheck(asset: ImagePickerAsset): Promise<QuickCheck
     const result = await analyzeClothing(asset.uri, profile);
 
     return {
-      id: `gemini-qc-${Date.now()}`,
+      id: `openrouter-qc-${Date.now()}`,
       label: result.label,
       score: result.score,
       confidence: result.confidence,
@@ -373,13 +376,15 @@ export async function runQuickCheck(asset: ImagePickerAsset): Promise<QuickCheck
     };
   }
 
-  throw new Error("No backend or Gemini API available for quick check.");
+  throw new Error("No backend or OpenRouter API available for quick check.");
 }
 
-async function runQuickCheckViaBackend(asset: ImagePickerAsset): Promise<QuickCheckView> {
+async function runQuickCheckViaBackend(rawAsset: ImagePickerAsset): Promise<QuickCheckView> {
+  const asset = await compressForWardrobe(rawAsset);
+
   const createUpload = await invokeEdgeFunction<CreateUploadResponse>("create-upload", {
-    fileName: asset.fileName ?? `quick-check-${Date.now()}.jpg`,
-    contentType: asset.mimeType ?? "image/jpeg",
+    fileName: rawAsset.fileName ?? `quick-check-${Date.now()}.jpg`,
+    contentType: "image/jpeg",
     kind: "wardrobe",
   });
 
@@ -465,22 +470,24 @@ export async function deleteAccountData() {
 /*  Wardrobe                                                           */
 /* ------------------------------------------------------------------ */
 
-export async function uploadWardrobeItem(asset: ImagePickerAsset, name: string) {
+export async function uploadWardrobeItem(rawAsset: ImagePickerAsset, name: string) {
   if (!backendConfigured || !(await isBackendReachable())) {
     await wait(900);
     return {
       id: `local-${Date.now()}`,
       name,
-      note: "Analyzed locally with Gemini AI.",
+      note: "Analyzed locally via OpenRouter AI.",
       tags: ["wardrobe", "manual"],
       fitScore: 0.82,
       createdAt: new Date().toISOString(),
     } satisfies WardrobeItemView;
   }
 
+  const asset = await compressForWardrobe(rawAsset);
+
   const createUpload = await invokeEdgeFunction<CreateUploadResponse>("create-upload", {
-    fileName: asset.fileName ?? `wardrobe-${Date.now()}.jpg`,
-    contentType: asset.mimeType ?? "image/jpeg",
+    fileName: rawAsset.fileName ?? `wardrobe-${Date.now()}.jpg`,
+    contentType: "image/jpeg",
     kind: "wardrobe",
   });
 
@@ -640,7 +647,7 @@ export async function fetchCatalogFeed(userId?: string | null): Promise<Recommen
       colorFamily: "warm earthy",
       description: `Personalized for your ${stored.undertone} profile.`,
       merchantName: "ToneMatch",
-      merchantSource: "gemini-analysis",
+      merchantSource: "openrouter-analysis",
     }));
   }
 

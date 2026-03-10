@@ -15,6 +15,9 @@ import {
 import { GlassCard } from "@/src/components/glass-card";
 import { PrimaryButton } from "@/src/components/primary-button";
 import { Screen } from "@/src/components/screen";
+import { useAuth } from "@/src/features/auth/use-auth";
+import { backendConfigured } from "@/src/lib/env";
+import { supabase } from "@/src/lib/supabase";
 import { useAppStore } from "@/src/store/app-store";
 import { palette } from "@/src/theme/palette";
 import { radius, spacing } from "@/src/theme/spacing";
@@ -77,11 +80,44 @@ function deriveProgress(status: string) {
 
 export default function AnalysisLoadingScreen() {
   const router = useRouter();
+  const { user } = useAuth();
   const scanState = useAppStore((s) => s.scanState);
+  const setScanState = useAppStore((s) => s.setScanState);
   const { status, previewUri, sessionId, message } = scanState;
 
   const progress = deriveProgress(status);
   const steps = deriveSteps(status);
+
+  /* Recovery: if page was refreshed and zustand reset to "idle", check DB */
+  useEffect(() => {
+    if (status !== "idle" || !backendConfigured || !user?.id) return;
+
+    let cancelled = false;
+    (async () => {
+      try {
+        const { data } = await supabase
+          .from("analysis_sessions")
+          .select("id, status")
+          .eq("user_id", user.id)
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        if (cancelled) return;
+
+        if (data?.status === "completed") {
+          router.replace(`/analysis/${data.id}`);
+        } else if (data?.status === "queued" || data?.status === "processing") {
+          setScanState({ status: "analyzing", message: "Analiz devam ediyor...", previewUri: null, sessionId: data.id });
+        } else {
+          router.replace("/(tabs)/home");
+        }
+      } catch {
+        if (!cancelled) router.replace("/(tabs)/home");
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [status, user?.id, router, setScanState]);
 
   /* Auto-navigate to results on completion */
   useEffect(() => {

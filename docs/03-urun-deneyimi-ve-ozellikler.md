@@ -142,6 +142,7 @@ Premium paywall ilk sonuçtan önce konmamalıdır. En doğru model:
 ### 7.1 Undertone Scan
 
 MVP'nin çekirdeği. Bulut analizi ile undertone ve renk profili üretir.
+Bu projede selfie ve cilt alt tonu yorum katmanı, OpenRouter üzerinden `google/gemini-3-flash-preview` ile çalışacaktır.
 
 ### 7.2 Personal Palette
 
@@ -184,6 +185,8 @@ Kullanıcı kendi kıyafet fotoğrafını ekler. Sistem:
 - Uygunluk skoru verir
 - Kombin eşleştirir
 - Eksik tamamlayıcı parça önerir
+
+Kıyafet fotoğrafına dayalı görsel analiz katmanında OpenRouter üzerinden `google/gemini-3.1-flash-lite-preview` kullanılacaktır.
 
 ### 7.6 Quick Check
 

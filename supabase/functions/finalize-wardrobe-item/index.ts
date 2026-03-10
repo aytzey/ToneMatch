@@ -2,6 +2,11 @@ import { createClient } from "jsr:@supabase/supabase-js@2";
 
 import { resolveRequestUser } from "../_shared/auth.ts";
 import { corsHeaders } from "../_shared/cors.ts";
+import {
+  openrouterConfigured,
+  downloadImageAsBase64,
+  analyzeWardrobeItemWithAI,
+} from "../_shared/openrouter.ts";
 
 type FinalizeWardrobePayload = {
   assetId: string;
@@ -64,7 +69,7 @@ Deno.serve(async (request) => {
   const body = (await request.json()) as FinalizeWardrobePayload;
   const { data: asset, error: assetError } = await adminClient
     .from("photo_assets")
-    .select("id, storage_path, file_name")
+    .select("id, bucket, storage_path, file_name")
     .eq("id", body.assetId)
     .eq("user_id", user.id)
     .single();
@@ -76,7 +81,50 @@ Deno.serve(async (request) => {
     });
   }
 
-  const derived = inferWardrobeTags(asset.storage_path);
+  // Try AI analysis, fall back to deterministic
+  let derived: { tags: string[]; note: string; fitScore: number };
+
+  if (openrouterConfigured) {
+    try {
+      // Fetch user's style profile for context
+      const { data: profile } = await adminClient
+        .from("style_profiles")
+        .select("undertone_label, contrast_label, palette_json, avoid_colors_json")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      const { base64, mimeType } = await downloadImageAsBase64(
+        adminClient,
+        asset.bucket,
+        asset.storage_path,
+      );
+
+      const aiResult = await analyzeWardrobeItemWithAI(
+        base64,
+        mimeType,
+        profile
+          ? {
+              undertone_label: profile.undertone_label,
+              contrast_label: profile.contrast_label,
+              palette_json: (profile.palette_json as Record<string, unknown>) ?? {},
+              avoid_colors_json: Array.isArray(profile.avoid_colors_json) ? profile.avoid_colors_json : [],
+            }
+          : null,
+      );
+
+      derived = {
+        tags: aiResult.tags,
+        note: aiResult.note,
+        fitScore: aiResult.fit_score,
+      };
+    } catch (aiError) {
+      console.error("OpenRouter wardrobe analysis failed, using fallback:", aiError);
+      derived = inferWardrobeTags(asset.storage_path);
+    }
+  } else {
+    derived = inferWardrobeTags(asset.storage_path);
+  }
+
   const { data: wardrobeItem, error: wardrobeError } = await adminClient
     .from("wardrobe_items")
     .insert({

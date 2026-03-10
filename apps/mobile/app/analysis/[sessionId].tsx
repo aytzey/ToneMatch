@@ -12,36 +12,11 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { GlassCard } from "@/src/components/glass-card";
 import { PrimaryButton } from "@/src/components/primary-button";
 import { Screen } from "@/src/components/screen";
+import { hexForColorName } from "@/src/lib/color-name-hex";
 import { useStyleProfile } from "@/src/features/style/use-style-profile";
 import { palette } from "@/src/theme/palette";
 import { radius, spacing } from "@/src/theme/spacing";
 import { type } from "@/src/theme/type";
-
-/* ------------------------------------------------------------------ */
-/*  Color swatch hex mapping                                           */
-/* ------------------------------------------------------------------ */
-
-const SWATCH_HEX: Record<string, string> = {
-  rust: "#b87332",
-  "deep olive": "#5d6146",
-  "forest green": "#2d6a4f",
-  "cool blue": "#6b9ac4",
-  lavender: "#b4a7d6",
-  burgundy: "#722f37",
-  terracotta: "#c67d4a",
-  mustard: "#c9a227",
-  teal: "#367588",
-  plum: "#6e3a5f",
-  charcoal: "#36454f",
-  cream: "#f5e6cc",
-  gold: "#c9a227",
-  coral: "#e07a5f",
-  sage: "#87a96b",
-};
-
-function hexForName(name: string): string {
-  return SWATCH_HEX[name.toLowerCase()] ?? palette.primary;
-}
 
 /* ------------------------------------------------------------------ */
 /*  ColorSwatch local component                                        */
@@ -54,7 +29,7 @@ type ColorSwatchProps = {
 
 function ColorSwatch({ name, size = "large" }: ColorSwatchProps) {
   const isLarge = size === "large";
-  const bg = hexForName(name);
+  const bg = hexForColorName(name);
 
   return (
     <View style={swatchStyles.wrapper}>
@@ -206,7 +181,10 @@ export default function AnalysisResultScreen() {
           <Text style={styles.whyBody}>
             {theoryItem.copy ?? data.summary?.description}
           </Text>
-          <Pressable style={styles.theoryLink}>
+          <Pressable
+            style={styles.theoryLink}
+            onPress={() => router.push("/occasion-guide")}
+          >
             <Text style={styles.theoryLinkText}>DIVE INTO THE THEORY</Text>
             <MaterialIcons
               name="arrow-forward"

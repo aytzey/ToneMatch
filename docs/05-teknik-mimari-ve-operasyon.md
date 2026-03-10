@@ -7,6 +7,7 @@
 - Mobil uygulama: Expo + React Native + TypeScript
 - BFF ve veri çekirdeği: Supabase
 - AI işleme servisi: Python tabanlı Cloud Run worker
+- LLM / vision yönlendirme: OpenRouter üzerinde `google/gemini-3-flash-preview` (selfie ve cilt alt tonu yorumu) + `google/gemini-3.1-flash-lite-preview` (kıyafet fotoğrafı görsel analizi)
 - Asenkron görev orkestrasyonu: Cloud Tasks
 - Katalog ve öneri verisi: Postgres + pgvector
 - Ödeme ve abonelik: RevenueCat + App Store / Google Play
@@ -76,6 +77,7 @@ AI pipeline, Edge Function içinde değil ayrı worker'da çalışmalıdır. Bun
 - Asenkron yeniden deneme ve kuyruk ihtiyacı
 
 Bu worker Python + FastAPI tabanlı olabilir.
+Worker içinde model routing sabitlenmeli: selfie/cilt alt tonu yorumları için `google/gemini-3-flash-preview`, kıyafet fotoğrafları için `google/gemini-3.1-flash-lite-preview`.
 
 ## 4. Uçtan Uca İstek Akışı
 
