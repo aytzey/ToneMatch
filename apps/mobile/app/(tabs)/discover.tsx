@@ -23,7 +23,7 @@ import { type } from "@/src/theme/type";
 /* ------------------------------------------------------------------ */
 
 const FILTER_CHIPS = [
-  { id: "color-family", label: "Color Family", selected: true },
+  { id: "your-tones", label: "Your Tones", selected: true },
   { id: "category", label: "Category", selected: false },
   { id: "budget", label: "Budget", selected: false },
 ];
@@ -42,8 +42,8 @@ const OCCASIONS = [
     image: require("@/assets/images/discover_datenight.png"),
   },
   {
-    id: "smart-casual",
-    title: "Smart Casual",
+    id: "weekend",
+    title: "Weekend",
     subtitle: "24 Styles found",
     image: require("@/assets/images/discover_smartcasual.png"),
   },
@@ -73,7 +73,7 @@ const TRENDING_PICKS = [
 export default function DiscoverScreen() {
   const { user } = useAuth();
   const [searchText, setSearchText] = useState("");
-  const [activeChip, setActiveChip] = useState("color-family");
+  const [activeChip, setActiveChip] = useState("your-tones");
 
   return (
     <Screen scrollable contentContainerStyle={styles.content}>
@@ -95,7 +95,7 @@ export default function DiscoverScreen() {
         />
         <TextInput
           style={styles.searchInput}
-          placeholder="Search products or styles"
+          placeholder="Search products or tones"
           placeholderTextColor={palette.muted}
           value={searchText}
           onChangeText={setSearchText}
