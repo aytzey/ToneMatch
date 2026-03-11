@@ -16,4 +16,5 @@ __pycache__
 apps/mobile/.expo
 apps/mobile/.env.local
 supabase/.branches
+supabase/.temp
 .runtime

@@ -9,6 +9,7 @@
   ],
   "main": "scripts/build_workbook.js",
   "scripts": {
+    "postinstall": "node scripts/link-env.js",
     "build:workbook": "node scripts/build_workbook.js",
     "ingest:catalog": "node scripts/ingest_catalog_feed.js",
     "dev:mobile": "npm run dev --workspace mobile",
