@@ -333,7 +333,7 @@ const styles = StyleSheet.create({
   },
   overline: {
     ...type.overline,
-    color: palette.muted,
+    color: palette.primary,
   },
   heroTitle: {
     ...type.hero,

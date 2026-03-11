@@ -57,7 +57,7 @@ const WARDROBE_ITEMS: WardrobeItem[] = [
     tags: ["Earth Tone", "Wool"],
     color: palette.swatch2,
     image: require("../../assets/images/wardrobe_blazer.png"),
-    quote: '"A cornerstone of deep autumn layering."',
+    quote: '"The undertone perfectly complements your skin\'s golden warmth."',
   },
   {
     id: "2",
@@ -66,7 +66,7 @@ const WARDROBE_ITEMS: WardrobeItem[] = [
     tags: ["Deep Green", "Silk"],
     color: palette.swatch3,
     image: require("../../assets/images/wardrobe_blouse.png"),
-    quote: '"Pairs beautifully with warm metallics."',
+    quote: '"Rich saturation balances your contrast level beautifully."',
   },
   {
     id: "3",
@@ -78,7 +78,7 @@ const WARDROBE_ITEMS: WardrobeItem[] = [
     fullWidth: true,
     borderlineMatch: true,
     stylingTip:
-      "Layer with a warm-toned scarf or statement earrings in gold to bring this into your palette range.",
+      "This cool-toned gray may wash you out. Pair with a copper necklace or a burnt orange scarf to bring warmth back to your face.",
   },
   {
     id: "4",
@@ -87,7 +87,7 @@ const WARDROBE_ITEMS: WardrobeItem[] = [
     tags: ["Blue-Black"],
     color: palette.swatch1,
     image: require("../../assets/images/wardrobe_skirt.png"),
-    quote: '"Deep indigo anchors any autumn outfit."',
+    quote: '"The dark wash provides the necessary weight for Deep Autumn style."',
   },
   {
     id: "5",
@@ -96,7 +96,7 @@ const WARDROBE_ITEMS: WardrobeItem[] = [
     tags: ["Golden"],
     color: palette.primary,
     image: require("../../assets/images/wardrobe_blazer.png"),
-    quote: '"The quintessential warm-weather staple."',
+    quote: '"A cornerstone color for your seasonal archetype."',
   },
 ];
 
