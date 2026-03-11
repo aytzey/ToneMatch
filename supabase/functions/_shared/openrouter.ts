@@ -14,7 +14,13 @@ function getApiKey(): string {
   return Deno.env.get("OPENROUTER_API_KEY") ?? "";
 }
 
+/** @deprecated Use isOpenrouterConfigured() for runtime check. */
 export const openrouterConfigured = Boolean(getApiKey());
+
+/** Check at call time so env vars injected after module load are detected. */
+export function isOpenrouterConfigured(): boolean {
+  return Boolean(getApiKey());
+}
 
 /* ------------------------------------------------------------------ */
 /*  Generic OpenRouter call                                            */

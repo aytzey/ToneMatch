@@ -67,13 +67,14 @@ async function invokeEdgeFunction<TResponse>(functionName: string, body?: unknow
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
+  const authToken = session?.access_token ?? supabaseConfig.anonKey;
+
   const response = await fetch(`${supabaseConfig.url}/functions/v1/${functionName}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       apikey: supabaseConfig.anonKey,
-      Authorization: `Bearer ${supabaseConfig.anonKey}`,
-      ...(session?.access_token ? { "x-supabase-auth": `Bearer ${session.access_token}` } : {}),
+      Authorization: `Bearer ${authToken}`,
     },
     body: JSON.stringify(body ?? {}),
     signal: controller.signal,
@@ -95,9 +96,14 @@ async function invokeEdgeFunction<TResponse>(functionName: string, body?: unknow
 }
 
 let _backendReachable: boolean | null = null;
+let _backendReachableCheckedAt = 0;
+const REACHABLE_CACHE_TTL_MS = 30_000; // re-check every 30 seconds
 
 async function isBackendReachable(): Promise<boolean> {
-  if (_backendReachable !== null) return _backendReachable;
+  const now = Date.now();
+  if (_backendReachable !== null && now - _backendReachableCheckedAt < REACHABLE_CACHE_TTL_MS) {
+    return _backendReachable;
+  }
   try {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 3000);
@@ -108,9 +114,11 @@ async function isBackendReachable(): Promise<boolean> {
     });
     clearTimeout(timeoutId);
     _backendReachable = response.ok || response.status === 401;
+    _backendReachableCheckedAt = now;
     return _backendReachable;
   } catch {
     _backendReachable = false;
+    _backendReachableCheckedAt = now;
     return false;
   }
 }

@@ -3,7 +3,7 @@ import { createClient } from "jsr:@supabase/supabase-js@2";
 import { resolveRequestUser } from "../_shared/auth.ts";
 import { corsHeaders } from "../_shared/cors.ts";
 import {
-  openrouterConfigured,
+  isOpenrouterConfigured,
   downloadImageAsBase64,
   analyzeClothingWithAI,
 } from "../_shared/openrouter.ts";
@@ -113,7 +113,7 @@ Deno.serve(async (request) => {
     } | null;
   } = fallbackQuickCheck(asset.storage_path);
 
-  if (openrouterConfigured) {
+  if (isOpenrouterConfigured()) {
     try {
       const { base64, mimeType } = await downloadImageAsBase64(
         adminClient,
