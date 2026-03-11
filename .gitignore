@@ -10,6 +10,9 @@ build
 coverage
 artifacts/*.log
 services/ai-worker/.venv
+__pycache__
+*.pyc
+.pytest_cache
 apps/mobile/.expo
 apps/mobile/.env.local
 supabase/.branches
