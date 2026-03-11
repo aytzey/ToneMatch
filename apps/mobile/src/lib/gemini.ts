@@ -113,7 +113,14 @@ Return ONLY valid JSON in this exact format:
 
 export async function analyzeSelfie(imageUri: string): Promise<SelfieAnalysisResult> {
   const rawJson = await callGemini(SELFIE_PROMPT, imageUri);
-  const parsed = JSON.parse(rawJson);
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let parsed: any;
+  try {
+    parsed = JSON.parse(rawJson);
+  } catch {
+    throw new Error("Gemini returned invalid JSON for selfie analysis.");
+  }
 
   return {
     undertone: parsed.undertone ?? "Warm",
@@ -226,7 +233,14 @@ export async function analyzeClothing(
 ): Promise<ClothingAnalysisResult> {
   const prompt = buildClothingPrompt(profile);
   const rawJson = await callGemini(prompt, imageUri);
-  const parsed = JSON.parse(rawJson);
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let parsed: any;
+  try {
+    parsed = JSON.parse(rawJson);
+  } catch {
+    throw new Error("Gemini returned invalid JSON for clothing analysis.");
+  }
 
   return {
     label: parsed.label ?? "Analyzed",

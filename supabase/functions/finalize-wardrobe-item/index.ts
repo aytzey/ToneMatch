@@ -3,7 +3,7 @@ import { createClient } from "jsr:@supabase/supabase-js@2";
 import { resolveRequestUser } from "../_shared/auth.ts";
 import { corsHeaders } from "../_shared/cors.ts";
 import {
-  openrouterConfigured,
+  isOpenrouterConfigured,
   downloadImageAsBase64,
   analyzeWardrobeItemWithAI,
 } from "../_shared/openrouter.ts";
@@ -84,7 +84,7 @@ Deno.serve(async (request) => {
   // Try AI analysis, fall back to deterministic
   let derived: { tags: string[]; note: string; fitScore: number };
 
-  if (openrouterConfigured) {
+  if (isOpenrouterConfigured()) {
     try {
       // Fetch user's style profile for context
       const { data: profile } = await adminClient

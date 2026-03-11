@@ -4,7 +4,7 @@ import { resolveRequestUser } from "../_shared/auth.ts";
 import { corsHeaders } from "../_shared/cors.ts";
 import { persistMockAnalysis } from "../_shared/mock-analysis.ts";
 import {
-  openrouterConfigured,
+  isOpenrouterConfigured,
   downloadImageAsBase64,
   analyzeSelfieWithAI,
   type SelfieAnalysisResult,
@@ -177,7 +177,7 @@ Deno.serve(async (request) => {
 
   let workerDispatch = { accepted: false, mode: "not-configured" };
 
-  if (openrouterConfigured) {
+  if (isOpenrouterConfigured()) {
     try {
       const { base64, mimeType } = await downloadImageAsBase64(
         adminClient,

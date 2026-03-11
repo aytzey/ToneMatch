@@ -501,7 +501,10 @@ def run_analysis(job: AnalyzeJobRequest, image_bytes: bytes | None = None) -> An
     signals = extract_image_signals(image_bytes) if image_bytes else fallback_signals()
     undertone = classify_undertone(signals)
     contrast_label = classify_contrast(signals)
-    profile = PROFILE_LIBRARY[(undertone, contrast_label)]
+    profile = PROFILE_LIBRARY.get(
+        (undertone, contrast_label),
+        PROFILE_LIBRARY[("Warm Neutral", "Medium Contrast")],  # safe fallback
+    )
 
     # Undertone confidence: based on distance from classification boundaries
     hue_dist_warm = max(0.0, signals.hue_angle - 57.0) / 20.0

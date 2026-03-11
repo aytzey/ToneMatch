@@ -136,18 +136,24 @@ export async function analyzeSelfie(imageUri: string): Promise<SelfieAnalysisRes
     { type: "image_url", image_url: { url: dataUrl } },
   ]);
 
-  const parsed = JSON.parse(rawJson);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let parsed: any;
+  try {
+    parsed = JSON.parse(rawJson);
+  } catch {
+    throw new Error("OpenRouter returned invalid JSON for selfie analysis.");
+  }
 
   return {
     undertone: parsed.undertone ?? "Warm",
     contrast: parsed.contrast ?? "Medium Contrast",
-    confidence: parsed.confidence ?? 0.85,
+    confidence: Number(parsed.confidence ?? 0.85),
     seasonalType: parsed.seasonalType ?? "Autumn",
     summaryTitle: parsed.summaryTitle ?? `${parsed.undertone} / ${parsed.contrast}`,
     summaryDescription: parsed.summaryDescription ?? "",
-    coreColors: parsed.coreColors ?? ["Rust", "Olive", "Forest Green"],
-    avoidColors: parsed.avoidColors ?? ["Cool Blue", "Lavender"],
-    focusItems: parsed.focusItems ?? [],
+    coreColors: Array.isArray(parsed.coreColors) ? parsed.coreColors : ["Rust", "Olive", "Forest Green"],
+    avoidColors: Array.isArray(parsed.avoidColors) ? parsed.avoidColors : ["Cool Blue", "Lavender"],
+    focusItems: Array.isArray(parsed.focusItems) ? parsed.focusItems : [],
   };
 }
 
@@ -264,7 +270,13 @@ export async function analyzeClothing(
     { type: "image_url", image_url: { url: dataUrl } },
   ]);
 
-  const parsed = JSON.parse(rawJson);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let parsed: any;
+  try {
+    parsed = JSON.parse(rawJson);
+  } catch {
+    throw new Error("OpenRouter returned invalid JSON for clothing analysis.");
+  }
 
   return {
     label: parsed.label ?? "Analyzed",
