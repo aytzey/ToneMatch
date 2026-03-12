@@ -5,6 +5,9 @@ const fontFamilyMedium = "Manrope_500Medium";
 const fontFamilyRegular = "Manrope_400Regular";
 const fontFamilySemiBold = "Manrope_600SemiBold";
 const fontFamilyExtraBold = "Manrope_800ExtraBold";
+const displayFamily = "CormorantGaramond_600SemiBold";
+const displayFamilyMedium = "CormorantGaramond_500Medium";
+const displayFamilyItalic = "CormorantGaramond_600SemiBold_Italic";
 
 export const type: Record<string, TextStyle> = {
   hero: {
@@ -28,6 +31,34 @@ export const type: Record<string, TextStyle> = {
     fontWeight: "700",
     letterSpacing: -0.2,
   },
+  displayHero: {
+    fontSize: 38,
+    lineHeight: 40,
+    fontFamily: displayFamily,
+    fontWeight: "600",
+    letterSpacing: -0.8,
+  },
+  displayTitle: {
+    fontSize: 30,
+    lineHeight: 34,
+    fontFamily: displayFamily,
+    fontWeight: "600",
+    letterSpacing: -0.6,
+  },
+  displaySection: {
+    fontSize: 24,
+    lineHeight: 28,
+    fontFamily: displayFamilyMedium,
+    fontWeight: "500",
+    letterSpacing: -0.4,
+  },
+  displayItalic: {
+    fontSize: 30,
+    lineHeight: 34,
+    fontFamily: displayFamilyItalic,
+    fontWeight: "600",
+    letterSpacing: -0.6,
+  },
   body: {
     fontSize: 15,
     lineHeight: 22,
@@ -47,11 +78,11 @@ export const type: Record<string, TextStyle> = {
     fontWeight: "500",
   },
   overline: {
-    fontSize: 10,
-    lineHeight: 14,
+    fontSize: 12,
+    lineHeight: 16,
     fontFamily: fontFamilyExtraBold,
     fontWeight: "800",
-    letterSpacing: 2,
+    letterSpacing: 1.8,
     textTransform: "uppercase",
   },
   sectionHeader: {

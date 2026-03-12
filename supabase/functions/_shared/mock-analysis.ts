@@ -80,6 +80,48 @@ function pickProfile(seed: string) {
   return profiles[code % profiles.length];
 }
 
+function buildAnalysisSnapshot(
+  profile: ReturnType<typeof pickProfile>,
+  sessionId: string,
+) {
+  const confidence = Number(
+    (((profile.undertone_confidence ?? 0) + (profile.contrast_confidence ?? 0)) / 2).toFixed(2),
+  );
+
+  return {
+    undertone: profile.undertone_label,
+    contrast: profile.contrast_label,
+    confidence,
+    summary: {
+      title: `${profile.undertone_label} / ${profile.contrast_label}`,
+      description: profile.fit_explanation,
+    },
+    focusItems: [
+      {
+        title: "Latest analysis result",
+        copy: profile.fit_explanation,
+      },
+      {
+        title: "Saved palette",
+        copy: `Core colors: ${profile.palette_json.core.slice(0, 3).join(", ")}. Avoid: ${profile.avoid_colors_json.slice(0, 3).join(", ")}.`,
+      },
+    ],
+    palette: {
+      core: profile.palette_json.core,
+      avoid: profile.avoid_colors_json,
+    },
+    recommendations: profile.products.map((item) => ({
+      title: item.title,
+      category: item.category,
+      reason: item.reason,
+      score: item.score,
+      price: item.price_label,
+    })),
+    capturedAt: new Date().toISOString(),
+    sourceSessionId: sessionId,
+  };
+}
+
 export async function persistMockAnalysis(
   adminClient: SupabaseClient,
   sessionId: string,
@@ -87,6 +129,7 @@ export async function persistMockAnalysis(
   assetId: string,
 ) {
   const profile = pickProfile(sessionId);
+  const analysisSnapshot = buildAnalysisSnapshot(profile, sessionId);
 
   await adminClient
     .from("analysis_sessions")
@@ -95,6 +138,7 @@ export async function persistMockAnalysis(
       quality_score: 0.88,
       light_score: 0.82,
       confidence_score: 0.86,
+      result_json: analysisSnapshot,
     })
     .eq("id", sessionId);
 
@@ -109,6 +153,7 @@ export async function persistMockAnalysis(
       palette_json: profile.palette_json,
       avoid_colors_json: profile.avoid_colors_json,
       fit_explanation: profile.fit_explanation,
+      analysis_snapshot_json: analysisSnapshot,
       source_analysis_session_id: sessionId,
     }, { onConflict: "user_id" });
 
@@ -118,6 +163,10 @@ export async function persistMockAnalysis(
       user_id: userId,
       analysis_session_id: sessionId,
       context: "home",
+      metadata: {
+        source: "supabase-function-fallback",
+        analysis_snapshot: analysisSnapshot,
+      },
     })
     .select("id")
     .single();
@@ -134,7 +183,12 @@ export async function persistMockAnalysis(
           score: item.score,
           price_label: item.price_label,
           merchant_url: `https://example.com/products/${assetId}/${index}`,
-          metadata: { source: "supabase-function-fallback" },
+          metadata: {
+            source: "supabase-function-fallback",
+            undertone: analysisSnapshot.undertone,
+            contrast: analysisSnapshot.contrast,
+            paletteCore: analysisSnapshot.palette.core.slice(0, 4),
+          },
         })),
       );
   }

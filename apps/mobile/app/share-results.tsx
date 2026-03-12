@@ -1,8 +1,12 @@
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, Share, StyleSheet, Text, View } from "react-native";
 import { useRouter } from "expo-router";
 import { MaterialIcons } from "@expo/vector-icons";
 
 import { Screen } from "@/src/components/screen";
+import { SurfaceCard } from "@/src/components/surface-card";
+import { useStyleProfile } from "@/src/features/style/use-style-profile";
+import { hexForColorName } from "@/src/lib/color-name-hex";
+import { buildEditorialStory } from "@/src/lib/style-story";
 import { palette } from "@/src/theme/palette";
 import { spacing, radius } from "@/src/theme/spacing";
 import { type } from "@/src/theme/type";
@@ -11,30 +15,34 @@ import { type } from "@/src/theme/type";
 /*  Data                                                               */
 /* ------------------------------------------------------------------ */
 
-const SWATCHES = ["#b87332", "#cc4e3c", "#355e3b", "#cc7722", "#5d2e1f"];
-
-const ATTRIBUTE_PILLS: {
-  icon: keyof typeof MaterialIcons.glyphMap;
-  label: string;
-}[] = [
-  { icon: "device-thermostat", label: "Warm Undertone" },
-  { icon: "circle", label: "High Contrast" },
-  { icon: "water-drop", label: "Rich Saturation" },
-];
-
-/* ------------------------------------------------------------------ */
-/*  Share Results Screen                                               */
-/* ------------------------------------------------------------------ */
-
 export default function ShareResultsScreen() {
   const router = useRouter();
+  const { data: profile } = useStyleProfile();
+  const story = buildEditorialStory(profile);
+  const swatches = profile?.palette.core.slice(0, 5).map((color) => hexForColorName(color)) ?? [
+    palette.primary,
+    palette.red,
+    palette.green,
+    palette.swatch2,
+    palette.swatch1,
+  ];
+  const attributePills: {
+    icon: keyof typeof MaterialIcons.glyphMap;
+    label: string;
+  }[] = [
+    { icon: "device-thermostat", label: story.undertoneLabel },
+    { icon: "circle", label: story.contrastLabel },
+    { icon: "water-drop", label: story.essenceTitle },
+  ];
 
   const handleClose = () => {
     router.back();
   };
 
-  const handleShare = () => {
-    // Share logic would go here
+  const handleShare = async () => {
+    await Share.share({
+      message: `ToneMatch result: ${story.seasonTitle}. ${story.tagline} Leading colors: ${story.paletteLead.join(", ")}.`,
+    });
   };
 
   return (
@@ -46,10 +54,20 @@ export default function ShareResultsScreen() {
           <Text style={styles.logoText}>TONEMATCH</Text>
         </View>
         <View style={styles.topBarActions}>
-          <Pressable onPress={handleShare} hitSlop={8}>
+          <Pressable
+            accessibilityLabel="Share palette summary"
+            accessibilityRole="button"
+            onPress={handleShare}
+            style={styles.actionButton}
+          >
             <MaterialIcons name="share" size={22} color={palette.ink} />
           </Pressable>
-          <Pressable onPress={handleClose} hitSlop={8}>
+          <Pressable
+            accessibilityLabel="Close share screen"
+            accessibilityRole="button"
+            onPress={handleClose}
+            style={styles.actionButton}
+          >
             <MaterialIcons name="close" size={22} color={palette.ink} />
           </Pressable>
         </View>
@@ -58,20 +76,29 @@ export default function ShareResultsScreen() {
       {/* ---- Portrait Section ---- */}
       <View style={styles.portraitWrapper}>
         <View style={styles.portrait}>
-          {/* Placeholder warm bg */}
-          <Image source={require("../assets/images/portrait_warm.png")} style={styles.portraitPlaceholder} resizeMode="cover" />
+          <View style={styles.portraitGradient}>
+            <View style={[styles.portraitGlow, { backgroundColor: swatches[0] }]} />
+            <View style={[styles.portraitGlowSecondary, { backgroundColor: swatches[1] ?? swatches[0] }]} />
+          </View>
+          <View style={styles.portraitSwatchStack}>
+            {swatches.slice(0, 4).map((color) => (
+              <View key={color} style={[styles.portraitSwatch, { backgroundColor: color }]} />
+            ))}
+          </View>
 
           {/* Match Score Badge */}
           <View style={styles.matchBadge}>
             <Text style={styles.matchBadgeOverline}>MATCH SCORE</Text>
-            <Text style={styles.matchBadgeValue}>98%</Text>
+            <Text style={styles.matchBadgeValue}>
+              {profile ? `${Math.round(profile.confidence * 100)}%` : "Live"}
+            </Text>
           </View>
         </View>
       </View>
 
       {/* ---- Title Area ---- */}
       <View style={styles.titleArea}>
-        <Text style={styles.seasonTitle}>Deep Autumn</Text>
+        <Text style={styles.seasonTitle}>{story.seasonTitle}</Text>
         <View style={styles.titleDivider} />
         <Text style={styles.paletteOverline}>SIGNATURE PALETTE</Text>
       </View>
@@ -79,7 +106,7 @@ export default function ShareResultsScreen() {
       {/* ---- Palette Swatches ---- */}
       <View style={styles.swatchSection}>
         <View style={styles.swatchRow}>
-          {SWATCHES.map((color, index) => (
+          {swatches.map((color, index) => (
             <View
               key={color}
               style={[
@@ -91,13 +118,13 @@ export default function ShareResultsScreen() {
         </View>
         <View style={styles.swatchLabelBlock}>
           <Text style={styles.swatchOverline}>SEASONAL ESSENCE</Text>
-          <Text style={styles.swatchTitle}>Rich & Earthy</Text>
+          <Text style={styles.swatchTitle}>{story.essenceTitle}</Text>
         </View>
       </View>
 
       {/* ---- Attribute Pills ---- */}
       <View style={styles.pillRow}>
-        {ATTRIBUTE_PILLS.map((pill) => (
+        {attributePills.map((pill) => (
           <View key={pill.label} style={styles.attributePill}>
             <MaterialIcons name={pill.icon} size={14} color={palette.primary} />
             <Text style={styles.attributePillLabel}>{pill.label}</Text>
@@ -106,21 +133,24 @@ export default function ShareResultsScreen() {
       </View>
 
       {/* ---- Quote Box ---- */}
-      <View style={styles.quoteBox}>
-        <Text style={styles.quoteText}>
-          "Rich, earthy tones balance your golden warmth and bring out the
-          intensity in your eyes."
-        </Text>
-      </View>
+      <SurfaceCard style={styles.quoteBox} tone="muted">
+        <Text style={styles.quoteText}>{`"${profile?.summary.description || story.tagline}"`}</Text>
+      </SurfaceCard>
 
       {/* ---- Footer CTA ---- */}
       <View style={styles.footer}>
-        {/* Fake QR placeholder */}
-        <View style={styles.qrPlaceholder} />
+        <View style={styles.footerSwatchGrid}>
+          {swatches.slice(0, 4).map((color, index) => (
+            <View
+              key={`${color}-${index}`}
+              style={[styles.footerSwatch, { backgroundColor: color }]}
+            />
+          ))}
+        </View>
         <View style={styles.footerTextBlock}>
-          <Text style={styles.footerOverline}>DISCOVER YOUR COLOR</Text>
+          <Text style={styles.footerOverline}>LATEST RESULT SAVED</Text>
           <View style={styles.footerLinkRow}>
-            <Text style={styles.footerUrl}>tonematch.app</Text>
+            <Text style={styles.footerUrl}>{story.paletteLead.slice(0, 2).join(" / ")}</Text>
             <MaterialIcons
               name="arrow-forward"
               size={16}
@@ -163,7 +193,14 @@ const styles = StyleSheet.create({
   topBarActions: {
     flexDirection: "row",
     alignItems: "center",
-    gap: spacing.md,
+    gap: spacing.sm,
+  },
+  actionButton: {
+    width: 44,
+    height: 44,
+    borderRadius: radius.full,
+    alignItems: "center",
+    justifyContent: "center",
   },
 
   /* Portrait */
@@ -179,20 +216,52 @@ const styles = StyleSheet.create({
     borderColor: palette.surface,
     position: "relative",
     elevation: 8,
-    shadowColor: "#000",
+    shadowColor: palette.ink,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.15,
     shadowRadius: 12,
   },
-  portraitPlaceholder: {
+  portraitGradient: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: "#a67c52",
+    backgroundColor: palette.charcoal,
+  },
+  portraitGlow: {
+    position: "absolute",
+    width: 220,
+    height: 220,
+    borderRadius: 120,
+    top: 36,
+    left: 24,
+    opacity: 0.85,
+  },
+  portraitGlowSecondary: {
+    position: "absolute",
+    width: 180,
+    height: 180,
+    borderRadius: 100,
+    bottom: 20,
+    right: 16,
+    opacity: 0.65,
+  },
+  portraitSwatchStack: {
+    position: "absolute",
+    left: spacing.lg,
+    bottom: spacing.lg,
+    flexDirection: "row",
+    gap: spacing.sm,
+  },
+  portraitSwatch: {
+    width: 44,
+    height: 44,
+    borderRadius: radius.full,
+    borderWidth: 2,
+    borderColor: palette.surfaceTintLine,
   },
   matchBadge: {
     position: "absolute",
     top: spacing.md,
     right: spacing.md,
-    backgroundColor: "rgba(255,255,255,0.70)",
+    backgroundColor: palette.surfaceTintSoft,
     borderRadius: radius.full,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
@@ -200,7 +269,7 @@ const styles = StyleSheet.create({
   },
   matchBadgeOverline: {
     ...type.overline,
-    fontSize: 8,
+    fontSize: 12,
     color: palette.muted,
     letterSpacing: 1.5,
   },
@@ -225,7 +294,7 @@ const styles = StyleSheet.create({
   titleDivider: {
     width: 48,
     height: 1,
-    backgroundColor: "rgba(184,115,50,0.40)",
+    backgroundColor: palette.primaryAccent,
   },
   paletteOverline: {
     ...type.overline,
@@ -258,7 +327,7 @@ const styles = StyleSheet.create({
   },
   swatchOverline: {
     ...type.overline,
-    fontSize: 9,
+    fontSize: 12,
     color: palette.muted,
     letterSpacing: 2,
   },
@@ -289,17 +358,11 @@ const styles = StyleSheet.create({
   attributePillLabel: {
     ...type.caption,
     color: palette.primary,
-    fontSize: 11,
+    fontSize: 12,
   },
 
   /* Quote Box */
   quoteBox: {
-    backgroundColor: palette.primaryMuted,
-    borderRadius: radius.xl,
-    borderWidth: 1,
-    borderColor: "rgba(184,115,50,0.10)",
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.xl,
     marginBottom: spacing.lg,
   },
   quoteText: {
@@ -317,11 +380,17 @@ const styles = StyleSheet.create({
     gap: spacing.md,
     paddingVertical: spacing.md,
   },
-  qrPlaceholder: {
+  footerSwatchGrid: {
     width: 56,
     height: 56,
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 4,
+  },
+  footerSwatch: {
+    width: 26,
+    height: 26,
     borderRadius: radius.sm,
-    backgroundColor: palette.ink,
   },
   footerTextBlock: {
     flex: 1,
@@ -329,7 +398,7 @@ const styles = StyleSheet.create({
   },
   footerOverline: {
     ...type.overline,
-    fontSize: 9,
+    fontSize: 12,
     color: palette.muted,
     letterSpacing: 2,
   },

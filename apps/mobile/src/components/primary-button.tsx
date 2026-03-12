@@ -2,9 +2,10 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { Link, type Href } from "expo-router";
 import { Pressable, StyleSheet, Text } from "react-native";
 
-import { palette } from "@/src/theme/palette";
 import { radius, spacing } from "@/src/theme/spacing";
 import { type } from "@/src/theme/type";
+import { useAppTheme } from "@/src/theme/theme-provider";
+import { useThemedStyles } from "@/src/theme/use-themed-styles";
 
 type PrimaryButtonProps = {
   label: string;
@@ -13,6 +14,8 @@ type PrimaryButtonProps = {
   disabled?: boolean;
   variant?: "primary" | "secondary" | "ghost";
   icon?: keyof typeof MaterialIcons.glyphMap;
+  accessibilityLabel?: string;
+  accessibilityHint?: string;
 };
 
 export function PrimaryButton({
@@ -22,20 +25,37 @@ export function PrimaryButton({
   disabled = false,
   variant = "primary",
   icon,
+  accessibilityLabel,
+  accessibilityHint,
 }: PrimaryButtonProps) {
+  const { palette } = useAppTheme();
+  const styles = useThemedStyles(createStyles);
+
   const inner = (
     <Pressable
+      accessibilityHint={accessibilityHint}
+      accessibilityLabel={accessibilityLabel ?? label}
+      accessibilityRole={href || onPress ? "button" : undefined}
+      accessibilityState={{ disabled }}
       disabled={disabled}
+      hitSlop={4}
       onPress={href ? undefined : onPress}
-      style={({ pressed }) => [
+      style={({ pressed }: { pressed: boolean }) => [
         styles.button,
-        variantStyles[variant],
+        styles[variant],
         pressed && !disabled && styles.pressed,
         disabled && styles.disabled,
       ]}
     >
-      {icon ? <MaterialIcons name={icon} size={20} color={variant === "primary" ? "#fff" : palette.primary} style={{ marginRight: 8 }} /> : null}
-      <Text style={[styles.label, labelStyles[variant]]}>{label}</Text>
+      {icon ? (
+        <MaterialIcons
+          name={icon}
+          size={20}
+          color={variant === "primary" ? palette.onPrimary : palette.primary}
+          style={styles.icon}
+        />
+      ) : null}
+      <Text style={[styles.label, styles[`${variant}Label`]]}>{label}</Text>
     </Pressable>
   );
 
@@ -50,51 +70,51 @@ export function PrimaryButton({
   return inner;
 }
 
-const styles = StyleSheet.create({
-  button: {
-    borderRadius: radius.xl,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: 14,
-    alignItems: "center",
-    justifyContent: "center",
-    flexDirection: "row",
-    minHeight: 52,
-  },
-  pressed: {
-    opacity: 0.85,
-    transform: [{ scale: 0.98 }],
-  },
-  disabled: {
-    opacity: 0.45,
-  },
-  label: {
-    ...type.label,
-    fontSize: 15,
-  },
-});
-
-const variantStyles = StyleSheet.create({
-  primary: {
-    backgroundColor: palette.primary,
-  },
-  secondary: {
-    backgroundColor: palette.surface,
-    borderWidth: 1,
-    borderColor: palette.border,
-  },
-  ghost: {
-    backgroundColor: "transparent",
-  },
-});
-
-const labelStyles = StyleSheet.create({
-  primary: {
-    color: "#ffffff",
-  },
-  secondary: {
-    color: palette.charcoal,
-  },
-  ghost: {
-    color: palette.primary,
-  },
-});
+const createStyles = (
+  palette: import("@/src/theme/palette").ThemePalette,
+) =>
+  StyleSheet.create({
+    button: {
+      borderRadius: radius.xl,
+      paddingHorizontal: spacing.lg,
+      paddingVertical: 14,
+      alignItems: "center",
+      justifyContent: "center",
+      flexDirection: "row",
+      minHeight: 52,
+    },
+    pressed: {
+      opacity: 0.85,
+      transform: [{ scale: 0.98 }],
+    },
+    disabled: {
+      opacity: 0.45,
+    },
+    label: {
+      ...type.label,
+      fontSize: 15,
+    },
+    icon: {
+      marginRight: spacing.sm,
+    },
+    primary: {
+      backgroundColor: palette.primary,
+    },
+    secondary: {
+      backgroundColor: palette.surface,
+      borderWidth: 1,
+      borderColor: palette.border,
+    },
+    ghost: {
+      backgroundColor: "transparent",
+    },
+    primaryLabel: {
+      color: palette.onPrimary,
+    },
+    secondaryLabel: {
+      color: palette.charcoal,
+    },
+    ghostLabel: {
+      color: palette.primary,
+    },
+  });

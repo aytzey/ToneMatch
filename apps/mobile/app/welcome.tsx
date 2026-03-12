@@ -2,23 +2,19 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Link, Redirect, useRouter } from "expo-router";
 import { StyleSheet, Text, View } from "react-native";
 
-import { GlassCard } from "@/src/components/glass-card";
 import { PrimaryButton } from "@/src/components/primary-button";
 import { Screen } from "@/src/components/screen";
+import { SurfaceCard } from "@/src/components/surface-card";
 import { useAuth } from "@/src/features/auth/use-auth";
+import { useAppCopy } from "@/src/providers/copy-provider";
 import { useAppStore } from "@/src/store/app-store";
 import { palette } from "@/src/theme/palette";
 import { spacing } from "@/src/theme/spacing";
 import { type } from "@/src/theme/type";
 
-const highlights = [
-  "Selfie ile kisisel renk paleti olustur",
-  "Sana yakisan kiyafet ve renk onerileri al",
-  "Gardrobunu akillica yonet",
-];
-
 export default function WelcomeScreen() {
   const router = useRouter();
+  const copy = useAppCopy().welcome;
   const { isAuthenticated, isDevSingleUserMode, ready } = useAuth();
   const completeOnboarding = useAppStore((state) => state.completeOnboarding);
   const enablePreviewMode = useAppStore((state) => state.enablePreviewMode);
@@ -41,38 +37,39 @@ export default function WelcomeScreen() {
   return (
     <Screen scrollable contentContainerStyle={styles.content}>
       <LinearGradient colors={[palette.canvas, palette.surface, palette.accentSoft]} style={styles.hero}>
-        <Text style={styles.eyebrow}>ToneMatch</Text>
-        <Text style={styles.title}>En iyi renklerini bul. Sonra gercek kiyafet kararina donustur.</Text>
-        <Text style={styles.copy}>
-          Selfie cekerek cilt alt tonunu analiz et, sana en cok yakisan renkleri kesfet ve gardrobunu buna gore
-          sekillendir.
-        </Text>
+        <Text style={styles.eyebrow}>{copy.eyebrow}</Text>
+        <Text style={styles.title}>{copy.title}</Text>
+        <Text style={styles.copy}>{copy.body}</Text>
       </LinearGradient>
 
-      <GlassCard>
-        <Text style={styles.sectionTitle}>ToneMatch ile neler yapabilirsin</Text>
+      <SurfaceCard>
+        <Text style={styles.sectionTitle}>{copy.highlightsTitle}</Text>
         <View style={styles.stack}>
-          {highlights.map((item) => (
+          {copy.highlights.map((item) => (
             <View key={item} style={styles.row}>
               <View style={styles.dot} />
               <Text style={styles.rowText}>{item}</Text>
             </View>
           ))}
         </View>
-      </GlassCard>
+      </SurfaceCard>
 
-      <GlassCard tone="dark">
-        <Text style={styles.sectionTitleDark}>Nasil calisir</Text>
-        <Text style={styles.copyDark}>
-          Selfie cek, renk profilini olustur, sana ozel kombin onerilerini kesfet. Her adim mahremiyetini koruyarak
-          calisiyor.
-        </Text>
-      </GlassCard>
+      <SurfaceCard tone="dark">
+        <Text style={styles.sectionTitleDark}>{copy.howItWorksTitle}</Text>
+        <Text style={styles.copyDark}>{copy.howItWorksBody}</Text>
+      </SurfaceCard>
 
-      <PrimaryButton label="Hesabinla devam et" onPress={handleEnterApp} />
-      <PrimaryButton label="Deneme modu" onPress={handlePreview} variant="secondary" />
+      <PrimaryButton
+        label={copy.continueWithAccount}
+        onPress={handleEnterApp}
+      />
+      <PrimaryButton
+        label={copy.previewMode}
+        onPress={handlePreview}
+        variant="secondary"
+      />
       <Link href="/(tabs)/scan" style={styles.link}>
-        Hemen kesfetmeye basla
+        {copy.startExploring}
       </Link>
     </Screen>
   );
@@ -137,8 +134,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   link: {
-    ...type.label,
+    fontSize: 14,
+    lineHeight: 18,
+    fontWeight: "600" as const,
     color: palette.primary,
-    textAlign: "center",
+    textAlign: "center" as const,
   },
 });

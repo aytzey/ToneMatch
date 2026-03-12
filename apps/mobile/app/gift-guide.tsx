@@ -1,37 +1,19 @@
 import { useState } from "react";
-import {
-  Image,
-  type ImageSourcePropType,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
-import { useRouter } from "expo-router";
+import { Image, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from "react-native";
+import { router } from "expo-router";
 import { MaterialIcons } from "@expo/vector-icons";
 
+import { GuideHeader, MetaPill } from "@/src/components/editorial-guide-primitives";
+import { PrimaryButton } from "@/src/components/primary-button";
 import { Screen } from "@/src/components/screen";
+import { SurfaceCard } from "@/src/components/surface-card";
+import { useCatalogFeed } from "@/src/features/catalog/use-catalog-feed";
+import { useStyleProfile } from "@/src/features/style/use-style-profile";
+import { hexForColorName } from "@/src/lib/color-name-hex";
+import { buildEditorialStory } from "@/src/lib/style-story";
 import { palette } from "@/src/theme/palette";
 import { radius, spacing } from "@/src/theme/spacing";
 import { type } from "@/src/theme/type";
-
-/* ------------------------------------------------------------------ */
-/*  Data                                                               */
-/* ------------------------------------------------------------------ */
-
-type Tone = {
-  label: string;
-  id: string;
-};
-
-const tones: Tone[] = [
-  { label: "Deep Autumn", id: "deep-autumn" },
-  { label: "Cool Winter", id: "cool-winter" },
-  { label: "Warm Spring", id: "warm-spring" },
-  { label: "Light Summer", id: "light-summer" },
-];
 
 type GiftCard = {
   id: string;
@@ -39,281 +21,362 @@ type GiftCard = {
   price: string;
   tone: string;
   imageBg: string;
-  image: ImageSourcePropType;
-  quote: string;
-  borderAccent: string;
+  image: number;
+  note: string;
+  accent: string;
 };
 
-const giftCards: GiftCard[] = [
-  {
-    id: "silk-gold",
-    title: "The Silk & Gold Set",
-    price: "$245.00",
-    tone: "Deep Autumn",
-    imageBg: "#c9a882",
-    image: require("@/assets/images/gift_silk_gold.png"),
-    quote:
-      "Warm metallics and silk textures mirror the richness of Deep Autumn's natural warmth, creating an effortlessly luxurious impression.",
-    borderAccent: palette.primary,
-  },
-  {
-    id: "cashmere-silver",
-    title: "The Cashmere & Silver Set",
-    price: "$380.00",
-    tone: "Cool Winter",
-    imageBg: "#8d8d8d",
-    image: require("@/assets/images/gift_cashmere_silver.png"),
-    quote:
-      "Cool-toned silvers and plush cashmere reflect Cool Winter's clarity and depth, offering understated sophistication.",
-    borderAccent: palette.clay,
-  },
-];
-
-/* ------------------------------------------------------------------ */
-/*  Gift Guide Screen                                                  */
-/* ------------------------------------------------------------------ */
+const GIFT_IMAGES = [
+  require("@/assets/images/gift_hero.png"),
+  require("@/assets/images/gift_silk_gold.png"),
+  require("@/assets/images/gift_cashmere_silver.png"),
+] as const;
 
 export default function GiftGuideScreen() {
-  const router = useRouter();
-  const [selectedTone, setSelectedTone] = useState("deep-autumn");
+  const { width } = useWindowDimensions();
+  const isWide = width >= 720;
+  const { data: profile } = useStyleProfile();
+  const { data: feed } = useCatalogFeed();
+  const story = buildEditorialStory(profile);
+  const [selectedTone, setSelectedTone] = useState("analysis-match");
+  const [savedIds, setSavedIds] = useState<string[]>([]);
+
+  const tones = [
+    { id: "analysis-match", label: story.seasonTitle },
+    { id: "near-face", label: "Near face" },
+    { id: "evening", label: "Evening gifts" },
+  ];
+
+  const baseCards = (feed ?? []).slice(0, 4);
+  const giftCards: GiftCard[] =
+    baseCards.length > 0
+      ? baseCards.map((item, index) => ({
+          id: item.id,
+          title: item.title,
+          price: item.price || "$0",
+          tone: story.seasonTitle,
+          imageBg: hexForColorName(
+            profile?.palette.core[index % (profile?.palette.core.length || 1)] ?? "Petrol",
+          ),
+          image: GIFT_IMAGES[index % GIFT_IMAGES.length],
+          note:
+            item.reason ||
+            `Chosen because ${story.paletteLead.slice(0, 2).join(" and ")} are carrying your current result.`,
+          accent: hexForColorName(story.paletteLead[index % story.paletteLead.length] ?? "Petrol"),
+        }))
+      : [
+          {
+            id: "gift-fallback-1",
+            title: "Warm silk scarf",
+            price: "$84",
+            tone: story.seasonTitle,
+            imageBg: hexForColorName(story.paletteLead[0] ?? "Petrol"),
+            image: GIFT_IMAGES[1],
+            note: `A reliable near-face gift when you want the palette to feel intentional instead of generic.`,
+            accent: hexForColorName(story.paletteLead[0] ?? "Petrol"),
+          },
+          {
+            id: "gift-fallback-2",
+            title: "Soft evening knit",
+            price: "$118",
+            tone: story.seasonTitle,
+            imageBg: hexForColorName(story.paletteLead[1] ?? "Olive"),
+            image: GIFT_IMAGES[2],
+            note: `A grounded gift option for colder months and lower-effort dressing days.`,
+            accent: hexForColorName(story.paletteLead[1] ?? "Olive"),
+          },
+        ];
+
+  const filteredCards = giftCards.filter((card, index) => {
+    if (selectedTone === "near-face") {
+      return index % 2 === 0;
+    }
+
+    if (selectedTone === "evening") {
+      return index % 2 === 1;
+    }
+
+    return true;
+  });
 
   return (
     <Screen scrollable contentContainerStyle={styles.content}>
-      {/* ---- Header ---- */}
-      <View style={styles.header}>
-        <Pressable style={styles.headerIcon} onPress={() => router.back()}>
-          <MaterialIcons name="menu" size={24} color={palette.ink} />
-        </Pressable>
-        <Text style={styles.headerTitle}>TONEMATCH</Text>
-        <Pressable style={styles.headerIcon}>
-          <MaterialIcons
-            name="shopping-bag"
-            size={24}
-            color={palette.ink}
-          />
-        </Pressable>
-      </View>
+      <GuideHeader title="GIFT EDIT" onBack={() => router.back()} />
 
-      {/* ---- Hero Section ---- */}
-      <View style={styles.heroContainer}>
-        <Image source={require("@/assets/images/gift_hero.png")} style={styles.heroPlaceholder} resizeMode="cover" />
-        <LinearGradient
-          colors={["transparent", "rgba(0,0,0,0.55)", "rgba(0,0,0,0.80)"]}
-          locations={[0.3, 0.7, 1]}
-          style={styles.heroGradient}
-        />
-        <View style={styles.heroTextOverlay}>
-          <Text style={styles.heroTitleLight}>
-            The Art of{" "}
-            <Text style={styles.heroTitleBold}>Giving</Text>
+      <View style={[styles.giftLead, isWide && styles.giftLeadWide]}>
+        <SurfaceCard tone="muted" style={styles.giftManifesto}>
+          <Text style={styles.introOverline}>Gift with palette logic</Text>
+          <Text style={styles.introTitle}>Choose pieces that feel personal on first wear.</Text>
+          <Text style={styles.introBody}>
+            This edit filters gifts through the same undertone and contrast logic used by your analysis, so the result feels considered instead of decorative.
           </Text>
-          <Text style={styles.heroDescription}>
-            Choose gifts that harmonize with their natural palette and elevate
-            their everyday elegance.
-          </Text>
-        </View>
-      </View>
-
-      {/* ---- Tone Selection ---- */}
-      <View style={styles.toneSection}>
-        <View style={styles.toneSectionHeader}>
-          <Text style={styles.toneSectionLabel}>Shop by Tone</Text>
-          <Pressable>
-            <Text style={styles.toneViewAll}>View All Palette Types</Text>
-          </Pressable>
-        </View>
-
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.toneChipRow}
-        >
-          {tones.map((tone) => {
-            const isSelected = tone.id === selectedTone;
-            return (
-              <Pressable
-                key={tone.id}
-                style={[
-                  styles.toneChip,
-                  isSelected ? styles.toneChipSelected : styles.toneChipDefault,
-                ]}
-                onPress={() => setSelectedTone(tone.id)}
-              >
-                <Text
-                  style={[
-                    styles.toneChipText,
-                    isSelected
-                      ? styles.toneChipTextSelected
-                      : styles.toneChipTextDefault,
-                  ]}
-                >
-                  {tone.label}
-                </Text>
-              </Pressable>
-            );
-          })}
-        </ScrollView>
-      </View>
-
-      {/* ---- Gift Cards ---- */}
-      <View style={styles.cardList}>
-        {giftCards.map((card) => (
-          <View key={card.id} style={styles.card}>
-            {/* Image area */}
-            <View style={styles.cardImageContainer}>
-              <Image
-                source={card.image}
-                style={[
-                  styles.cardImagePlaceholder,
-                  { backgroundColor: card.imageBg },
-                ]}
-                resizeMode="cover"
-              />
-              <View style={styles.cardBadge}>
-                <Text style={styles.cardBadgeText}>
-                  Recommended for {card.tone}
-                </Text>
-              </View>
-            </View>
-
-            {/* Card info */}
-            <View style={styles.cardInfo}>
-              <View style={styles.cardInfoRow}>
-                <View style={styles.cardInfoText}>
-                  <Text style={styles.cardTitle}>{card.title}</Text>
-                  <Text style={styles.cardPrice}>{card.price}</Text>
-                </View>
-                <Pressable style={styles.heartButton}>
-                  <MaterialIcons
-                    name="favorite-border"
-                    size={22}
-                    color={palette.muted}
-                  />
-                </Pressable>
-              </View>
-
-              {/* Why it works */}
-              <View
-                style={[
-                  styles.whyBox,
-                  { borderLeftColor: card.borderAccent },
-                ]}
-              >
-                <Text style={styles.whyLabel}>Why it works</Text>
-                <Text style={styles.whyQuote}>{card.quote}</Text>
-              </View>
-            </View>
+          <View style={styles.metaRow}>
+            <MetaPill label={story.seasonTitle} />
+            <MetaPill label={story.undertoneLabel} tone="dark" />
+            <MetaPill label={story.contrastLabel} />
           </View>
-        ))}
+          <View style={styles.introNoteCard}>
+            <Text style={styles.introNoteLabel}>Best use</Text>
+            <Text style={styles.introNoteText}>
+              Focus on scarves, knits, jewelry, and small leather goods that repeat the palette without feeling too literal.
+            </Text>
+          </View>
+        </SurfaceCard>
+
+        <View style={styles.giftPreviewColumn}>
+          <View style={styles.introImageCard}>
+            <Image source={GIFT_IMAGES[0]} style={styles.introImage} resizeMode="cover" />
+          </View>
+          <View style={styles.giftPaletteStrip}>
+            {story.paletteLead.slice(0, 3).map((tone) => (
+              <View key={tone} style={styles.giftPaletteTile}>
+                <View
+                  style={[
+                    styles.giftPaletteSwatch,
+                    { backgroundColor: hexForColorName(tone) },
+                  ]}
+                />
+                <Text style={styles.giftPaletteLabel}>{tone}</Text>
+              </View>
+            ))}
+          </View>
+        </View>
+      </View>
+
+      <View style={styles.sectionHeader}>
+        <Text style={styles.sectionTitle}>Gift filters</Text>
+        <Text style={styles.sectionTag}>Touch-friendly</Text>
+      </View>
+
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chipRow}>
+        {tones.map((tone) => {
+          const isSelected = tone.id === selectedTone;
+
+          return (
+            <Pressable
+              accessibilityLabel={tone.label}
+              accessibilityRole="button"
+              accessibilityState={{ selected: isSelected }}
+              key={tone.id}
+              onPress={() => setSelectedTone(tone.id)}
+              style={[
+                styles.toneChip,
+                isSelected ? styles.toneChipSelected : styles.toneChipDefault,
+              ]}
+            >
+              <Text
+                style={[
+                  styles.toneChipText,
+                  isSelected ? styles.toneChipTextSelected : styles.toneChipTextDefault,
+                ]}
+              >
+                {tone.label}
+              </Text>
+            </Pressable>
+          );
+        })}
+      </ScrollView>
+
+      <View style={styles.cardColumn}>
+        {filteredCards.map((card) => {
+          const isSaved = savedIds.includes(card.id);
+
+          return (
+            <SurfaceCard key={card.id} tone="default">
+              <View style={[styles.giftCard, isWide && styles.giftCardWide]}>
+                <View style={[styles.giftImageWrap, { backgroundColor: card.imageBg }]}>
+                  <Image source={card.image} style={styles.giftImage} resizeMode="cover" />
+                </View>
+
+                <View style={styles.giftContent}>
+                  <View style={styles.giftHeader}>
+                    <View style={styles.giftHeaderCopy}>
+                      <Text style={styles.giftEyebrow}>Recommended for {card.tone}</Text>
+                      <Text style={styles.giftTitle}>{card.title}</Text>
+                      <Text style={styles.giftPrice}>{card.price}</Text>
+                    </View>
+                    <Pressable
+                      accessibilityLabel={isSaved ? `Remove ${card.title} from saved gifts` : `Save ${card.title}`}
+                      accessibilityRole="button"
+                      accessibilityState={{ selected: isSaved }}
+                      onPress={() =>
+                        setSavedIds((current) =>
+                          current.includes(card.id)
+                            ? current.filter((id) => id !== card.id)
+                            : [...current, card.id],
+                        )
+                      }
+                      style={styles.saveButton}
+                    >
+                      <MaterialIcons
+                        name={isSaved ? "favorite" : "favorite-border"}
+                        size={22}
+                        color={isSaved ? palette.primary : palette.charcoal}
+                      />
+                    </Pressable>
+                  </View>
+
+                  <View style={[styles.noteBox, { borderLeftColor: card.accent }]}>
+                    <Text style={styles.noteLabel}>Why it works</Text>
+                    <Text style={styles.noteText}>{card.note}</Text>
+                  </View>
+                </View>
+              </View>
+            </SurfaceCard>
+          );
+        })}
+      </View>
+
+      <View style={[styles.buttonGroup, isWide && styles.buttonGroupWide]}>
+        <PrimaryButton label="Shop matched pieces" icon="shopping-bag" href="/(tabs)/discover" />
+        <PrimaryButton
+          label="Open wardrobe"
+          icon="checkroom"
+          variant="secondary"
+          href="/(tabs)/wardrobe"
+        />
       </View>
     </Screen>
   );
 }
 
-/* ------------------------------------------------------------------ */
-/*  Styles                                                             */
-/* ------------------------------------------------------------------ */
-
 const styles = StyleSheet.create({
   content: {
-    paddingBottom: 120,
+    paddingHorizontal: spacing.lg,
+    paddingBottom: spacing.xxl,
+    gap: spacing.lg,
   },
-
-  /* Header */
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: spacing.md,
-    paddingTop: spacing.md,
-    paddingBottom: spacing.sm,
-  },
-  headerIcon: {
-    width: 40,
-    height: 40,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  headerTitle: {
-    fontSize: 15,
-    fontWeight: "800",
-    letterSpacing: 4,
-    textTransform: "uppercase",
-    color: palette.ink,
-    textAlign: "center",
-    flex: 1,
-  },
-
-  /* Hero */
-  heroContainer: {
-    minHeight: 320,
-    position: "relative",
-    overflow: "hidden",
-  },
-  heroPlaceholder: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "#a67c52",
-  },
-  heroGradient: {
-    ...StyleSheet.absoluteFillObject,
-  },
-  heroTextOverlay: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    padding: spacing.lg,
-    gap: spacing.sm,
-  },
-  heroTitleLight: {
-    fontSize: 34,
-    lineHeight: 40,
-    fontWeight: "300",
-    color: "#ffffff",
-  },
-  heroTitleBold: {
-    fontWeight: "700",
-    fontStyle: "italic",
-  },
-  heroDescription: {
-    ...type.body,
-    color: "rgba(255,255,255,0.90)",
-    lineHeight: 22,
-  },
-
-  /* Tone Selection */
-  toneSection: {
-    paddingTop: spacing.lg,
+  giftLead: {
     gap: spacing.md,
   },
-  toneSectionHeader: {
+  giftLeadWide: {
+    alignItems: "stretch",
     flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: spacing.lg,
   },
-  toneSectionLabel: {
-    ...type.h3,
-    color: palette.ink,
+  giftManifesto: {
+    flex: 1.1,
+    gap: spacing.sm,
   },
-  toneViewAll: {
-    ...type.caption,
+  giftPreviewColumn: {
+    flex: 0.9,
+    gap: spacing.md,
+  },
+  introShell: {
+    gap: spacing.lg,
+  },
+  introShellWide: {
+    alignItems: "stretch",
+    flexDirection: "row",
+  },
+  introCopy: {
+    flex: 1.1,
+    gap: spacing.sm,
+  },
+  introOverline: {
+    ...type.overline,
     color: palette.primary,
   },
-  toneChipRow: {
-    paddingHorizontal: spacing.lg,
+  introTitle: {
+    ...type.displayHero,
+    color: palette.charcoal,
+  },
+  introBody: {
+    ...type.body,
+    color: palette.charcoal,
+    fontSize: 16,
+  },
+  metaRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: spacing.sm,
+    marginTop: spacing.sm,
+  },
+  introVisualColumn: {
+    flex: 0.9,
+    gap: spacing.md,
+  },
+  introImageCard: {
+    minHeight: 220,
+    borderRadius: radius.xl,
+    overflow: "hidden",
+  },
+  introImage: {
+    ...StyleSheet.absoluteFillObject,
+    width: undefined,
+    height: undefined,
+  },
+  introNoteCard: {
+    backgroundColor: palette.surface,
+    borderColor: palette.border,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    gap: spacing.xs,
+    padding: spacing.md,
+  },
+  introNoteLabel: {
+    ...type.sectionHeader,
+    color: palette.primary,
+  },
+  introNoteText: {
+    ...type.body,
+    color: palette.charcoal,
+  },
+  giftPaletteStrip: {
+    backgroundColor: palette.surface,
+    borderColor: palette.border,
+    borderRadius: radius.xl,
+    borderWidth: 1,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    gap: spacing.sm,
+    padding: spacing.md,
+  },
+  giftPaletteTile: {
+    alignItems: "center",
+    flex: 1,
+    gap: spacing.xs,
+  },
+  giftPaletteSwatch: {
+    width: "100%",
+    aspectRatio: 1,
+    borderRadius: radius.lg,
+  },
+  giftPaletteLabel: {
+    ...type.caption,
+    color: palette.charcoal,
+    textAlign: "center",
+  },
+  sectionHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "baseline",
+  },
+  sectionTitle: {
+    ...type.displaySection,
+    color: palette.charcoal,
+  },
+  sectionTag: {
+    ...type.caption,
+    color: palette.primary,
+    letterSpacing: 1,
+    textTransform: "uppercase",
+  },
+  chipRow: {
+    flexDirection: "row",
     gap: spacing.sm,
   },
   toneChip: {
+    borderRadius: radius.full,
+    minHeight: 44,
+    justifyContent: "center",
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
-    borderRadius: radius.full,
   },
   toneChipSelected: {
     backgroundColor: palette.primary,
   },
   toneChipDefault: {
-    backgroundColor: palette.primarySoft,
+    backgroundColor: palette.surface,
     borderWidth: 1,
     borderColor: palette.border,
   },
@@ -322,94 +385,84 @@ const styles = StyleSheet.create({
     fontSize: 13,
   },
   toneChipTextSelected: {
-    color: "#ffffff",
+    color: palette.onPrimary,
   },
   toneChipTextDefault: {
     color: palette.charcoal,
   },
-
-  /* Card list */
-  cardList: {
-    paddingHorizontal: spacing.md,
-    paddingTop: spacing.lg,
-    gap: spacing.xl,
+  cardColumn: {
+    gap: spacing.lg,
   },
-
-  /* Individual card */
-  card: {
-    gap: spacing.md,
+  giftCard: {
+    gap: spacing.lg,
   },
-  cardImageContainer: {
-    aspectRatio: 4 / 5,
+  giftCardWide: {
+    flexDirection: "row",
+  },
+  giftImageWrap: {
+    minHeight: 220,
     borderRadius: radius.xl,
     overflow: "hidden",
     position: "relative",
   },
-  cardImagePlaceholder: {
+  giftImage: {
     ...StyleSheet.absoluteFillObject,
+    width: undefined,
+    height: undefined,
   },
-  cardBadge: {
-    position: "absolute",
-    top: spacing.md,
-    left: spacing.md,
-    backgroundColor: "rgba(255,255,255,0.90)",
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-    borderRadius: radius.sm,
-  },
-  cardBadgeText: {
-    ...type.caption,
-    fontSize: 11,
-    color: palette.charcoal,
-  },
-
-  /* Card info */
-  cardInfo: {
+  giftContent: {
+    flex: 1,
     gap: spacing.md,
   },
-  cardInfoRow: {
+  giftHeader: {
     flexDirection: "row",
-    alignItems: "flex-start",
     justifyContent: "space-between",
+    gap: spacing.md,
   },
-  cardInfoText: {
+  giftHeaderCopy: {
     flex: 1,
     gap: spacing.xs,
   },
-  cardTitle: {
-    ...type.h3,
-    color: palette.ink,
+  giftEyebrow: {
+    ...type.overline,
+    color: palette.primary,
   },
-  cardPrice: {
+  giftTitle: {
+    ...type.displayTitle,
+    color: palette.charcoal,
+  },
+  giftPrice: {
     ...type.label,
     color: palette.primary,
   },
-  heartButton: {
-    width: 40,
-    height: 40,
+  saveButton: {
+    width: 44,
+    height: 44,
+    borderRadius: radius.full,
     alignItems: "center",
     justifyContent: "center",
   },
-
-  /* Why it works box */
-  whyBox: {
+  noteBox: {
     backgroundColor: palette.primaryMuted,
     borderLeftWidth: 4,
-    borderRadius: radius.sm,
+    borderRadius: radius.lg,
     padding: spacing.md,
     gap: spacing.xs,
   },
-  whyLabel: {
+  noteLabel: {
     ...type.caption,
-    color: palette.muted,
+    color: palette.primary,
     textTransform: "uppercase",
     letterSpacing: 1,
   },
-  whyQuote: {
+  noteText: {
     ...type.body,
-    fontSize: 14,
-    fontStyle: "italic",
     color: palette.charcoal,
-    lineHeight: 20,
+  },
+  buttonGroup: {
+    gap: spacing.md,
+  },
+  buttonGroupWide: {
+    flexDirection: "row",
   },
 });

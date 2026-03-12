@@ -2,6 +2,7 @@ import { useState } from "react";
 import {
   Alert,
   Image,
+  Linking,
   Pressable,
   StyleSheet,
   Text,
@@ -10,10 +11,12 @@ import {
 import { useRouter } from "expo-router";
 import { MaterialIcons } from "@expo/vector-icons";
 
-import { GlassCard } from "@/src/components/glass-card";
 import { PrimaryButton } from "@/src/components/primary-button";
 import { Screen } from "@/src/components/screen";
+import { useSubscriptionState } from "@/src/features/billing/use-subscription-state";
 import { useAuth } from "@/src/features/auth/use-auth";
+import { useStyleProfile } from "@/src/features/style/use-style-profile";
+import { buildEditorialStory } from "@/src/lib/style-story";
 import { deleteAccountData, exportAccountData } from "@/src/lib/tonematch-api";
 import { palette } from "@/src/theme/palette";
 import { radius, spacing } from "@/src/theme/spacing";
@@ -26,12 +29,42 @@ import { type } from "@/src/theme/type";
 export default function ProfileScreen() {
   const router = useRouter();
   const { user, signOut } = useAuth();
+  const { data: profile } = useStyleProfile();
+  const { data: subscription } = useSubscriptionState();
   const [exporting, setExporting] = useState(false);
+  const story = buildEditorialStory(profile);
+  const displayName =
+    user?.user_metadata?.display_name ??
+    user?.email?.split("@")[0] ??
+    "ToneMatch Member";
+  const createdAt = user?.created_at ? new Date(user.created_at) : null;
+  const memberSince = createdAt
+    ? createdAt.toLocaleDateString("en-US", { month: "short", year: "numeric" }).toUpperCase()
+    : "RECENTLY";
+  const planLabel = subscription?.plan ? `ToneMatch ${subscription.plan.toUpperCase()}` : "ToneMatch";
 
   /* ---------- handlers ---------- */
 
   const handleManagePlan = () => {
     router.push("/paywall");
+  };
+
+  const handleNotifications = () => {
+    Alert.alert(
+      "Notifications",
+      "Notification controls will live here once push preferences are enabled."
+    );
+  };
+
+  const handleLanguage = () => {
+    Alert.alert(
+      "Language",
+      "The app is currently optimized for English. Additional language support is being expanded."
+    );
+  };
+
+  const handleSupportCenter = async () => {
+    await Linking.openURL("mailto:support@tonematch.app?subject=ToneMatch%20Support");
   };
 
   const handleExport = async () => {
@@ -83,7 +116,12 @@ export default function ProfileScreen() {
       {/* ---- Header ---- */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Profile</Text>
-        <Pressable style={styles.settingsButton}>
+        <Pressable
+          accessibilityLabel="Open profile settings"
+          accessibilityRole="button"
+          style={styles.settingsButton}
+          onPress={() => Alert.alert("Profile settings", "Notifications, language, privacy, and export controls are available in the sections below.")}
+        >
           <MaterialIcons name="settings" size={24} color={palette.ink} />
         </Pressable>
       </View>
@@ -105,16 +143,16 @@ export default function ProfileScreen() {
         </View>
 
         {/* Name */}
-        <Text style={styles.userName}>Alex Rivers</Text>
+        <Text style={styles.userName}>{displayName}</Text>
 
         {/* Season chip */}
         <View style={styles.seasonChip}>
           <View style={styles.greenDot} />
-          <Text style={styles.seasonChipText}>Deep Autumn Enthusiast</Text>
+          <Text style={styles.seasonChipText}>{story.seasonTitle}</Text>
         </View>
 
         {/* Member since */}
-        <Text style={styles.memberSince}>MEMBER SINCE SEP 2023</Text>
+        <Text style={styles.memberSince}>MEMBER SINCE {memberSince}</Text>
       </View>
 
       {/* ---- ToneMatch Plus promo card ---- */}
@@ -130,10 +168,12 @@ export default function ProfileScreen() {
                 size={22}
                 color={palette.primary}
               />
-              <Text style={styles.promoTitle}>ToneMatch Plus</Text>
+              <Text style={styles.promoTitle}>{planLabel}</Text>
             </View>
             <Text style={styles.promoBody}>
-              Your personal color consultant is active.
+              {profile
+                ? `${story.undertoneLabel} x ${story.contrastLabel} is active across your recommendations and wardrobe.`
+                : "Your personal color consultant is active."}
             </Text>
             <PrimaryButton label="Manage Plan" onPress={handleManagePlan} />
           </View>
@@ -149,13 +189,19 @@ export default function ProfileScreen() {
       <View style={styles.section}>
         <Text style={styles.sectionHeader}>ACCOUNT EXPERIENCE</Text>
 
-        <SettingsRow icon="notifications" label="Notifications" />
+        <SettingsRow icon="notifications" label="Notifications" onPress={handleNotifications} />
         <SettingsRow
           icon="translate"
           label="Language"
           value="English (US)"
+          onPress={handleLanguage}
         />
-        <SettingsRow icon="help-outline" label="Support Center" showBorder={false} />
+        <SettingsRow
+          icon="help-outline"
+          label="Support Center"
+          onPress={handleSupportCenter}
+          showBorder={false}
+        />
       </View>
 
       {/* ---- DATA & PRIVACY ---- */}
@@ -172,24 +218,37 @@ export default function ProfileScreen() {
           <View style={styles.privacyCardText}>
             <Text style={styles.privacyCardTitle}>Privacy & Trust</Text>
             <Text style={styles.privacyCardBody}>
-              Your biometric data and color profiles are encrypted and never
-              sold to third parties.
+              Your analysis snapshot, wardrobe fit notes, and color profile stay linked to your account and are never sold to third parties.
             </Text>
           </View>
         </View>
 
         {/* Export row */}
-        <Pressable style={styles.actionRow} onPress={handleExport}>
+        <Pressable
+          accessibilityLabel="Export my color data"
+          accessibilityRole="button"
+          accessibilityState={{ disabled: exporting }}
+          disabled={exporting}
+          style={[styles.actionRow, exporting && styles.actionRowDisabled]}
+          onPress={handleExport}
+        >
           <MaterialIcons
             name="file-download"
             size={22}
             color={palette.muted}
           />
-          <Text style={styles.actionRowLabel}>Export My Color Data</Text>
+          <Text style={styles.actionRowLabel}>
+            {exporting ? "Exporting Color Data..." : "Export My Color Data"}
+          </Text>
         </Pressable>
 
         {/* Delete account row */}
-        <Pressable style={styles.actionRow} onPress={handleDeleteAccount}>
+        <Pressable
+          accessibilityLabel="Delete account"
+          accessibilityRole="button"
+          style={styles.actionRow}
+          onPress={handleDeleteAccount}
+        >
           <MaterialIcons
             name="no-accounts"
             size={22}
@@ -211,16 +270,21 @@ export default function ProfileScreen() {
 function SettingsRow({
   icon,
   label,
+  onPress,
   value,
   showBorder = true,
 }: {
   icon: keyof typeof MaterialIcons.glyphMap;
   label: string;
+  onPress: () => void;
   value?: string;
   showBorder?: boolean;
 }) {
   return (
     <Pressable
+      accessibilityLabel={value ? `${label}, ${value}` : label}
+      accessibilityRole="button"
+      onPress={onPress}
       style={[styles.settingsRow, showBorder && styles.settingsRowBorder]}
     >
       <View style={styles.settingsRowLeft}>
@@ -261,10 +325,10 @@ const styles = StyleSheet.create({
     color: palette.ink,
   },
   settingsButton: {
-    width: 40,
-    height: 40,
+    width: 44,
+    height: 44,
     borderRadius: radius.full,
-    backgroundColor: "rgba(0,0,0,0.05)",
+    backgroundColor: palette.primarySoft,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -285,7 +349,7 @@ const styles = StyleSheet.create({
     height: AVATAR_SIZE + RING_WIDTH * 2,
     borderRadius: (AVATAR_SIZE + RING_WIDTH * 2) / 2,
     borderWidth: RING_WIDTH,
-    borderColor: "rgba(184, 115, 50, 0.20)",
+    borderColor: palette.focusRing,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -305,8 +369,8 @@ const styles = StyleSheet.create({
   },
   verifiedBadgeText: {
     ...type.overline,
-    fontSize: 9,
-    color: "#ffffff",
+    fontSize: 12,
+    color: palette.onPrimary,
     letterSpacing: 1.8,
   },
   userName: {
@@ -362,7 +426,7 @@ const styles = StyleSheet.create({
     width: 128,
     height: 128,
     borderRadius: 64,
-    backgroundColor: "rgba(184, 115, 50, 0.20)",
+    backgroundColor: palette.focusRing,
   },
   promoContent: {
     flexDirection: "row",
@@ -382,12 +446,12 @@ const styles = StyleSheet.create({
   promoTitle: {
     ...type.h3,
     fontSize: 18,
-    color: "#ffffff",
+    color: palette.onDark,
   },
   promoBody: {
     ...type.body,
     fontSize: 14,
-    color: "rgba(255,255,255,0.6)",
+    color: palette.onDarkSoft,
   },
   promoImage: {
     width: 96,
@@ -406,7 +470,7 @@ const styles = StyleSheet.create({
     color: palette.ink,
     paddingVertical: spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: "rgba(0,0,0,0.06)",
+    borderBottomColor: palette.borderLight,
   },
 
   /* Settings rows */
@@ -414,11 +478,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingVertical: 16,
+    minHeight: 52,
+    paddingVertical: 12,
   },
   settingsRowBorder: {
     borderBottomWidth: 1,
-    borderBottomColor: "rgba(0,0,0,0.06)",
+    borderBottomColor: palette.borderLight,
   },
   settingsRowLeft: {
     flexDirection: "row",
@@ -472,11 +537,15 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 12,
-    paddingVertical: 14,
+    minHeight: 52,
+    paddingVertical: 12,
+  },
+  actionRowDisabled: {
+    opacity: 0.55,
   },
   actionRowLabel: {
     ...type.label,
-    color: palette.muted,
+    color: palette.charcoal,
   },
   deleteText: {
     color: palette.red,

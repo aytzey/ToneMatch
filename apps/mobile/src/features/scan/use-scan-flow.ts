@@ -25,8 +25,8 @@ export function useScanFlow() {
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
     if (status !== "granted") {
       Alert.alert(
-        "Kamera izni gerekli",
-        "Selfie cekmek icin kamera erisim izni vermelisin. Ayarlar > ToneMatch > Kamera adimini takip edebilirsin.",
+        "Camera access required",
+        "Allow camera access to capture a selfie. You can change this in Settings > ToneMatch > Camera.",
       );
       return false;
     }
@@ -40,8 +40,8 @@ export function useScanFlow() {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== "granted") {
       Alert.alert(
-        "Galeri izni gerekli",
-        "Galeriden fotograf secmek icin erisim izni vermelisin.",
+        "Photo library access required",
+        "Allow photo access so you can choose a selfie from your library.",
       );
       return false;
     }
@@ -62,7 +62,7 @@ export function useScanFlow() {
 
     setScanState({
       status: "selecting",
-      message: source === "camera" ? "Kamera aciliyor..." : "Galeriden selfie seciliyor...",
+      message: source === "camera" ? "Opening camera..." : "Selecting a selfie from your library...",
       previewUri: null,
       sessionId: null,
     });
@@ -84,7 +84,7 @@ export function useScanFlow() {
               quality: 0.9,
             });
     } catch (err) {
-      const errMsg = err instanceof Error ? err.message : "Kamera acilamadi.";
+      const errMsg = err instanceof Error ? err.message : "The camera could not be opened.";
       setScanState({
         status: "error",
         message: errMsg,
@@ -101,7 +101,7 @@ export function useScanFlow() {
     if (pickerResponse.canceled || !pickerResponse.assets[0]) {
       setScanState({
         status: "idle",
-        message: "Selfie secilmedi. Devam etmek icin kamera veya galeriyi tekrar ac.",
+        message: "No selfie was selected. Open the camera or library again to continue.",
         previewUri: null,
         sessionId: null,
       });
@@ -113,7 +113,7 @@ export function useScanFlow() {
 
     setScanState({
       status: "reviewing",
-      message: "Fotograf secildi. Kaliteyi kontrol et ve analizi baslat.",
+      message: "Photo selected. Review the quality, then start the analysis.",
       previewUri: selectedAsset.uri,
       sessionId: null,
     });
@@ -137,8 +137,8 @@ export function useScanFlow() {
       status: "uploading",
       message:
         isPreviewMode || !backendConfigured || !user
-          ? "Preview mode: fotograf secildi, yerel analiz simule ediliyor."
-          : "Selfie signed upload ile yukleniyor ve analiz job'i aciliyor.",
+          ? "Preview mode: photo selected, local analysis is being simulated."
+          : "Uploading your selfie and opening the analysis session.",
       previewUri: asset.uri,
       sessionId: null,
     });
@@ -146,19 +146,23 @@ export function useScanFlow() {
     router.push("/analysis-loading");
 
     try {
+      console.log("[startAnalysis] calling uploadAndAnalyzeSelfie");
       const { sessionId, mode } = await uploadAndAnalyzeSelfie(asset);
+      console.log("[startAnalysis] upload done | sessionId:", sessionId, "mode:", mode);
 
       setScanState({
         status: "analyzing",
         message:
           mode === "preview"
-            ? "Preview analiz calisiyor. Sonuc ekranlari mock profille yenilenecek."
-            : "Analiz job'i acildi. Undertone, contrast ve recommendation pipeline'i bekleniyor.",
+            ? "Preview analysis is running. Result screens will update with the preview profile."
+            : "Analysis started. Waiting for undertone, contrast, and recommendation results.",
         previewUri: asset.uri,
         sessionId,
       });
 
+      console.log("[startAnalysis] polling session:", sessionId);
       const session = await pollAnalysisSession(sessionId);
+      console.log("[startAnalysis] poll result | status:", session.status, "id:", session.id);
 
       await queryClient.invalidateQueries({ queryKey: ["style-experience"] });
       await queryClient.invalidateQueries({ queryKey: ["analysis-history"] });
@@ -167,8 +171,8 @@ export function useScanFlow() {
         status: session.status === "completed" ? "ready" : "error",
         message:
           session.status === "completed"
-            ? "Analiz tamamlandi. Home ve Discover ekranlari guncellendi."
-            : "Analiz tamamlanamadi. Isik ve cekim kalitesini kontrol edip tekrar dene.",
+            ? "Analysis finished. Home and Discover have been refreshed."
+            : "The analysis could not be completed. Check lighting and image quality, then try again.",
         previewUri: asset.uri,
         sessionId: session.id,
       });
@@ -184,9 +188,10 @@ export function useScanFlow() {
         router.replace(`/analysis/${session.id}`);
       }
     } catch (error) {
+      console.error("[startAnalysis] CAUGHT ERROR:", error);
       setScanState({
         status: "error",
-        message: error instanceof Error ? error.message : "Scan akisi beklenmedik sekilde durdu.",
+        message: error instanceof Error ? error.message : "The scan flow stopped unexpectedly.",
         previewUri: asset.uri,
         sessionId: null,
       });

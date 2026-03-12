@@ -2,11 +2,12 @@ import { Redirect, useRouter } from "expo-router";
 import { useState } from "react";
 import { ActivityIndicator, Alert, StyleSheet, Text, View } from "react-native";
 
-import { GlassCard } from "@/src/components/glass-card";
 import { PrimaryButton } from "@/src/components/primary-button";
 import { Screen } from "@/src/components/screen";
+import { SurfaceCard } from "@/src/components/surface-card";
 import { TextField } from "@/src/components/text-field";
 import { useAuth } from "@/src/features/auth/use-auth";
+import { useAppCopy } from "@/src/providers/copy-provider";
 import { useAppStore } from "@/src/store/app-store";
 import { palette } from "@/src/theme/palette";
 import { spacing } from "@/src/theme/spacing";
@@ -14,6 +15,7 @@ import { type } from "@/src/theme/type";
 
 export default function AuthScreen() {
   const router = useRouter();
+  const copy = useAppCopy().auth;
   const { backendConfigured, isAuthenticated, isDevSingleUserMode, ready, signInWithPassword, signUpWithPassword } =
     useAuth();
   const enablePreviewMode = useAppStore((state) => state.enablePreviewMode);
@@ -29,22 +31,20 @@ export default function AuthScreen() {
   if (isDevSingleUserMode) {
     return (
       <Screen scrollable contentContainerStyle={styles.content}>
-        <Text style={styles.eyebrow}>Giris</Text>
-        <Text style={styles.title}>Hesabin hazirlaniyor...</Text>
-        <GlassCard tone="accent">
-          <Text style={styles.sectionTitleAccent}>Otomatik giris</Text>
-          <Text style={styles.copyAccent}>
-            Oturumun otomatik olarak aciliyor. Birkac saniye bekle.
-          </Text>
+        <Text style={styles.eyebrow}>{copy.eyebrow}</Text>
+        <Text style={styles.title}>{copy.automaticSignInHeading}</Text>
+        <SurfaceCard tone="accent">
+          <Text style={styles.sectionTitleAccent}>{copy.automaticSignInTitle}</Text>
+          <Text style={styles.copyAccent}>{copy.automaticSignInBody}</Text>
           <ActivityIndicator color={palette.surface} style={styles.loader} />
-        </GlassCard>
+        </SurfaceCard>
       </Screen>
     );
   }
 
   const submit = async () => {
     if (!email || !password) {
-      Alert.alert("Eksik alan", "Email ve sifre alanlarini doldur.");
+      Alert.alert(copy.missingDetailsTitle, copy.missingDetailsBody);
       return;
     }
 
@@ -58,14 +58,14 @@ export default function AuthScreen() {
         if (result.session) {
           router.replace("/(tabs)/home");
         } else {
-          Alert.alert(
-            "Hesap olusturuldu",
-            "Hesabin basariyla olusturuldu. Email dogrulamasi gerekiyorsa mailini kontrol et."
-          );
+          Alert.alert(copy.accountCreatedTitle, copy.accountCreatedBody);
         }
       }
     } catch (error) {
-      Alert.alert("Giris hatasi", error instanceof Error ? error.message : "Bilinmeyen bir hata olustu.");
+      Alert.alert(
+        copy.signInErrorTitle,
+        error instanceof Error ? error.message : copy.genericError,
+      );
     } finally {
       setPending(false);
     }
@@ -78,29 +78,29 @@ export default function AuthScreen() {
 
   return (
     <Screen scrollable contentContainerStyle={styles.content}>
-      <Text style={styles.eyebrow}>Giris</Text>
-      <Text style={styles.title}>Hesabina giris yap veya hizlica goz at.</Text>
+      <Text style={styles.eyebrow}>{copy.eyebrow}</Text>
+      <Text style={styles.title}>{copy.title}</Text>
 
-      <GlassCard tone={backendConfigured ? "light" : "accent"}>
+      <SurfaceCard tone={backendConfigured ? "default" : "accent"}>
         <Text style={[styles.sectionTitle, !backendConfigured && styles.sectionTitleAccent]}>
-          {backendConfigured ? "Hesap sistemi hazir" : "Hesap sistemi ayarlaniyor"}
+          {backendConfigured ? copy.readyTitle : copy.setupTitle}
         </Text>
         <Text style={[styles.copy, !backendConfigured && styles.copyAccent]}>
           {backendConfigured
-            ? "Email ve sifre ile giris yap veya yeni hesap olustur."
-            : "Sunucu baglantisi henuz kurulmadi. Deneme modunu kullanabilirsin."}
+            ? copy.readyBody
+            : copy.setupBody}
         </Text>
-      </GlassCard>
+      </SurfaceCard>
 
-      <GlassCard>
+      <SurfaceCard>
         <View style={styles.switchRow}>
           <PrimaryButton
-            label="Giris yap"
+            label={copy.signIn}
             onPress={() => setMode("sign-in")}
             variant={mode === "sign-in" ? "primary" : "secondary"}
           />
           <PrimaryButton
-            label="Hesap olustur"
+            label={copy.createAccount}
             onPress={() => setMode("sign-up")}
             variant={mode === "sign-up" ? "primary" : "secondary"}
           />
@@ -108,33 +108,43 @@ export default function AuthScreen() {
 
         <View style={styles.form}>
           <TextField
-            label="Email"
+            label={copy.emailLabel}
             value={email}
             autoCapitalize="none"
             autoCorrect={false}
             keyboardType="email-address"
             onChangeText={setEmail}
-            placeholder="ornek@email.com"
+            placeholder={copy.emailPlaceholder}
           />
           <TextField
-            label="Sifre"
+            label={copy.passwordLabel}
             value={password}
             autoCapitalize="none"
             autoCorrect={false}
             secureTextEntry
             onChangeText={setPassword}
-            placeholder="En az 8 karakter"
+            placeholder={copy.passwordPlaceholder}
           />
         </View>
 
         <PrimaryButton
-          label={pending ? "Isleniyor..." : mode === "sign-in" ? "Giris yap" : "Hesap olustur"}
+          label={
+            pending
+              ? copy.working
+              : mode === "sign-in"
+                ? copy.signIn
+                : copy.createAccount
+          }
           onPress={submit}
           disabled={pending || !backendConfigured}
         />
-      </GlassCard>
+      </SurfaceCard>
 
-      <PrimaryButton label="Deneme modunda gez" onPress={openPreview} variant="ghost" />
+      <PrimaryButton
+        label={copy.continueInPreview}
+        onPress={openPreview}
+        variant="ghost"
+      />
     </Screen>
   );
 }

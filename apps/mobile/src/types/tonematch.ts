@@ -21,6 +21,33 @@ export type RecommendationCard = {
   colorFamily?: string;
 };
 
+export type StyleSummary = {
+  title: string;
+  description: string;
+};
+
+export type StyleFocusItem = {
+  title: string;
+  copy: string;
+};
+
+export type StylePalette = {
+  core: string[];
+  avoid: string[];
+};
+
+export type AnalysisSnapshot = {
+  undertone: string;
+  contrast: string;
+  confidence: number;
+  summary: StyleSummary;
+  focusItems: StyleFocusItem[];
+  palette: StylePalette;
+  recommendations: RecommendationCard[];
+  capturedAt?: string;
+  sourceSessionId?: string | null;
+};
+
 export type ClothingCheck = {
   visible_colors: string[];
   verdict: string;
@@ -33,19 +60,31 @@ export type StyleExperience = {
   contrast: string;
   confidence: number;
   plan: SubscriptionPlan;
-  summary: {
-    title: string;
-    description: string;
-  };
-  focusItems: {
-    title: string;
-    copy: string;
-  }[];
-  palette: {
-    core: string[];
-    avoid: string[];
-  };
+  summary: StyleSummary;
+  focusItems: StyleFocusItem[];
+  palette: StylePalette;
   recommendations: RecommendationCard[];
+};
+
+export type StyleTheorySection = {
+  title: string;
+  body: string;
+};
+
+export type StyleTheoryExample = {
+  title: string;
+  copy: string;
+};
+
+export type StyleTheoryView = {
+  title: string;
+  subtitle: string;
+  intro: string;
+  pullQuote: string;
+  sections: StyleTheorySection[];
+  examples: StyleTheoryExample[];
+  closing: string;
+  source: "ai" | "fallback";
 };
 
 export type AnalysisSessionView = {

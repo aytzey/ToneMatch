@@ -1,17 +1,23 @@
 import { useState } from "react";
 import {
+  Alert,
   Image,
+  Linking,
   Pressable,
   StyleSheet,
   Text,
+  useWindowDimensions,
   View,
 } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { MaterialIcons } from "@expo/vector-icons";
 
+import { MetaPill } from "@/src/components/editorial-guide-primitives";
 import { PrimaryButton } from "@/src/components/primary-button";
 import { Screen } from "@/src/components/screen";
+import { SurfaceCard } from "@/src/components/surface-card";
+import { useSubscriptionState } from "@/src/features/billing/use-subscription-state";
+import { useAppStore } from "@/src/store/app-store";
 import { palette } from "@/src/theme/palette";
 import { radius, spacing } from "@/src/theme/spacing";
 import { type } from "@/src/theme/type";
@@ -89,72 +95,105 @@ const features: {
 /* ------------------------------------------------------------------ */
 
 export default function PaywallScreen() {
+  const { width } = useWindowDimensions();
+  const isWide = width >= 720;
   const router = useRouter();
   const [selectedPlan, setSelectedPlan] = useState<PlanId>("plus");
+  const setPreviewPlan = useAppStore((state) => state.setPreviewPlan);
+  const {
+    presentPaywall,
+    restorePurchases,
+    revenueCatConfigured,
+  } = useSubscriptionState();
 
   const handleClose = () => {
     router.back();
   };
 
-  const handleStartTrial = () => {
-    // Purchase logic would go here
+  const handleStartTrial = async () => {
+    if (revenueCatConfigured) {
+      const result = await presentPaywall();
+      if (result === "CANCELLED" || result === "ERROR" || result === "NOT_PRESENTED") {
+        return;
+      }
+    }
+
+    setPreviewPlan(selectedPlan);
+    Alert.alert("Plan updated", `Your app is now using the ${selectedPlan.toUpperCase()} experience.`);
     router.back();
   };
 
-  const handleRestore = () => {
-    // Restore purchases logic
+  const handleRestore = async () => {
+    const restored = await restorePurchases();
+    Alert.alert(
+      restored ? "Purchases restored" : "Nothing to restore",
+      restored
+        ? "Your subscription access has been refreshed."
+        : "No previous purchases were found for this account.",
+    );
   };
 
   return (
     <Screen scrollable contentContainerStyle={styles.content}>
       {/* ---- Header ---- */}
       <View style={styles.header}>
-        <Pressable style={styles.closeButton} onPress={handleClose}>
+        <Pressable
+          accessibilityLabel="Close membership screen"
+          accessibilityRole="button"
+          style={styles.closeButton}
+          onPress={handleClose}
+        >
           <MaterialIcons name="close" size={24} color={palette.ink} />
         </Pressable>
         <Text style={styles.headerTitle}>MEMBERSHIP</Text>
         <View style={styles.headerSpacer} />
       </View>
 
-      {/* ---- Hero Image ---- */}
-      <View style={styles.heroContainer}>
-        <Image
-          source={require("../assets/images/paywall_hero.png")}
-          style={styles.heroImage}
-          resizeMode="cover"
-        />
-        {/* Gradient overlay */}
-        <LinearGradient
-          colors={["transparent", "rgba(248,247,246,0.4)", palette.canvas]}
-          style={styles.heroGradient}
-        />
-        {/* Hero text overlay */}
-        <View style={styles.heroTextOverlay}>
-          <Text style={styles.heroOverline}>THE SCIENCE OF STYLE</Text>
-          <Text style={styles.heroHeadline}>
-            Elevate Your{"\n"}
-            <Text style={styles.heroHeadlineItalic}>Visual Identity</Text>
-          </Text>
-        </View>
-      </View>
+      <SurfaceCard tone="muted">
+        <View style={[styles.membershipIntro, isWide && styles.membershipIntroWide]}>
+          <View style={styles.membershipCopy}>
+            <Text style={styles.heroOverline}>EDITORIAL MEMBERSHIP</Text>
+            <Text style={styles.heroHeadline}>
+              Train your closet around a
+              <Text style={styles.heroHeadlineItalic}> stable palette</Text>
+            </Text>
+            <Text style={styles.masterBody}>
+              Access professional-grade seasonal analysis, clearer shopping decisions, and a more consistent visual identity across every outfit.
+            </Text>
+            <View style={styles.membershipMeta}>
+              <MetaPill label="7-day free trial" />
+              <MetaPill label="Cancel anytime" tone="dark" />
+              <MetaPill label="Analysis-led styling" />
+            </View>
+          </View>
 
-      {/* ---- Master your palette ---- */}
-      <View style={styles.masterSection}>
-        <Text style={styles.masterTitle}>Master your palette</Text>
-        <Text style={styles.masterBody}>
-          Access professional-grade seasonal analysis and personalized styling
-          insights.
-        </Text>
-      </View>
+          <View style={styles.membershipVisualColumn}>
+            <View style={styles.heroFrameLarge}>
+              <Image
+                source={require("../assets/images/paywall_hero.png")}
+                style={styles.heroImage}
+                resizeMode="cover"
+              />
+            </View>
+            <View style={styles.heroFrameSmall}>
+              <Text style={styles.heroFrameLabel}>What changes after upgrade</Text>
+              <Text style={styles.heroFrameText}>
+                More scans, deeper contrast guidance, and a feed that stays anchored to your saved result.
+              </Text>
+            </View>
+          </View>
+        </View>
+      </SurfaceCard>
 
       {/* ---- Feature list ---- */}
       <View style={styles.featureList}>
-        {features.map((feature) => (
+        {features.map((feature, index) => (
           <View key={feature.title} style={styles.featureRow}>
-            <View style={styles.featureIconCircle}>
+            <View style={styles.featureMarker}>
+              <Text style={styles.featureMarkerText}>{`${index + 1}`.padStart(2, "0")}</Text>
               <MaterialIcons
                 name={feature.icon}
-                size={22}
+                size={18}
                 color={palette.primary}
               />
             </View>
@@ -170,13 +209,16 @@ export default function PaywallScreen() {
       <View style={styles.planSection}>
         <Text style={styles.planSectionHeader}>SELECT YOUR EXPERIENCE</Text>
 
-        <View style={styles.planList}>
+        <View accessibilityRole="radiogroup" style={styles.planList}>
           {plans.map((plan) => {
             const isSelected = plan.id === selectedPlan;
             const isFeatured = Boolean(plan.badge);
 
             return (
               <Pressable
+                accessibilityLabel={`${plan.name}, ${plan.price}${plan.perMonth ? " per month" : ""}`}
+                accessibilityRole="radio"
+                accessibilityState={{ selected: isSelected }}
                 key={plan.id}
                 style={[
                   styles.planRow,
@@ -224,15 +266,27 @@ export default function PaywallScreen() {
 
         {/* Footer links */}
         <View style={styles.footerLinks}>
-          <Pressable onPress={handleRestore}>
+          <Pressable
+            accessibilityLabel="Restore purchases"
+            accessibilityRole="button"
+            onPress={handleRestore}
+          >
             <Text style={styles.footerLink}>Restore Purchase</Text>
           </Pressable>
           <Text style={styles.footerDivider}>|</Text>
-          <Pressable>
+          <Pressable
+            accessibilityLabel="Open Terms of Service"
+            accessibilityRole="link"
+            onPress={() => Linking.openURL("https://tonematch.app/terms")}
+          >
             <Text style={styles.footerLink}>Terms of Service</Text>
           </Pressable>
           <Text style={styles.footerDivider}>|</Text>
-          <Pressable>
+          <Pressable
+            accessibilityLabel="Open privacy policy"
+            accessibilityRole="link"
+            onPress={() => Linking.openURL("https://tonematch.app/privacy")}
+          >
             <Text style={styles.footerLink}>Privacy</Text>
           </Pressable>
         </View>
@@ -260,8 +314,8 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.sm,
   },
   closeButton: {
-    width: 40,
-    height: 40,
+    width: 44,
+    height: 44,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -275,30 +329,10 @@ const styles = StyleSheet.create({
     width: 40,
   },
 
-  /* Hero */
-  heroContainer: {
-    marginHorizontal: spacing.md,
-    borderRadius: radius.xl,
-    overflow: "hidden",
-    minHeight: 320,
-    position: "relative",
-    backgroundColor: palette.clay,
-  },
   heroImage: {
     ...StyleSheet.absoluteFillObject,
-    width: "100%",
-    height: "100%",
-  },
-  heroGradient: {
-    ...StyleSheet.absoluteFillObject,
-  },
-  heroTextOverlay: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    padding: spacing.lg,
-    gap: spacing.sm,
+    width: undefined,
+    height: undefined,
   },
   heroOverline: {
     ...type.overline,
@@ -306,34 +340,62 @@ const styles = StyleSheet.create({
     letterSpacing: 2.5,
   },
   heroHeadline: {
-    fontSize: 34,
-    lineHeight: 40,
-    fontWeight: "300",
+    ...type.displayHero,
     color: palette.ink,
   },
   heroHeadlineItalic: {
-    fontWeight: "700",
-    fontStyle: "italic",
+    fontFamily: "CormorantGaramond_600SemiBold_Italic",
+    fontWeight: "600",
   },
 
-  /* Master your palette */
-  masterSection: {
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.xl,
-    alignItems: "center",
-    gap: spacing.sm,
-  },
-  masterTitle: {
-    ...type.h2,
-    color: palette.ink,
-    textAlign: "center",
-  },
   masterBody: {
     ...type.body,
     color: palette.muted,
-    textAlign: "center",
-    maxWidth: 280,
+    maxWidth: 360,
     lineHeight: 22,
+  },
+  membershipIntro: {
+    gap: spacing.lg,
+  },
+  membershipIntroWide: {
+    flexDirection: "row",
+    alignItems: "stretch",
+  },
+  membershipCopy: {
+    flex: 1.1,
+    gap: spacing.sm,
+  },
+  membershipMeta: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: spacing.sm,
+    marginTop: spacing.sm,
+  },
+  membershipVisualColumn: {
+    flex: 0.9,
+    gap: spacing.md,
+  },
+  heroFrameLarge: {
+    minHeight: 240,
+    borderRadius: radius.xl,
+    overflow: "hidden",
+    backgroundColor: palette.accentSoft,
+  },
+  heroFrameSmall: {
+    backgroundColor: palette.surface,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    borderColor: palette.border,
+    padding: spacing.md,
+    gap: spacing.xs,
+  },
+  heroFrameLabel: {
+    ...type.sectionHeader,
+    color: palette.primary,
+  },
+  heroFrameText: {
+    ...type.body,
+    color: palette.charcoal,
   },
 
   /* Features */
@@ -347,13 +409,15 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
     gap: spacing.md,
   },
-  featureIconCircle: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: palette.primarySoft,
-    alignItems: "center",
-    justifyContent: "center",
+  featureMarker: {
+    minWidth: 54,
+    gap: spacing.xs,
+    paddingTop: 2,
+  },
+  featureMarkerText: {
+    ...type.caption,
+    color: palette.primary,
+    letterSpacing: 1.2,
   },
   featureText: {
     flex: 1,
@@ -424,8 +488,8 @@ const styles = StyleSheet.create({
   },
   planBadgeText: {
     ...type.overline,
-    fontSize: 9,
-    color: "#ffffff",
+    fontSize: 12,
+    color: palette.onPrimary,
     letterSpacing: 2,
   },
   planInfo: {
@@ -452,7 +516,7 @@ const styles = StyleSheet.create({
   },
   planPeriod: {
     ...type.overline,
-    fontSize: 9,
+    fontSize: 12,
     color: palette.muted,
     letterSpacing: 1,
   },
@@ -465,14 +529,15 @@ const styles = StyleSheet.create({
   },
   finePrint: {
     ...type.caption,
-    fontSize: 11,
+    fontSize: 12,
     color: palette.muted,
     textAlign: "center",
-    lineHeight: 16,
+    lineHeight: 18,
     paddingHorizontal: spacing.md,
   },
   footerLinks: {
     flexDirection: "row",
+    flexWrap: "wrap",
     alignItems: "center",
     justifyContent: "center",
     gap: spacing.md,
@@ -482,7 +547,7 @@ const styles = StyleSheet.create({
   footerLink: {
     ...type.caption,
     fontSize: 12,
-    color: "rgba(184, 115, 50, 0.7)",
+    color: palette.primary,
   },
   footerDivider: {
     ...type.caption,

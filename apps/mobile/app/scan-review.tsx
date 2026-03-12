@@ -2,9 +2,9 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import {
   Image,
+  Pressable,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
 
@@ -34,7 +34,7 @@ const QUALITY_CHECKS: {
 
 export default function ScanReviewScreen() {
   const router = useRouter();
-  const { state, startAnalysis, captureWithCamera } = useScanFlow();
+  const { state, startAnalysis } = useScanFlow();
 
   const previewUri = state.previewUri;
 
@@ -54,13 +54,15 @@ export default function ScanReviewScreen() {
     <Screen scrollable contentContainerStyle={styles.content}>
       {/* -- Header -- */}
       <View style={styles.header}>
-        <TouchableOpacity
+        <Pressable
+          accessibilityLabel="Go back"
+          accessibilityRole="button"
           onPress={handleBack}
           hitSlop={12}
           style={styles.backBtn}
         >
           <MaterialIcons name="arrow-back" size={24} color={palette.charcoal} />
-        </TouchableOpacity>
+        </Pressable>
         <Text style={styles.headerTitle}>Scan Review</Text>
         <View style={styles.headerSpacer} />
       </View>
@@ -152,8 +154,8 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.sm,
   },
   backBtn: {
-    width: 40,
-    height: 40,
+    width: 44,
+    height: 44,
     borderRadius: radius.full,
     backgroundColor: palette.surface,
     alignItems: "center",
@@ -193,7 +195,7 @@ const styles = StyleSheet.create({
     bottom: spacing.md,
     left: spacing.md,
     right: spacing.md,
-    backgroundColor: "rgba(255,255,255,0.90)",
+    backgroundColor: palette.surfaceTintStrong,
     borderRadius: radius.lg,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.md,
@@ -211,8 +213,8 @@ const styles = StyleSheet.create({
   },
   statusOverline: {
     ...type.overline,
-    fontSize: 9,
-    color: "rgba(184,115,50,0.70)",
+    fontSize: 12,
+    color: palette.primary,
     letterSpacing: 1.5,
   },
   statusTitle: {
@@ -221,7 +223,7 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
   statusPill: {
-    backgroundColor: "rgba(45,106,79,0.10)",
+    backgroundColor: palette.primaryMuted,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.xs,
     borderRadius: radius.full,

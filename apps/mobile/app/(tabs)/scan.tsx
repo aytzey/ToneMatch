@@ -1,46 +1,47 @@
-import { useRef, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
+  Alert,
   Animated,
   Easing,
   Pressable,
   StyleSheet,
   Text,
   View,
+  useWindowDimensions,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { BlurView } from "expo-blur";
 import { useRouter } from "expo-router";
 import { MaterialIcons } from "@expo/vector-icons";
+import { CameraView, useCameraPermissions } from "expo-camera";
 
-import { palette } from "@/src/theme/palette";
-import { spacing, radius } from "@/src/theme/spacing";
-import { type } from "@/src/theme/type";
-import { useAuth } from "@/src/features/auth/use-auth";
 import { useScanFlow } from "@/src/features/scan/use-scan-flow";
+import { palette } from "@/src/theme/palette";
+import { radius, spacing } from "@/src/theme/spacing";
+import { type } from "@/src/theme/type";
 
-/* ------------------------------------------------------------------ */
-/*  Constants                                                          */
-/* ------------------------------------------------------------------ */
-
-const OVAL_WIDTH = 220;
-const OVAL_HEIGHT = 290;
+const OVAL_RATIO = 1.32;
+const MAX_OVAL_WIDTH = 248;
 const CAPTURE_SIZE = 72;
 const CAPTURE_RING = 88;
 const PULSE_SIZE = 100;
 const SIDE_BTN = 44;
 const BOTTOM_BTN = 52;
 
-/* ------------------------------------------------------------------ */
-/*  Component                                                          */
-/* ------------------------------------------------------------------ */
-
 export default function ScanScreen() {
   const insets = useSafeAreaInsets();
+  const { width: viewportWidth } = useWindowDimensions();
   const router = useRouter();
-  const { state, pickFromLibrary, captureWithCamera } = useScanFlow();
+  const { pickFromLibrary, captureWithCamera } = useScanFlow();
+  const [permission, requestPermission] = useCameraPermissions();
+  const [facing, setFacing] = useState<"front" | "back">("front");
+  const [showGuide, setShowGuide] = useState(true);
+  const [showPrivacyShade, setShowPrivacyShade] = useState(false);
+  const [showLightingTip, setShowLightingTip] = useState(true);
 
-  /* Pulsing outer ring animation */
   const pulseAnim = useRef(new Animated.Value(1)).current;
+
+  const ovalWidth = Math.min(MAX_OVAL_WIDTH, Math.max(184, viewportWidth - 120));
+  const ovalHeight = Math.round(ovalWidth * OVAL_RATIO);
 
   useEffect(() => {
     const loop = Animated.loop(
@@ -57,119 +58,193 @@ export default function ScanScreen() {
           easing: Easing.inOut(Easing.ease),
           useNativeDriver: true,
         }),
-      ])
+      ]),
     );
+
     loop.start();
     return () => loop.stop();
   }, [pulseAnim]);
 
+  const handleHelp = () => {
+    Alert.alert(
+      "Capture tips",
+      "Use soft natural light, keep your face centered in the guide, and remove glasses or strong filters before scanning.",
+    );
+  };
+
+  const handleFlip = () => {
+    setFacing((current) => (current === "front" ? "back" : "front"));
+  };
+
+  const instructionCopy = showLightingTip
+    ? "Face a soft window light and keep your features inside the guide for the most stable read."
+    : "Keep your eyes, nose, and lips inside the guide so the analysis can read shape and contrast clearly.";
+
   return (
     <View style={styles.root}>
-      {/* ---- Camera preview placeholder ---- */}
       <View style={styles.cameraArea}>
-        <View style={styles.cameraPlaceholder} />
-
-        {/* Header bar */}
-        <View style={[styles.headerBar, { paddingTop: insets.top + spacing.xs }]}>
-          <BlurView
-            intensity={40}
-            tint="dark"
-            style={StyleSheet.absoluteFill}
+        {permission?.granted ? (
+          <CameraView
+            accessibilityLabel="Live camera preview"
+            facing={facing}
+            style={StyleSheet.absoluteFillObject}
           />
+        ) : (
           <Pressable
+            accessibilityLabel="Allow camera access"
+            accessibilityRole="button"
+            onPress={requestPermission}
+            style={styles.cameraPlaceholder}
+          >
+            <MaterialIcons name="videocam-off" size={48} color={palette.muted} />
+            <Text style={styles.permissionText}>
+              Camera access is required{"\n"}Tap to continue
+            </Text>
+          </Pressable>
+        )}
+
+        {showPrivacyShade ? <View pointerEvents="none" style={styles.privacyShade} /> : null}
+
+        <View style={[styles.headerBar, { paddingTop: insets.top + spacing.xs }]}>
+          <View pointerEvents="none" style={styles.headerBackdrop} />
+
+          <Pressable
+            accessibilityLabel="Close scanner"
+            accessibilityRole="button"
+            hitSlop={12}
             onPress={() => router.back()}
             style={styles.headerBtn}
-            hitSlop={12}
           >
             <MaterialIcons name="close" size={22} color={palette.surface} />
           </Pressable>
 
           <Text style={styles.headerTitle}>TONEMATCH AI</Text>
 
-          <Pressable style={styles.headerBtn} hitSlop={12}>
+          <Pressable
+            accessibilityLabel="Open capture tips"
+            accessibilityRole="button"
+            hitSlop={12}
+            onPress={handleHelp}
+            style={styles.headerBtn}
+          >
             <MaterialIcons name="help-outline" size={22} color={palette.surface} />
           </Pressable>
         </View>
 
-        {/* Face oval guide */}
-        <View style={styles.ovalContainer} pointerEvents="none">
-          <View style={styles.oval}>
-            {/* Corner bracket marks at cardinal points */}
-            <View style={[styles.bracketMark, styles.bracketTop]} />
-            <View style={[styles.bracketMark, styles.bracketBottom]} />
-            <View style={[styles.bracketMark, styles.bracketLeft]} />
-            <View style={[styles.bracketMark, styles.bracketRight]} />
+        {showGuide ? (
+          <View style={styles.ovalContainer} pointerEvents="none">
+            <View
+              style={[
+                styles.oval,
+                {
+                  borderRadius: ovalWidth / 2,
+                  height: ovalHeight,
+                  width: ovalWidth,
+                },
+              ]}
+            >
+              <View style={[styles.bracketMark, styles.bracketTop]} />
+              <View style={[styles.bracketMark, styles.bracketBottom]} />
+              <View style={[styles.bracketMark, styles.bracketLeft]} />
+              <View style={[styles.bracketMark, styles.bracketRight]} />
+            </View>
           </View>
-        </View>
+        ) : null}
 
-        {/* Right-side floating buttons */}
         <View style={styles.sideButtons}>
-          <Pressable style={styles.sideBtn}>
-            <BlurView intensity={30} tint="light" style={StyleSheet.absoluteFill} />
-            <MaterialIcons name="wb-sunny" size={20} color={palette.surface} />
+          <Pressable
+            accessibilityLabel="Toggle lighting tips"
+            accessibilityRole="button"
+            accessibilityState={{ selected: showLightingTip }}
+            onPress={() => setShowLightingTip((current) => !current)}
+            style={[styles.sideBtn, showLightingTip && styles.sideBtnActive]}
+          >
+            <MaterialIcons
+              name="wb-sunny"
+              size={20}
+              color={showLightingTip ? palette.onPrimary : palette.surface}
+            />
           </Pressable>
-          <Pressable style={styles.sideBtn}>
-            <BlurView intensity={30} tint="light" style={StyleSheet.absoluteFill} />
-            <MaterialIcons name="visibility-off" size={20} color={palette.surface} />
+          <Pressable
+            accessibilityLabel="Toggle privacy shade"
+            accessibilityRole="button"
+            accessibilityState={{ selected: showPrivacyShade }}
+            onPress={() => setShowPrivacyShade((current) => !current)}
+            style={[styles.sideBtn, showPrivacyShade && styles.sideBtnActive]}
+          >
+            <MaterialIcons
+              name={showPrivacyShade ? "visibility" : "visibility-off"}
+              size={20}
+              color={showPrivacyShade ? palette.onPrimary : palette.surface}
+            />
           </Pressable>
-          <Pressable style={styles.sideBtn}>
-            <BlurView intensity={30} tint="light" style={StyleSheet.absoluteFill} />
-            <MaterialIcons name="face" size={20} color={palette.surface} />
+          <Pressable
+            accessibilityLabel="Toggle framing guide"
+            accessibilityRole="button"
+            accessibilityState={{ selected: showGuide }}
+            onPress={() => setShowGuide((current) => !current)}
+            style={[styles.sideBtn, showGuide && styles.sideBtnActive]}
+          >
+            <MaterialIcons
+              name="face"
+              size={20}
+              color={showGuide ? palette.onPrimary : palette.surface}
+            />
           </Pressable>
         </View>
 
-        {/* Instruction card at bottom of camera area */}
-        <View style={styles.instructionWrapper}>
-          <View style={styles.instructionCard}>
-            <BlurView
-              intensity={50}
-              tint="light"
-              style={StyleSheet.absoluteFill}
-            />
-            <Text style={styles.instructionTitle}>
-              Position your face in the frame
-            </Text>
-            <Text style={styles.instructionSub}>
-              Ensure your features align with the guide{"\n"}for high accuracy
-            </Text>
+        {showGuide ? (
+          <View style={styles.instructionWrapper}>
+            <View style={styles.instructionCard}>
+              <Text style={styles.instructionTitle}>Position your face in the frame</Text>
+              <Text style={styles.instructionSub}>{instructionCopy}</Text>
+            </View>
           </View>
-        </View>
+        ) : null}
       </View>
 
-      {/* ---- Bottom capture controls ---- */}
-      <View style={styles.controlsArea}>
-        {/* Library / Capture / Flip row */}
+      <View
+        style={[
+          styles.controlsArea,
+          { paddingBottom: Math.max(insets.bottom, spacing.sm) },
+        ]}
+      >
         <View style={styles.controlsRow}>
-          {/* Library */}
-          <Pressable style={styles.secondaryBtn} onPress={pickFromLibrary}>
-            <MaterialIcons
-              name="photo-library"
-              size={24}
-              color={palette.charcoal}
-            />
+          <Pressable
+            accessibilityLabel="Choose a photo from your library"
+            accessibilityRole="button"
+            onPress={pickFromLibrary}
+            style={styles.secondaryBtn}
+          >
+            <MaterialIcons name="photo-library" size={24} color={palette.charcoal} />
           </Pressable>
 
-          {/* Capture button with pulsing ring */}
           <View style={styles.captureWrapper}>
             <Animated.View
-              style={[
-                styles.pulseRing,
-                { transform: [{ scale: pulseAnim }] },
-              ]}
+              style={[styles.pulseRing, { transform: [{ scale: pulseAnim }] }]}
             />
-            <Pressable style={styles.captureOuter} onPress={captureWithCamera}>
+            <Pressable
+              accessibilityLabel="Capture photo"
+              accessibilityRole="button"
+              onPress={captureWithCamera}
+              style={styles.captureOuter}
+            >
               <View style={styles.captureInner}>
                 <MaterialIcons
+                  color={palette.onPrimary}
                   name="photo-camera"
                   size={28}
-                  color={palette.surface}
                 />
               </View>
             </Pressable>
           </View>
 
-          {/* Flip */}
-          <Pressable style={styles.secondaryBtn}>
+          <Pressable
+            accessibilityLabel={`Switch to ${facing === "front" ? "back" : "front"} camera`}
+            accessibilityRole="button"
+            onPress={handleFlip}
+            style={styles.secondaryBtn}
+          >
             <MaterialIcons
               name="flip-camera-ios"
               size={24}
@@ -178,17 +253,17 @@ export default function ScanScreen() {
           </Pressable>
         </View>
 
-        {/* Labels under Library / Flip */}
         <View style={styles.labelsRow}>
           <Text style={styles.controlLabel}>LIBRARY</Text>
           <View style={{ width: CAPTURE_RING }} />
           <Text style={styles.controlLabel}>FLIP</Text>
         </View>
 
-        {/* Tip banner */}
         <View style={styles.tipBanner}>
           <Text style={styles.tipText}>
-            NATURAL LIGHT IS BEST {"  \u2022  "} REMOVE GLASSES AND FILTERS
+            {showLightingTip
+              ? "SOFT DAYLIGHT IMPROVES ACCURACY"
+              : "GUIDE TOGGLES ARE AVAILABLE ON THE RIGHT"}
           </Text>
         </View>
       </View>
@@ -196,58 +271,64 @@ export default function ScanScreen() {
   );
 }
 
-/* ------------------------------------------------------------------ */
-/*  Styles                                                             */
-/* ------------------------------------------------------------------ */
-
 const styles = StyleSheet.create({
-  /* Root */
   root: {
     flex: 1,
     backgroundColor: palette.charcoal,
   },
-
-  /* Camera area */
   cameraArea: {
     flex: 1,
     position: "relative",
   },
   cameraPlaceholder: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: "#3a3a3a",
-  },
-
-  /* Header */
-  headerBar: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    flexDirection: "row",
     alignItems: "center",
+    backgroundColor: palette.ink,
+    justifyContent: "center",
+  },
+  permissionText: {
+    color: palette.onDark,
+    fontSize: 14,
+    marginTop: spacing.sm,
+    textAlign: "center",
+  },
+  privacyShade: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: palette.overlay,
+    zIndex: 1,
+  },
+  headerBar: {
+    alignItems: "center",
+    flexDirection: "row",
     justifyContent: "space-between",
-    paddingHorizontal: spacing.md,
-    paddingBottom: spacing.sm,
+    left: 0,
     overflow: "hidden",
+    paddingBottom: spacing.sm,
+    paddingHorizontal: spacing.md,
+    position: "absolute",
+    right: 0,
+    top: 0,
     zIndex: 10,
   },
+  headerBackdrop: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: palette.overlaySoft,
+  },
   headerBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: radius.full,
     alignItems: "center",
+    borderRadius: radius.full,
+    height: 44,
     justifyContent: "center",
+    width: 44,
     zIndex: 2,
   },
   headerTitle: {
     ...type.sectionHeader,
     color: palette.surface,
-    letterSpacing: 2.5,
     fontSize: 14,
+    letterSpacing: 2.5,
     zIndex: 2,
   },
-
-  /* Oval guide */
   ovalContainer: {
     ...StyleSheet.absoluteFillObject,
     alignItems: "center",
@@ -255,92 +336,91 @@ const styles = StyleSheet.create({
     zIndex: 5,
   },
   oval: {
-    width: OVAL_WIDTH,
-    height: OVAL_HEIGHT,
-    borderRadius: OVAL_WIDTH / 2,
-    borderWidth: 2,
+    alignItems: "center",
     borderColor: palette.primary,
     borderStyle: "dashed",
-    alignItems: "center",
+    borderWidth: 2,
     justifyContent: "center",
   },
   bracketMark: {
+    borderColor: palette.primary,
+    height: 18,
     position: "absolute",
     width: 18,
-    height: 18,
-    borderColor: palette.primary,
   },
   bracketTop: {
-    top: -2,
     alignSelf: "center",
-    borderTopWidth: 3,
+    borderBottomWidth: 0,
     borderLeftWidth: 3,
     borderRightWidth: 3,
     borderTopLeftRadius: 4,
     borderTopRightRadius: 4,
-    borderBottomWidth: 0,
+    borderTopWidth: 3,
+    top: -2,
   },
   bracketBottom: {
-    bottom: -2,
     alignSelf: "center",
+    borderBottomLeftRadius: 4,
+    borderBottomRightRadius: 4,
     borderBottomWidth: 3,
     borderLeftWidth: 3,
     borderRightWidth: 3,
-    borderBottomLeftRadius: 4,
-    borderBottomRightRadius: 4,
     borderTopWidth: 0,
+    bottom: -2,
   },
   bracketLeft: {
-    left: -2,
-    borderLeftWidth: 3,
-    borderTopWidth: 3,
-    borderBottomWidth: 3,
-    borderTopLeftRadius: 4,
     borderBottomLeftRadius: 4,
+    borderBottomWidth: 3,
+    borderLeftWidth: 3,
     borderRightWidth: 0,
+    borderTopLeftRadius: 4,
+    borderTopWidth: 3,
+    left: -2,
   },
   bracketRight: {
-    right: -2,
-    borderRightWidth: 3,
-    borderTopWidth: 3,
-    borderBottomWidth: 3,
-    borderTopRightRadius: 4,
     borderBottomRightRadius: 4,
+    borderBottomWidth: 3,
     borderLeftWidth: 0,
+    borderRightWidth: 3,
+    borderTopRightRadius: 4,
+    borderTopWidth: 3,
+    right: -2,
   },
-
-  /* Side buttons */
   sideButtons: {
+    gap: spacing.sm,
     position: "absolute",
     right: spacing.md,
     top: "35%",
-    gap: spacing.sm,
     zIndex: 10,
   },
   sideBtn: {
-    width: SIDE_BTN,
-    height: SIDE_BTN,
-    borderRadius: radius.full,
     alignItems: "center",
+    backgroundColor: palette.surfaceTintMuted,
+    borderColor: palette.surfaceTintLineSoft,
+    borderRadius: radius.full,
+    borderWidth: 1,
+    height: SIDE_BTN,
     justifyContent: "center",
-    backgroundColor: "rgba(255,255,255,0.18)",
-    overflow: "hidden",
+    width: SIDE_BTN,
   },
-
-  /* Instruction card */
+  sideBtnActive: {
+    backgroundColor: palette.primary,
+    borderColor: palette.primary,
+  },
   instructionWrapper: {
-    position: "absolute",
     bottom: spacing.lg,
     left: spacing.lg,
+    position: "absolute",
     right: spacing.lg + SIDE_BTN + spacing.md,
     zIndex: 10,
   },
   instructionCard: {
+    backgroundColor: palette.surfaceTintMuted,
+    borderColor: palette.surfaceTintLineSubtle,
     borderRadius: radius.lg,
-    overflow: "hidden",
-    paddingVertical: spacing.md,
+    borderWidth: 1,
     paddingHorizontal: spacing.lg,
-    backgroundColor: "rgba(255,255,255,0.15)",
+    paddingVertical: spacing.md,
   },
   instructionTitle: {
     ...type.h3,
@@ -349,94 +429,84 @@ const styles = StyleSheet.create({
   },
   instructionSub: {
     ...type.caption,
-    color: "rgba(255,255,255,0.75)",
-    lineHeight: 17,
+    color: palette.onDarkMuted,
+    lineHeight: 18,
   },
-
-  /* Controls area */
   controlsArea: {
-    backgroundColor: palette.surface,
-    paddingTop: spacing.lg,
-    paddingBottom: spacing.sm,
     alignItems: "center",
+    backgroundColor: palette.surface,
+    paddingBottom: spacing.sm,
+    paddingTop: spacing.lg,
   },
   controlsRow: {
+    alignItems: "center",
     flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
     gap: spacing.xxl,
+    justifyContent: "center",
   },
-
-  /* Secondary (Library / Flip) buttons */
   secondaryBtn: {
-    width: BOTTOM_BTN,
-    height: BOTTOM_BTN,
-    borderRadius: radius.full,
+    alignItems: "center",
     backgroundColor: palette.canvas,
-    alignItems: "center",
+    borderRadius: radius.full,
+    height: BOTTOM_BTN,
     justifyContent: "center",
+    width: BOTTOM_BTN,
   },
-
-  /* Capture button */
   captureWrapper: {
-    width: PULSE_SIZE,
-    height: PULSE_SIZE,
     alignItems: "center",
+    height: PULSE_SIZE,
     justifyContent: "center",
+    width: PULSE_SIZE,
   },
   pulseRing: {
     ...StyleSheet.absoluteFillObject,
+    borderColor: palette.primaryLine,
     borderRadius: radius.full,
     borderWidth: 2,
-    borderColor: "rgba(184, 115, 50, 0.35)",
   },
   captureOuter: {
-    width: CAPTURE_RING,
-    height: CAPTURE_RING,
+    alignItems: "center",
+    borderColor: palette.primary,
     borderRadius: radius.full,
     borderWidth: 3,
-    borderColor: palette.primary,
-    alignItems: "center",
+    height: CAPTURE_RING,
     justifyContent: "center",
+    width: CAPTURE_RING,
   },
   captureInner: {
-    width: CAPTURE_SIZE,
-    height: CAPTURE_SIZE,
-    borderRadius: radius.full,
+    alignItems: "center",
     backgroundColor: palette.primary,
-    alignItems: "center",
+    borderRadius: radius.full,
+    height: CAPTURE_SIZE,
     justifyContent: "center",
+    width: CAPTURE_SIZE,
   },
-
-  /* Labels */
   labelsRow: {
-    flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
+    flexDirection: "row",
     gap: spacing.xxl,
+    justifyContent: "center",
     marginTop: spacing.xs,
   },
   controlLabel: {
     ...type.overline,
     color: palette.muted,
+    fontSize: 12,
     textAlign: "center",
     width: BOTTOM_BTN,
-    fontSize: 9,
   },
-
-  /* Tip banner */
   tipBanner: {
-    marginTop: spacing.md,
-    backgroundColor: palette.primarySoft,
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.lg,
-    borderRadius: radius.full,
     alignSelf: "center",
+    backgroundColor: palette.primarySoft,
+    borderRadius: radius.full,
+    marginTop: spacing.md,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm,
   },
   tipText: {
     ...type.overline,
     color: palette.primary,
-    fontSize: 9,
+    fontSize: 12,
     letterSpacing: 1.2,
     textAlign: "center",
   },

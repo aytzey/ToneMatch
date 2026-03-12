@@ -1,19 +1,20 @@
 import { LinearGradient } from "expo-linear-gradient";
 import { Link } from "expo-router";
 import {
-  Dimensions,
   Image,
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
   View,
+  useWindowDimensions,
 } from "react-native";
 
 import { MaterialIcons } from "@expo/vector-icons";
 
 import { Screen } from "@/src/components/screen";
 import { hexForColorName } from "@/src/lib/color-name-hex";
+import { buildEditorialStory } from "@/src/lib/style-story";
 import { useAuth } from "@/src/features/auth/use-auth";
 import { useAnalysisHistory } from "@/src/features/style/use-analysis-history";
 import { useStyleProfile } from "@/src/features/style/use-style-profile";
@@ -36,9 +37,6 @@ function relativeDate(dateStr?: string): string {
   return weeks === 1 ? "1 week ago" : `${weeks} weeks ago`;
 }
 
-const SCREEN_WIDTH = Dimensions.get("window").width;
-const OCCASION_CARD_WIDTH = 160;
-
 const DEFAULT_SWATCH_COLORS = [
   palette.swatch1,
   palette.swatch2,
@@ -50,25 +48,28 @@ const DEFAULT_SWATCH_COLORS = [
 const OCCASIONS = [
   {
     label: "The Office",
-    bg: "#c9a882",
+    bg: palette.accentSoft,
     image: require("@/assets/images/home_occasion_office.png"),
   },
   {
     label: "Date Night",
-    bg: "#d4b896",
+    bg: palette.clay,
     image: require("@/assets/images/home_occasion_date.png"),
   },
   {
     label: "Weekend",
-    bg: "#bfa27e",
+    bg: palette.surfaceMuted,
     image: require("@/assets/images/home_occasion_weekend.png"),
   },
 ];
 
 export default function HomeScreen() {
+  const { width } = useWindowDimensions();
   const { user } = useAuth();
   const { data } = useStyleProfile();
   const { data: history } = useAnalysisHistory();
+  const story = buildEditorialStory(data);
+  const occasionCardWidth = Math.min(168, Math.max(140, width * 0.4));
 
   const displayName =
     user?.user_metadata?.display_name ??
@@ -76,10 +77,10 @@ export default function HomeScreen() {
     "there";
   const firstName = displayName.split(" ")[0];
 
-  const analysisTitle = data?.summary?.title ?? "Deep Autumn Palette";
+  const analysisTitle = data?.summary?.title ?? "Your saved palette";
   const confidence = data?.confidence
     ? `${Math.round(data.confidence * 100)}%`
-    : "98%";
+    : "No score";
 
   const swatchColors =
     data?.palette?.core && data.palette.core.length > 0
@@ -94,24 +95,33 @@ export default function HomeScreen() {
     <Screen scrollable contentContainerStyle={styles.scrollContent}>
       {/* ---- Header ---- */}
       <View style={styles.header}>
-        <Pressable style={styles.headerIconWrap} accessibilityLabel="Menu">
-          <MaterialIcons name="menu" size={24} color={palette.charcoal} />
-        </Pressable>
+        <Link href="/(tabs)/discover" asChild>
+          <Pressable
+            accessibilityLabel="Open discover"
+            accessibilityRole="button"
+            style={styles.headerIconWrap}
+          >
+            <MaterialIcons name="menu" size={24} color={palette.charcoal} />
+          </Pressable>
+        </Link>
 
         <Text style={styles.headerTitle}>TONEMATCH</Text>
 
-        <Pressable
-          style={styles.headerAvatarWrap}
-          accessibilityLabel="Account"
-        >
-          <View style={styles.headerAvatarCircle}>
-            <MaterialIcons
-              name="account-circle"
-              size={28}
-              color={palette.primary}
-            />
-          </View>
-        </Pressable>
+        <Link href="/(tabs)/profile" asChild>
+          <Pressable
+            accessibilityRole="button"
+            style={styles.headerAvatarWrap}
+            accessibilityLabel="Open account"
+          >
+            <View style={styles.headerAvatarCircle}>
+              <MaterialIcons
+                name="account-circle"
+                size={28}
+                color={palette.primary}
+              />
+            </View>
+          </Pressable>
+        </Link>
       </View>
 
       {/* ---- Hero Card ---- */}
@@ -126,21 +136,21 @@ export default function HomeScreen() {
 
           {/* Gradient overlay */}
           <LinearGradient
-            colors={["transparent", "rgba(25,20,16,0.85)"]}
+            colors={["transparent", palette.overlayStrong]}
             locations={[0.2, 1]}
-            style={StyleSheet.absoluteFill}
+            style={StyleSheet.absoluteFillObject}
           />
 
           {/* Hero content pinned to bottom */}
           <View style={styles.heroContent}>
             <Text style={styles.heroEyebrow}>Today for you</Text>
             <Text style={styles.heroHeadline}>
-              Morning, {firstName}. Ready for your palette?
+              Morning, {firstName}. {story.seasonTitle} guide is ready.
             </Text>
             <View style={styles.heroSubRow}>
               <View style={styles.heroAccentBar} />
               <Text style={styles.heroSubText}>
-                New Season Guide Available
+                {story.paletteLead.slice(0, 2).join(" + ")} are leading today
               </Text>
             </View>
           </View>
@@ -189,18 +199,22 @@ export default function HomeScreen() {
       <View style={styles.quickActionsGrid}>
         <Link href="/(tabs)/scan" asChild>
           <Pressable
+            accessibilityLabel="Start a new scan"
+            accessibilityRole="button"
             style={({ pressed }) => [
               styles.quickActionPrimary,
               pressed && styles.pressed,
             ]}
           >
-            <MaterialIcons name="photo-camera" size={26} color="#fff" />
+            <MaterialIcons name="photo-camera" size={26} color={palette.onPrimary} />
             <Text style={styles.quickActionLabelWhite}>New Scan</Text>
           </Pressable>
         </Link>
 
         <Link href="/quick-check" asChild>
           <Pressable
+            accessibilityLabel="Open quick check"
+            accessibilityRole="button"
             style={({ pressed }) => [
               styles.quickActionSecondary,
               pressed && styles.pressed,
@@ -215,28 +229,38 @@ export default function HomeScreen() {
           </Pressable>
         </Link>
 
-        <Pressable
-          style={({ pressed }) => [
-            styles.quickActionSecondary,
-            pressed && styles.pressed,
-          ]}
-        >
-          <MaterialIcons
-            name="auto-awesome"
-            size={26}
-            color={palette.primary}
-          />
-          <Text style={styles.quickActionLabel}>Trends</Text>
-        </Pressable>
+        <Link href="/style-guide" asChild>
+          <Pressable
+            accessibilityLabel="Open style guides"
+            accessibilityRole="button"
+            style={({ pressed }) => [
+              styles.quickActionSecondary,
+              pressed && styles.pressed,
+            ]}
+          >
+            <MaterialIcons
+              name="auto-awesome"
+              size={26}
+              color={palette.primary}
+            />
+            <Text style={styles.quickActionLabel}>Guides</Text>
+          </Pressable>
+        </Link>
       </View>
 
       {/* ---- Occasions ---- */}
       <View style={styles.occasionsSection}>
         <View style={styles.occasionsHeaderRow}>
           <Text style={styles.sectionHeader}>OCCASIONS</Text>
-          <Pressable>
-            <Text style={styles.seeAll}>SEE ALL</Text>
-          </Pressable>
+          <Link href="/occasion-guide" asChild>
+            <Pressable
+              accessibilityLabel="See all occasion guides"
+              accessibilityRole="button"
+              style={styles.seeAllButton}
+            >
+              <Text style={styles.seeAll}>SEE ALL</Text>
+            </Pressable>
+          </Link>
         </View>
 
         <ScrollView
@@ -245,11 +269,15 @@ export default function HomeScreen() {
           contentContainerStyle={styles.occasionsScroll}
         >
           {OCCASIONS.map((item) => (
-            <View key={item.label} style={styles.occasionCard}>
+            <View
+              key={item.label}
+              style={[styles.occasionCard, { width: occasionCardWidth }]}
+            >
               <Image
                 source={item.image}
                 style={[
                   styles.occasionImage,
+                  { width: occasionCardWidth },
                   { backgroundColor: item.bg },
                 ]}
                 resizeMode="cover"
@@ -287,8 +315,8 @@ const styles = StyleSheet.create({
     backgroundColor: palette.canvas,
   },
   headerIconWrap: {
-    width: 40,
-    height: 40,
+    width: 44,
+    height: 44,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -301,14 +329,14 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   headerAvatarWrap: {
-    width: 40,
-    height: 40,
+    width: 44,
+    height: 44,
     alignItems: "flex-end",
     justifyContent: "center",
   },
   headerAvatarCircle: {
-    width: 36,
-    height: 36,
+    width: 44,
+    height: 44,
     borderRadius: radius.full,
     backgroundColor: palette.primarySoft,
     alignItems: "center",
@@ -322,12 +350,13 @@ const styles = StyleSheet.create({
   heroCard: {
     borderRadius: radius.xl,
     overflow: "hidden",
-    height: 260,
+    aspectRatio: 4 / 5,
+    minHeight: 260,
     position: "relative",
   },
   heroImagePlaceholder: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: "#a67c52",
+    backgroundColor: palette.primary,
   },
   heroContent: {
     position: "absolute",
@@ -338,7 +367,7 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
   },
   heroEyebrow: {
-    fontSize: 11,
+    fontSize: 12,
     fontFamily: "Manrope_700Bold",
     fontWeight: "700",
     color: palette.primary,
@@ -350,7 +379,7 @@ const styles = StyleSheet.create({
     lineHeight: 30,
     fontFamily: "Manrope_700Bold",
     fontWeight: "700",
-    color: "#ffffff",
+    color: palette.onDark,
     letterSpacing: -0.3,
   },
   heroSubRow: {
@@ -366,10 +395,10 @@ const styles = StyleSheet.create({
     backgroundColor: palette.primary,
   },
   heroSubText: {
-    fontSize: 10,
+    fontSize: 12,
     fontFamily: "Manrope_600SemiBold",
     fontWeight: "600",
-    color: "rgba(255,255,255,0.8)",
+    color: palette.onDarkMuted,
     letterSpacing: 0.5,
     textTransform: "uppercase",
   },
@@ -395,7 +424,7 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     borderWidth: 1,
     borderColor: palette.borderLight,
-    shadowColor: "#000",
+    shadowColor: palette.ink,
     shadowOpacity: 0.04,
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 8,
@@ -424,7 +453,7 @@ const styles = StyleSheet.create({
     height: 24,
     borderRadius: radius.full,
     borderWidth: 1.5,
-    borderColor: "rgba(255,255,255,0.25)",
+    borderColor: palette.surfaceTintLine,
   },
   swatchMore: {
     width: 24,
@@ -435,7 +464,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   swatchMoreText: {
-    fontSize: 9,
+    fontSize: 12,
     fontFamily: "Manrope_600SemiBold",
     fontWeight: "600",
     color: palette.muted,
@@ -444,7 +473,7 @@ const styles = StyleSheet.create({
     width: 96,
     height: 96,
     borderRadius: radius.md,
-    backgroundColor: "#c9a87c",
+    backgroundColor: palette.accentSoft,
     borderWidth: 1,
     borderColor: palette.border,
   },
@@ -482,16 +511,16 @@ const styles = StyleSheet.create({
     borderColor: palette.border,
   },
   quickActionLabelWhite: {
-    fontSize: 10,
+    fontSize: 12,
     fontFamily: "Manrope_700Bold",
     fontWeight: "700",
-    color: "#ffffff",
+    color: palette.onPrimary,
     textTransform: "uppercase",
     letterSpacing: 0.5,
     textAlign: "center",
   },
   quickActionLabel: {
-    fontSize: 10,
+    fontSize: 12,
     fontFamily: "Manrope_700Bold",
     fontWeight: "700",
     color: palette.charcoal,
@@ -523,24 +552,27 @@ const styles = StyleSheet.create({
     letterSpacing: 0.8,
     textTransform: "uppercase",
   },
+  seeAllButton: {
+    minHeight: 44,
+    justifyContent: "center",
+  },
   occasionsScroll: {
     paddingHorizontal: spacing.md,
     paddingBottom: spacing.md,
     gap: spacing.md,
   },
   occasionCard: {
-    width: OCCASION_CARD_WIDTH,
     gap: spacing.sm,
   },
   occasionImage: {
-    width: OCCASION_CARD_WIDTH,
-    height: 192,
+    aspectRatio: 5 / 6,
+    minHeight: 180,
     borderRadius: radius.xl,
     borderWidth: 1,
     borderColor: palette.borderLight,
   },
   occasionLabel: {
-    fontSize: 11,
+    fontSize: 12,
     fontFamily: "Manrope_700Bold",
     fontWeight: "700",
     color: palette.charcoal,

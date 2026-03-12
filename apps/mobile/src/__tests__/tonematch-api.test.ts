@@ -46,6 +46,7 @@ jest.mock("@/src/lib/openrouter", () => ({
   openrouterConfigured: false,
   analyzeSelfie: jest.fn(),
   analyzeClothing: jest.fn(),
+  generateStyleTheory: jest.fn(),
   selfieResultToStyleExperience: jest.fn(),
 }));
 
@@ -96,7 +97,9 @@ import {
   fetchAnalysisHistory,
   fetchCatalogFeed,
   fetchSubscriptionState,
+  generateStyleTheory,
 } from "@/src/lib/tonematch-api";
+import { buildStablePalette } from "@/src/lib/style-profile-normalizer";
 
 /* ------------------------------------------------------------------ */
 /*  Tests                                                              */
@@ -121,7 +124,10 @@ describe("fetchStyleExperience", () => {
     mockProfileStore.loadProfile.mockResolvedValueOnce(storedProfile);
 
     const result = await fetchStyleExperience("user-1");
-    expect(result).toEqual(storedProfile);
+    expect(result).not.toBeNull();
+    expect(result!.undertone).toBe("Cool Bright");
+    expect(result!.palette.core).toEqual(buildStablePalette("Cool Bright", "High Contrast").core);
+    expect(result!.palette.avoid).toEqual(buildStablePalette("Cool Bright", "High Contrast").avoid);
   });
 
   it("returns mock profile when no backend and no stored profile", async () => {
@@ -216,5 +222,29 @@ describe("fetchSubscriptionState", () => {
     const state = await fetchSubscriptionState("user-1");
     expect(state.plan).toBe("plus");
     expect(state.provider).toBe("local");
+  });
+});
+
+describe("generateStyleTheory", () => {
+  it("returns a long-form fallback article when AI is unavailable", async () => {
+    const theory = await generateStyleTheory({
+      undertone: "Warm Neutral",
+      contrast: "Medium Contrast",
+      confidence: 0.87,
+      plan: "plus",
+      summary: { title: "Warm / Medium", description: "Your palette feels grounded and balanced." },
+      focusItems: [{ title: "Why this works", copy: "Earthy color depth keeps your skin lively." }],
+      palette: { core: ["Rust", "Olive", "Forest Green"], avoid: ["Icy Grey", "Blue Violet"] },
+      recommendations: [
+        { id: "r1", title: "Olive knit polo", category: "Top", reason: "Keeps warmth close to the face.", score: 0.9, price: "$68" },
+      ],
+    });
+
+    expect(theory.source).toBe("fallback");
+    expect(theory.sections.length).toBeGreaterThanOrEqual(4);
+    expect(theory.title).toContain("Warm Neutral");
+    expect(theory.sections[0].body.length).toBeGreaterThan(80);
+    expect(theory.examples).toHaveLength(3);
+    expect(theory.examples[0].copy).toContain("Warm Neutral");
   });
 });

@@ -1,22 +1,27 @@
 /**
- * Tests for the profile store (AsyncStorage-backed cache).
+ * Tests for the profile store (FileSystem-backed cache).
  */
 
-// Mock AsyncStorage
-const mockStorage = new Map<string, string>();
-jest.mock("@react-native-async-storage/async-storage", () => ({
-  __esModule: true,
-  default: {
-    getItem: jest.fn((key: string) => Promise.resolve(mockStorage.get(key) ?? null)),
-    setItem: jest.fn((key: string, value: string) => {
-      mockStorage.set(key, value);
-      return Promise.resolve();
-    }),
-    removeItem: jest.fn((key: string) => {
-      mockStorage.delete(key);
-      return Promise.resolve();
-    }),
-  },
+// Mock expo-file-system legacy API used on native platforms
+const mockFiles = new Map<string, string>();
+jest.mock("expo-file-system/legacy", () => ({
+  documentDirectory: "file:///mock/",
+  writeAsStringAsync: jest.fn((path: string, content: string) => {
+    mockFiles.set(path, content);
+    return Promise.resolve();
+  }),
+  readAsStringAsync: jest.fn((path: string) => {
+    const content = mockFiles.get(path);
+    if (content === undefined) throw new Error("File not found");
+    return Promise.resolve(content);
+  }),
+  getInfoAsync: jest.fn((path: string) =>
+    Promise.resolve({ exists: mockFiles.has(path) }),
+  ),
+  deleteAsync: jest.fn((path: string) => {
+    mockFiles.delete(path);
+    return Promise.resolve();
+  }),
 }));
 
 import type { StyleExperience } from "@/src/types/tonematch";
@@ -36,7 +41,7 @@ const TEST_PROFILE: StyleExperience = {
 };
 
 beforeEach(() => {
-  mockStorage.clear();
+  mockFiles.clear();
   jest.resetModules();
   // Re-require to reset the in-memory cache
   profileStore = require("@/src/store/profile-store");
@@ -71,7 +76,7 @@ describe("profile-store", () => {
   });
 
   it("handles corrupt JSON gracefully", async () => {
-    mockStorage.set("tonematch_profile", "{invalid json");
+    mockFiles.set("file:///mock/tonematch_profile.json", "{invalid json");
     const loaded = await profileStore.loadProfile();
     expect(loaded).toBeNull();
   });

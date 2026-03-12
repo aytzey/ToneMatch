@@ -34,8 +34,10 @@ export function AuthProvider({ children }: PropsWithChildren) {
     let cancelled = false;
 
     const bootstrapSession = async () => {
+      console.log("[AuthProvider] bootstrap | backendConfigured:", backendConfigured, "devSingleUserMode:", devSingleUserMode);
       if (!devSingleUserMode) {
         const { data } = await supabase.auth.getSession();
+        console.log("[AuthProvider] getSession | hasSession:", !!data.session, "email:", data.session?.user?.email);
         if (cancelled) {
           return;
         }
@@ -115,11 +117,13 @@ export function AuthProvider({ children }: PropsWithChildren) {
       setReady(true);
     };
 
-    bootstrapSession().catch((error) => {
+    bootstrapSession().then(() => {
+      console.log("[AuthProvider] bootstrap complete");
+    }).catch((error) => {
       if (cancelled) {
         return;
       }
-      console.error("Auth bootstrap failed", error);
+      console.error("[AuthProvider] bootstrap FAILED:", error);
       setSession(null);
       setReady(true);
     });

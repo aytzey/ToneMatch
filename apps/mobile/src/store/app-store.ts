@@ -27,7 +27,7 @@ export const useAppStore = create<AppState>((set) => ({
   previewPlan: "free",
   scanState: {
     status: "idle",
-    message: "Kamera, galeri ve signed upload entegrasyonu icin hazir. Sonraki adim gercek capture ekranini baglamak.",
+    message: "Camera, library, and upload flow are ready. The next step is the live capture experience.",
     previewUri: null,
     sessionId: null,
   },

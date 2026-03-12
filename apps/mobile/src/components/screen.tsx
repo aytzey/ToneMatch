@@ -1,20 +1,36 @@
 import { PropsWithChildren } from "react";
-import { SafeAreaView, ScrollView, StyleProp, StyleSheet, View, ViewStyle } from "react-native";
+import { ScrollView, StyleProp, StyleSheet, View, ViewStyle } from "react-native";
+import { Edge, SafeAreaView } from "react-native-safe-area-context";
 
-import { palette } from "@/src/theme/palette";
+import { useThemedStyles } from "@/src/theme/use-themed-styles";
 
 type ScreenProps = PropsWithChildren<{
   scrollable?: boolean;
   contentContainerStyle?: StyleProp<ViewStyle>;
+  keyboardShouldPersistTaps?: "always" | "handled" | "never";
+  keyboardDismissMode?: "none" | "interactive" | "on-drag";
+  edges?: Edge[];
 }>;
 
-export function Screen({ children, scrollable = false, contentContainerStyle }: ScreenProps) {
+export function Screen({
+  children,
+  scrollable = false,
+  contentContainerStyle,
+  keyboardShouldPersistTaps = "handled",
+  keyboardDismissMode = "on-drag",
+  edges,
+}: ScreenProps) {
+  const styles = useThemedStyles(createStyles);
+
   if (scrollable) {
     return (
-      <SafeAreaView style={styles.safe}>
+      <SafeAreaView edges={edges} style={styles.safe}>
         <ScrollView
+          automaticallyAdjustKeyboardInsets
           contentInsetAdjustmentBehavior="automatic"
-          contentContainerStyle={contentContainerStyle}
+          contentContainerStyle={[styles.scrollContent, contentContainerStyle]}
+          keyboardDismissMode={keyboardDismissMode}
+          keyboardShouldPersistTaps={keyboardShouldPersistTaps}
           showsVerticalScrollIndicator={false}
         >
           {children}
@@ -24,15 +40,19 @@ export function Screen({ children, scrollable = false, contentContainerStyle }: 
   }
 
   return (
-    <SafeAreaView style={styles.safe}>
+    <SafeAreaView edges={edges} style={styles.safe}>
       <View style={[{ flex: 1 }, contentContainerStyle]}>{children}</View>
     </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({
-  safe: {
-    flex: 1,
-    backgroundColor: palette.canvas,
-  },
-});
+const createStyles = (palette: import("@/src/theme/palette").ThemePalette) =>
+  StyleSheet.create({
+    safe: {
+      flex: 1,
+      backgroundColor: palette.canvas,
+    },
+    scrollContent: {
+      flexGrow: 1,
+    },
+  });

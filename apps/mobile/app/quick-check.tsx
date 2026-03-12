@@ -5,17 +5,18 @@ import { useState } from "react";
 import {
   ActivityIndicator,
   Alert,
+  Pressable,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
 
-import { GlassCard } from "@/src/components/glass-card";
 import { Pill } from "@/src/components/pill";
 import { PrimaryButton } from "@/src/components/primary-button";
 import { Screen } from "@/src/components/screen";
-import { useAuth } from "@/src/features/auth/use-auth";
+import { SurfaceCard } from "@/src/components/surface-card";
+import { useStyleProfile } from "@/src/features/style/use-style-profile";
+import { buildEditorialStory } from "@/src/lib/style-story";
 import { runQuickCheck } from "@/src/lib/tonematch-api";
 import { palette } from "@/src/theme/palette";
 import { radius, spacing } from "@/src/theme/spacing";
@@ -36,15 +37,19 @@ const SUGGESTED_USAGE: { icon: keyof typeof MaterialIcons.glyphMap; label: strin
 /* ------------------------------------------------------------------ */
 export default function QuickCheckScreen() {
   const router = useRouter();
-  const { backendConfigured, isPreviewMode } = useAuth();
+  const { data: profile } = useStyleProfile();
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<QuickCheckView | null>(null);
+  const story = buildEditorialStory(profile);
 
   /* Pick image from camera or library then run analysis */
   const handlePick = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== "granted") {
-      Alert.alert("Galeri izni gerekli", "Fotograf secmek icin galeri erisim izni vermelisin.");
+      Alert.alert(
+        "Library access required",
+        "Allow photo access so we can analyze the item against your saved palette.",
+      );
       return;
     }
 
@@ -74,20 +79,22 @@ export default function QuickCheckScreen() {
 
   /* Derive verdict helpers */
   const isGoodFit =
-    result?.clothingCheck?.verdict === "uyuyor" ||
+    result?.clothingCheck?.verdict === "matches" ||
+    result?.clothingCheck?.verdict?.toLowerCase().includes("match") ||
     result?.label?.toLowerCase().includes("good");
 
   return (
     <Screen scrollable contentContainerStyle={styles.content}>
       {/* ── Header ─────────────────────────────────────────────── */}
       <View style={styles.header}>
-        <TouchableOpacity
+        <Pressable
+          accessibilityLabel="Go back"
+          accessibilityRole="button"
           onPress={() => router.back()}
-          hitSlop={12}
           style={styles.backBtn}
         >
           <MaterialIcons name="arrow-back" size={24} color={palette.charcoal} />
-        </TouchableOpacity>
+        </Pressable>
         <Text style={styles.headerTitle}>Quick Check</Text>
         {/* Spacer to center title */}
         <View style={styles.headerSpacer} />
@@ -102,8 +109,9 @@ export default function QuickCheckScreen() {
 
           <Text style={styles.uploadTitle}>Upload Product Photo</Text>
           <Text style={styles.uploadBody}>
-            Take a photo or upload an image to analyze the color match against
-            your Deep Autumn profile.
+            Upload one product image and we will check how well it fits your{" "}
+            {story.seasonTitle} result, with extra weight on{" "}
+            {story.paletteLead.slice(0, 2).join(" and ")}.
           </Text>
 
           <PrimaryButton
@@ -127,7 +135,7 @@ export default function QuickCheckScreen() {
       {result && result.clothingCheck && (
         <>
           {/* Analysis Result Card */}
-          <GlassCard>
+          <SurfaceCard>
             <Text style={styles.overline}>ANALYSIS RESULT</Text>
 
             <View style={styles.matchRow}>
@@ -161,7 +169,7 @@ export default function QuickCheckScreen() {
                 ))}
               </View>
             )}
-          </GlassCard>
+          </SurfaceCard>
 
           {/* Suggested Usage */}
           <View style={styles.suggestedSection}>
@@ -169,7 +177,8 @@ export default function QuickCheckScreen() {
             <View style={styles.suggestedRow}>
               {SUGGESTED_USAGE.map((item) => (
                 <View key={item.label} style={styles.suggestedItem}>
-                  <View style={styles.suggestedIconCircle}>
+                  <View style={styles.suggestedAccent} />
+                  <View style={styles.suggestedIconWrap}>
                     <MaterialIcons
                       name={item.icon}
                       size={24}
@@ -198,7 +207,7 @@ export default function QuickCheckScreen() {
           ) : null}
 
           {/* Detail card */}
-          <GlassCard>
+          <SurfaceCard>
             <Text style={styles.detailSectionTitle}>Details</Text>
             <Text style={styles.detailBody}>{result.reason}</Text>
             <View style={styles.metaRow}>
@@ -212,7 +221,7 @@ export default function QuickCheckScreen() {
                 subtle
               />
             </View>
-          </GlassCard>
+          </SurfaceCard>
 
           {/* Action buttons */}
           <View style={styles.actionStack}>
@@ -220,7 +229,7 @@ export default function QuickCheckScreen() {
               label="Save to Wardrobe"
               icon="checkroom"
               onPress={() => {
-                Alert.alert("Saved", "Item saved to your wardrobe.");
+                router.push("/(tabs)/wardrobe");
               }}
             />
 
@@ -229,7 +238,7 @@ export default function QuickCheckScreen() {
               icon="search"
               variant="ghost"
               onPress={() => {
-                /* navigate to discover / similar */
+                router.push("/(tabs)/discover");
               }}
             />
           </View>
@@ -266,8 +275,8 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.sm,
   },
   backBtn: {
-    width: 40,
-    height: 40,
+    width: 44,
+    height: 44,
     borderRadius: radius.full,
     backgroundColor: palette.surface,
     alignItems: "center",
@@ -282,7 +291,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   headerSpacer: {
-    width: 40,
+    width: 44,
   },
 
   /* Upload area */
@@ -367,16 +376,28 @@ const styles = StyleSheet.create({
   },
   suggestedRow: {
     flexDirection: "row",
-    justifyContent: "space-around",
+    gap: spacing.sm,
   },
   suggestedItem: {
     alignItems: "center",
+    backgroundColor: palette.surface,
+    borderColor: palette.border,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.md,
     gap: spacing.sm,
     flex: 1,
   },
-  suggestedIconCircle: {
-    width: 56,
-    height: 56,
+  suggestedAccent: {
+    width: 28,
+    height: 4,
+    borderRadius: radius.full,
+    backgroundColor: palette.primary,
+  },
+  suggestedIconWrap: {
+    width: 44,
+    height: 44,
     borderRadius: radius.full,
     backgroundColor: palette.primarySoft,
     alignItems: "center",

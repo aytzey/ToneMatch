@@ -1,11 +1,13 @@
 import { MaterialIcons } from "@expo/vector-icons";
 import { Redirect, Tabs } from "expo-router";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useAuth } from "@/src/features/auth/use-auth";
 import { palette } from "@/src/theme/palette";
 
 export default function TabsLayout() {
   const { isAuthenticated, ready } = useAuth();
+  const insets = useSafeAreaInsets();
 
   if (!ready) {
     return null;
@@ -23,17 +25,20 @@ export default function TabsLayout() {
         tabBarInactiveTintColor: palette.muted,
         tabBarLabelStyle: {
           fontFamily: "Manrope_700Bold",
-          fontSize: 10,
-          letterSpacing: 1,
+          fontSize: 12,
+          letterSpacing: 0.8,
           textTransform: "uppercase",
+        },
+        tabBarItemStyle: {
+          paddingVertical: 4,
         },
         tabBarStyle: {
           backgroundColor: palette.canvas,
           borderTopWidth: 1,
           borderTopColor: palette.border,
           paddingTop: 6,
-          paddingBottom: 8,
-          height: 64,
+          paddingBottom: Math.max(insets.bottom, 8),
+          height: 64 + Math.max(insets.bottom - 8, 0),
         },
       }}
     >

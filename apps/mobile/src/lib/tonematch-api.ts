@@ -6,18 +6,26 @@ import { backendConfigured, supabaseConfig } from "@/src/lib/env";
 import {
   analyzeClothing,
   analyzeSelfie,
+  generateStyleTheory as generateOpenRouterStyleTheory,
   openrouterConfigured,
   selfieResultToStyleExperience,
 } from "@/src/lib/openrouter";
+import {
+  applyStablePalette,
+  buildStablePalette,
+  buildTheoryExamples,
+} from "@/src/lib/style-profile-normalizer";
 import { supabase } from "@/src/lib/supabase";
 import { useAppStore } from "@/src/store/app-store";
 import { loadProfile, saveProfile } from "@/src/store/profile-store";
 import type {
+  AnalysisSnapshot,
   AnalysisSessionView,
   ExportPayload,
   QuickCheckView,
   RecommendationCard,
   StyleExperience,
+  StyleTheoryView,
   SubscriptionPlan,
   SubscriptionStateView,
   WardrobeItemView,
@@ -68,6 +76,7 @@ async function invokeEdgeFunction<TResponse>(functionName: string, body?: unknow
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
   const authToken = session?.access_token ?? supabaseConfig.anonKey;
+  console.log(`[invokeEdgeFunction] ${functionName} | hasSession: ${!!session} | authToken: ${authToken?.slice(0, 20)}...`);
 
   const response = await fetch(`${supabaseConfig.url}/functions/v1/${functionName}`, {
     method: "POST",
@@ -83,6 +92,7 @@ async function invokeEdgeFunction<TResponse>(functionName: string, body?: unknow
   clearTimeout(timeoutId);
 
   const payload = (await response.json().catch(() => null)) as { error?: string } | TResponse | null;
+  console.log(`[invokeEdgeFunction] ${functionName} | status: ${response.status} | payload:`, JSON.stringify(payload)?.slice(0, 200));
 
   if (!response.ok) {
     const message =
@@ -98,27 +108,56 @@ async function invokeEdgeFunction<TResponse>(functionName: string, body?: unknow
 let _backendReachable: boolean | null = null;
 let _backendReachableCheckedAt = 0;
 const REACHABLE_CACHE_TTL_MS = 30_000; // re-check every 30 seconds
+const isWebRuntime = typeof window !== "undefined" && typeof document !== "undefined";
+
+function isLocalWebOrigin() {
+  if (!isWebRuntime) {
+    return false;
+  }
+
+  const hostname = globalThis.location?.hostname ?? "";
+  return (
+    hostname === "localhost" ||
+    hostname === "127.0.0.1" ||
+    hostname === "0.0.0.0" ||
+    hostname.endsWith(".local") ||
+    /^10\./.test(hostname) ||
+    /^192\.168\./.test(hostname) ||
+    /^172\.(1[6-9]|2\d|3[0-1])\./.test(hostname)
+  );
+}
 
 async function isBackendReachable(): Promise<boolean> {
   const now = Date.now();
   if (_backendReachable !== null && now - _backendReachableCheckedAt < REACHABLE_CACHE_TTL_MS) {
+    console.log("[isBackendReachable] cached:", _backendReachable);
     return _backendReachable;
   }
+
+  if (isLocalWebOrigin()) {
+    _backendReachable = false;
+    _backendReachableCheckedAt = now;
+    console.log("[isBackendReachable] skipping local web probe to avoid CORS preflight failures");
+    return false;
+  }
+
   try {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 3000);
-    const response = await fetch(`${supabaseConfig.url}/rest/v1/`, {
-      method: "HEAD",
+    const response = await fetch(`${supabaseConfig.url}/functions/v1/create-upload`, {
+      method: "OPTIONS",
       signal: controller.signal,
       headers: { apikey: supabaseConfig.anonKey },
     });
     clearTimeout(timeoutId);
-    _backendReachable = response.ok || response.status === 401;
+    _backendReachable = response.ok;
     _backendReachableCheckedAt = now;
+    console.log("[isBackendReachable] fresh check:", response.status, "→", _backendReachable);
     return _backendReachable;
-  } catch {
+  } catch (err) {
     _backendReachable = false;
     _backendReachableCheckedAt = now;
+    console.error("[isBackendReachable] network error:", err);
     return false;
   }
 }
@@ -127,24 +166,359 @@ function useOpenRouterFallback(): boolean {
   return openrouterConfigured;
 }
 
+function joinNatural(values: string[]) {
+  if (values.length === 0) {
+    return "";
+  }
+
+  if (values.length === 1) {
+    return values[0];
+  }
+
+  if (values.length === 2) {
+    return `${values[0]} and ${values[1]}`;
+  }
+
+  return `${values.slice(0, -1).join(", ")}, and ${values[values.length - 1]}`;
+}
+
+function buildAnalysisSnapshot(
+  profile: StyleExperience,
+  options?: { capturedAt?: string; sourceSessionId?: string | null },
+): AnalysisSnapshot {
+  const normalized = applyStablePalette(profile);
+
+  return {
+    undertone: normalized.undertone,
+    contrast: normalized.contrast,
+    confidence: normalized.confidence,
+    summary: {
+      title: normalized.summary.title,
+      description: normalized.summary.description,
+    },
+    focusItems: normalized.focusItems.map((item) => ({
+      title: item.title,
+      copy: item.copy,
+    })),
+    palette: {
+      core: [...normalized.palette.core],
+      avoid: [...normalized.palette.avoid],
+    },
+    recommendations: normalized.recommendations.map((item) => ({
+      id: item.id,
+      title: item.title,
+      category: item.category,
+      description: item.description,
+      reason: item.reason,
+      score: Number(item.score ?? 0),
+      price: item.price,
+      merchantUrl: item.merchantUrl ?? null,
+      merchantName: item.merchantName ?? null,
+      merchantSource: item.merchantSource ?? null,
+      isPremium: item.isPremium,
+      colorFamily: item.colorFamily,
+    })),
+    capturedAt: options?.capturedAt ?? new Date().toISOString(),
+    sourceSessionId: options?.sourceSessionId ?? null,
+  };
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
+function parseStringArray(value: unknown) {
+  return Array.isArray(value) ? value.filter((entry): entry is string => typeof entry === "string") : [];
+}
+
+function parseFocusItems(value: unknown) {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value
+    .map((item) => {
+      if (!isRecord(item)) {
+        return null;
+      }
+
+      return {
+        title: typeof item.title === "string" ? item.title : "",
+        copy: typeof item.copy === "string" ? item.copy : "",
+      };
+    })
+    .filter((item): item is { title: string; copy: string } => Boolean(item?.title || item?.copy));
+}
+
+function parseRecommendations(value: unknown): RecommendationCard[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value
+    .map((item, index) => {
+      if (!isRecord(item)) {
+        return null;
+      }
+
+      return {
+        id: typeof item.id === "string" ? item.id : `snapshot-rec-${index + 1}`,
+        title: typeof item.title === "string" ? item.title : "Recommended piece",
+        category: typeof item.category === "string" ? item.category : "Style pick",
+        description: typeof item.description === "string" ? item.description : undefined,
+        reason: typeof item.reason === "string" ? item.reason : "",
+        score: Number(item.score ?? 0),
+        price: typeof item.price === "string" ? item.price : "",
+        merchantUrl: typeof item.merchantUrl === "string" ? item.merchantUrl : null,
+        merchantName: typeof item.merchantName === "string" ? item.merchantName : null,
+        merchantSource: typeof item.merchantSource === "string" ? item.merchantSource : null,
+        isPremium: typeof item.isPremium === "boolean" ? item.isPremium : undefined,
+        colorFamily: typeof item.colorFamily === "string" ? item.colorFamily : undefined,
+      } satisfies RecommendationCard;
+    })
+    .filter((item): item is RecommendationCard => Boolean(item));
+}
+
+function parseAnalysisSnapshot(value: unknown): AnalysisSnapshot | null {
+  if (!isRecord(value)) {
+    return null;
+  }
+
+  const summary = isRecord(value.summary)
+    ? {
+        title: typeof value.summary.title === "string" ? value.summary.title : "",
+        description: typeof value.summary.description === "string" ? value.summary.description : "",
+      }
+    : { title: "", description: "" };
+
+  const paletteValue = isRecord(value.palette) ? value.palette : {};
+  const snapshot: AnalysisSnapshot = {
+    undertone: typeof value.undertone === "string" ? value.undertone : "",
+    contrast: typeof value.contrast === "string" ? value.contrast : "",
+    confidence: Number(value.confidence ?? 0),
+    summary,
+    focusItems: parseFocusItems(value.focusItems),
+    palette: {
+      core: parseStringArray(paletteValue.core),
+      avoid: parseStringArray(paletteValue.avoid),
+    },
+    recommendations: parseRecommendations(value.recommendations),
+    capturedAt: typeof value.capturedAt === "string" ? value.capturedAt : undefined,
+    sourceSessionId:
+      typeof value.sourceSessionId === "string" ? value.sourceSessionId : null,
+  };
+
+  if (!snapshot.undertone || !snapshot.contrast) {
+    return null;
+  }
+
+  return snapshot;
+}
+
+function styleExperienceFromSnapshot(
+  snapshot: AnalysisSnapshot,
+  plan: SubscriptionPlan,
+): StyleExperience {
+  return applyStablePalette({
+    undertone: snapshot.undertone,
+    contrast: snapshot.contrast,
+    confidence: snapshot.confidence,
+    plan,
+    summary: snapshot.summary,
+    focusItems: snapshot.focusItems,
+    palette: snapshot.palette,
+    recommendations: snapshot.recommendations,
+  });
+}
+
+async function persistLocalAnalysisSnapshot(profile: StyleExperience) {
+  if (!backendConfigured) {
+    return;
+  }
+
+  const { data: { session } } = await supabase.auth.getSession();
+  const userId = session?.user?.id;
+
+  if (!userId) {
+    return;
+  }
+
+  const snapshot = buildAnalysisSnapshot(profile);
+  const normalized = applyStablePalette(profile);
+  const upsertProfile = await supabase
+    .from("style_profiles")
+    .upsert({
+      user_id: userId,
+      undertone_label: normalized.undertone,
+      undertone_confidence: normalized.confidence,
+      contrast_label: normalized.contrast,
+      contrast_confidence: normalized.confidence,
+      palette_json: {
+        core: normalized.palette.core,
+        neutrals: [],
+        accent: [],
+      },
+      avoid_colors_json: normalized.palette.avoid,
+      fit_explanation: normalized.summary.description,
+      analysis_snapshot_json: snapshot,
+      source_analysis_session_id: null,
+    }, {
+      onConflict: "user_id",
+    });
+
+  if (upsertProfile.error) {
+    throw upsertProfile.error;
+  }
+
+  if (normalized.recommendations.length === 0) {
+    return;
+  }
+
+  const recommendationSet = await supabase
+    .from("recommendation_sets")
+    .insert({
+      user_id: userId,
+      analysis_session_id: null,
+      context: "home",
+      metadata: {
+        source: "openrouter-direct",
+        analysis_snapshot: snapshot,
+      },
+    })
+    .select("id")
+    .single();
+
+  if (recommendationSet.error) {
+    throw recommendationSet.error;
+  }
+
+  const itemsInsert = await supabase
+    .from("recommendation_items")
+    .insert(
+      normalized.recommendations.map((item) => ({
+        recommendation_set_id: recommendationSet.data.id,
+        title: item.title,
+        category: item.category,
+        reason: item.reason,
+        score: item.score,
+        price_label: item.price,
+        merchant_url: item.merchantUrl ?? null,
+        metadata: {
+          source: "openrouter-direct",
+          undertone: normalized.undertone,
+          contrast: normalized.contrast,
+          paletteCore: normalized.palette.core.slice(0, 4),
+        },
+      })),
+    );
+
+  if (itemsInsert.error) {
+    throw itemsInsert.error;
+  }
+}
+
+function buildFallbackTheory(profile: StyleExperience): StyleTheoryView {
+  const normalizedProfile = applyStablePalette(profile);
+  const stable = buildStablePalette(
+    normalizedProfile.undertone,
+    normalizedProfile.contrast,
+  );
+  const bestColors = normalizedProfile.palette.core.slice(0, 4);
+  const cautionColors = normalizedProfile.palette.avoid.slice(0, 3);
+  const topRecommendation = normalizedProfile.recommendations[0];
+  const examples = buildTheoryExamples(normalizedProfile);
+  const undertoneMechanic =
+    stable.undertoneLabel === "Olive Soft"
+      ? "The worker's olive branch only opens when chroma stays muted, b*/a* rises above 1.3, a* stays suppressed, and the normalized hue angle remains above 48 degrees."
+      : stable.undertoneLabel === "Warm Neutral"
+        ? "The worker resolves Warm Neutral when the normalized hue angle clears 57 degrees, or when a near-neutral hue still shows enough yellow dominance in the b*/a* ratio to stay on the warm side."
+        : "The worker resolves Cool Bright when hue angle falls below 48 degrees, or when the neutral zone does not show enough yellow dominance to hold a warm classification.";
+  const contrastMechanic =
+    stable.contrastLabel === "Low Contrast"
+      ? "Low Contrast is assigned when the L* standard deviation of the center facial crop stays below 0.11."
+      : stable.contrastLabel === "Medium Contrast"
+        ? "Medium Contrast is assigned when facial L* spread sits between 0.11 and 0.19."
+        : "High Contrast is assigned once facial L* spread crosses 0.19.";
+
+  return {
+    title: `How the implementation resolved ${stable.undertoneLabel} x ${stable.contrastLabel}`,
+    subtitle:
+      "A mechanics-first breakdown of the article-backed pipeline, the thresholds it uses, and why your result lands in this exact bucket.",
+    intro: `This screen is no longer generic style theory. It is the implementation note for the analysis pipeline itself. ToneMatch first normalizes the selfie, center-crops the face region, filters for likely skin pixels, converts those pixels into CIELAB space, then classifies undertone and contrast with fixed thresholds. Your current result maps into the ${stable.undertoneLabel} x ${stable.contrastLabel} branch, and that branch resolves the palette deterministically instead of asking the model to invent a fresh color story each time. ${normalizedProfile.summary.description}`,
+    pullQuote: `The article implementation is simple on purpose: normalize the face region, classify with fixed CIELAB thresholds, then resolve one stable palette for that bucket.`,
+    sections: [
+      {
+        title: "Step 1: what the article implementation actually measures",
+        body: `The worker implementation described in the article does not start by asking an LLM for a vibe-based opinion. It resizes the image to 320 by 320, center-crops a 192 by 192 face proxy, applies dual skin-pixel detection rules in RGB and YCbCr space, and only then converts the sampled pixels into CIELAB. That is the mechanical core of the system.\n\nThe key signals are L*, a*, b*, hue angle, chroma, ITA, b*/a* ratio, skin pixel ratio, brightness, saturation, and a contrast measure derived from the L* spread of the full center crop. Those are the signals the article implementation trusts before it maps anything into undertone, contrast, recommendations, or palette.`,
+      },
+      {
+        title: "Step 2: why your result lands in this undertone branch",
+        body: `${undertoneMechanic} Because your current result is being normalized into ${stable.undertoneLabel}, the implementation is effectively saying that the normalized facial color signal belongs in that branch, not in the competing branches.\n\nThis matters because the article implementation is threshold-driven. It does not let every rerun freestyle a new undertone family. Once the signal family points toward ${stable.undertoneLabel}, the downstream palette logic stays attached to that same undertone bucket. That is the consistency layer you asked for.`,
+      },
+      {
+        title: "Step 3: how contrast is assigned",
+        body: `${contrastMechanic} That threshold comes from the lightness spread across skin, hair, brows, and eyes inside the normalized crop. In other words, the implementation is not reading contrast as a stylistic adjective; it is reading it as a measurable light-dark range.\n\nYour current branch resolves to ${stable.contrastLabel}, so the system is choosing a palette density that matches that band. This is why the same undertone bucket can still produce different advice for low, medium, and high contrast users: the article implementation splits the wardrobe logic on contrast after undertone is fixed.`,
+      },
+      {
+        title: "Step 4: how the deterministic palette is resolved",
+        body: `After classification, the implementation does not ask for random color invention. It looks up the profile library entry for ${stable.undertoneLabel} x ${stable.contrastLabel} and resolves the core palette from there. In your case that means ${joinNatural(bestColors)} lead the recommendation set, while ${joinNatural(cautionColors)} stay in the caution group.\n\n${topRecommendation ? `${topRecommendation.title} is a downstream example of this logic. ${topRecommendation.reason}` : "The recommendation layer is downstream of the bucket, not upstream of it."} The point is that your result is anchored to one profile library entry, so the same signal family returns the same color family instead of drifting from run to run.`,
+      },
+      {
+        title: "Step 5: where lighting normalization helps and where it can still fail",
+        body: `The article explicitly treats lighting as a stabilization problem, not a magic correction problem. The implementation reduces background influence by center-cropping the image and basing the decision on detected skin pixels rather than the whole frame. On the worker side, it also drops luminance outliers from the top and bottom five percent so highlights and deep shadows do less damage.\n\nThis means background light should matter less than before, but not literally disappear. If the room casts a strong color onto the face, or if the face itself is under uneven light, the result can still move. That is why the pipeline also carries quality, light, and confidence signals instead of pretending every selfie is equally reliable.`,
+      },
+    ],
+    examples,
+    closing:
+      `The implementation takeaway is straightforward: the selfie is normalized, the face region is measured in CIELAB, undertone and contrast are classified with fixed branches, and the palette is resolved from one stable library entry. That is why ${stable.undertoneLabel} x ${stable.contrastLabel} should keep returning the same color family unless the underlying image signal genuinely changes.`,
+    source: "fallback",
+  };
+}
+
+export async function generateStyleTheory(profile: StyleExperience): Promise<StyleTheoryView> {
+  const normalizedProfile = applyStablePalette(profile);
+
+  if (!useOpenRouterFallback()) {
+    return buildFallbackTheory(normalizedProfile);
+  }
+
+  try {
+    return await generateOpenRouterStyleTheory(normalizedProfile);
+  } catch (error) {
+    console.error("[generateStyleTheory] falling back after AI error:", error);
+    return buildFallbackTheory(normalizedProfile);
+  }
+}
+
 /* ------------------------------------------------------------------ */
 /*  uploadAndAnalyzeSelfie                                             */
 /* ------------------------------------------------------------------ */
 
 export async function uploadAndAnalyzeSelfie(asset: ImagePickerAsset) {
+  console.log("[uploadAndAnalyzeSelfie] backendConfigured:", backendConfigured, "openrouterConfigured:", openrouterConfigured);
+
   /* Try real backend first */
   if (backendConfigured) {
     const reachable = await isBackendReachable();
+    console.log("[uploadAndAnalyzeSelfie] reachable:", reachable);
     if (reachable) {
+      console.log("[uploadAndAnalyzeSelfie] → backend path");
       return uploadAndAnalyzeViaBackend(asset);
     }
   }
 
   /* OpenRouter direct analysis */
   if (useOpenRouterFallback()) {
-    const result = await analyzeSelfie(asset.uri);
-    const profile = selfieResultToStyleExperience(result, "plus");
+    console.log("[uploadAndAnalyzeSelfie] → openrouter path");
+    const normalizedAsset = await compressForAnalysis(asset);
+    const result = await analyzeSelfie(normalizedAsset.uri, { originalImageUri: asset.uri });
+    const profile = applyStablePalette(selfieResultToStyleExperience(result, "plus"));
     await saveProfile(profile);
+    try {
+      await persistLocalAnalysisSnapshot(profile);
+    } catch (error) {
+      console.error("[uploadAndAnalyzeSelfie] could not persist local analysis snapshot:", error);
+    }
 
     return {
       sessionId: `openrouter-${Date.now()}`,
@@ -246,32 +620,41 @@ export async function pollAnalysisSession(sessionId: string, timeoutMs = 45_000)
 /* ------------------------------------------------------------------ */
 
 export async function fetchStyleExperience(userId?: string | null): Promise<StyleExperience | null> {
+  console.log("[fetchStyleExperience] userId:", userId, "backendConfigured:", backendConfigured);
+
   /* Check locally stored profile first */
   const stored = await loadProfile();
-  if (stored) return stored;
+  console.log("[fetchStyleExperience] stored profile:", stored ? "found" : "null");
+  if (stored) return applyStablePalette(stored);
 
   /* Try real backend */
   if (backendConfigured && userId) {
     const reachable = await isBackendReachable();
+    console.log("[fetchStyleExperience] reachable:", reachable);
     if (reachable) {
+      console.log("[fetchStyleExperience] → backend path");
       return fetchStyleExperienceFromBackend(userId);
     }
   }
 
+  console.log("[fetchStyleExperience] → mock fallback");
   /* Fallback to mock */
-  return {
+  return applyStablePalette({
     ...mockStyleProfile,
     plan: useAppStore.getState().previewPlan,
-  };
+  });
 }
 
 async function fetchStyleExperienceFromBackend(userId: string): Promise<StyleExperience> {
+  console.log("[fetchStyleExperienceFromBackend] userId:", userId);
+
   const profileResponse = await supabase
     .from("style_profiles")
-    .select("undertone_label, undertone_confidence, contrast_label, contrast_confidence, palette_json, avoid_colors_json, fit_explanation")
+    .select("undertone_label, undertone_confidence, contrast_label, contrast_confidence, palette_json, avoid_colors_json, fit_explanation, analysis_snapshot_json")
     .eq("user_id", userId)
     .maybeSingle();
 
+  console.log("[fetchStyleExperienceFromBackend] style_profiles:", profileResponse.error ? "ERROR: " + profileResponse.error.message : profileResponse.data ? "found" : "null");
   if (profileResponse.error) throw profileResponse.error;
 
   const planResponse = await supabase
@@ -280,6 +663,7 @@ async function fetchStyleExperienceFromBackend(userId: string): Promise<StyleExp
     .eq("user_id", userId)
     .maybeSingle();
 
+  console.log("[fetchStyleExperienceFromBackend] subscription_states:", planResponse.error ? "ERROR: " + planResponse.error.message : planResponse.data?.plan ?? "null");
   if (planResponse.error) throw planResponse.error;
 
   const latestSetResponse = await supabase
@@ -290,9 +674,16 @@ async function fetchStyleExperienceFromBackend(userId: string): Promise<StyleExp
     .limit(1)
     .maybeSingle();
 
+  console.log("[fetchStyleExperienceFromBackend] recommendation_sets:", latestSetResponse.error ? "ERROR: " + latestSetResponse.error.message : latestSetResponse.data?.id ?? "null");
   if (latestSetResponse.error) throw latestSetResponse.error;
 
   let recommendations: RecommendationCard[] = [];
+  const snapshot = parseAnalysisSnapshot(profileResponse.data?.analysis_snapshot_json);
+
+  if (snapshot?.recommendations.length) {
+    recommendations = snapshot.recommendations;
+  }
+
   if (latestSetResponse.data?.id) {
     const itemResponse = await supabase
       .from("recommendation_items")
@@ -302,29 +693,38 @@ async function fetchStyleExperienceFromBackend(userId: string): Promise<StyleExp
 
     if (itemResponse.error) throw itemResponse.error;
 
-    recommendations = (itemResponse.data ?? []).map((item) => ({
-      id: item.id,
-      title: item.title,
-      category: item.category,
-      reason: item.reason ?? "",
-      score: Number(item.score ?? 0),
-      price: item.price_label ?? "",
-      merchantUrl: item.merchant_url,
-    }));
+    if (recommendations.length === 0) {
+      recommendations = (itemResponse.data ?? []).map((item) => ({
+        id: item.id,
+        title: item.title,
+        category: item.category,
+        reason: item.reason ?? "",
+        score: Number(item.score ?? 0),
+        price: item.price_label ?? "",
+        merchantUrl: item.merchant_url,
+      }));
+    }
   }
 
   if (!profileResponse.data) {
-    return {
+    return applyStablePalette({
       ...mockStyleProfile,
       plan: (planResponse.data?.plan as SubscriptionPlan) ?? useAppStore.getState().previewPlan,
-    };
+    });
+  }
+  const stablePalette = buildStablePalette(
+    profileResponse.data.undertone_label,
+    profileResponse.data.contrast_label,
+  );
+
+  if (snapshot) {
+    return styleExperienceFromSnapshot({
+      ...snapshot,
+      recommendations: recommendations.length > 0 ? recommendations : snapshot.recommendations,
+    }, (planResponse.data?.plan as SubscriptionPlan) ?? useAppStore.getState().previewPlan);
   }
 
-  const paletteJson = profileResponse.data.palette_json as { core?: string[]; neutrals?: string[]; accent?: string[] } | null;
-  const coreColors = paletteJson?.core ?? paletteJson?.neutrals ?? [];
-  const avoidColors = Array.isArray(profileResponse.data.avoid_colors_json) ? profileResponse.data.avoid_colors_json : [];
-
-  return {
+  return applyStablePalette({
     undertone: profileResponse.data.undertone_label,
     contrast: profileResponse.data.contrast_label,
     confidence: averageConfidence(Number(profileResponse.data.undertone_confidence ?? 0), Number(profileResponse.data.contrast_confidence ?? 0)),
@@ -333,10 +733,10 @@ async function fetchStyleExperienceFromBackend(userId: string): Promise<StyleExp
       title: `${profileResponse.data.undertone_label} / ${profileResponse.data.contrast_label}`,
       description: profileResponse.data.fit_explanation ?? "Yeni stil profilin hazir.",
     },
-    focusItems: buildFocusItems(coreColors, avoidColors),
-    palette: { core: coreColors, avoid: avoidColors.map(String) },
+    focusItems: buildFocusItems(stablePalette.core, stablePalette.avoid),
+    palette: { core: stablePalette.core, avoid: stablePalette.avoid },
     recommendations,
-  };
+  });
 }
 
 /* ------------------------------------------------------------------ */
@@ -648,12 +1048,15 @@ export async function fetchCatalogFeed(userId?: string | null): Promise<Recommen
   /* Use stored profile recommendations if available */
   const stored = await loadProfile();
   if (stored && stored.recommendations.length > 0) {
-    return stored.recommendations.map((item, index) => ({
+    const normalized = applyStablePalette(stored);
+    const colorFamily = normalized.palette.core.slice(0, 2).join(" / ");
+
+    return normalized.recommendations.map((item, index) => ({
       ...item,
       id: item.id ?? `rec-${index + 1}`,
       isPremium: index % 2 === 0,
-      colorFamily: "warm earthy",
-      description: `Personalized for your ${stored.undertone} profile.`,
+      colorFamily,
+      description: `Built for your ${normalized.undertone} x ${normalized.contrast} result using ${normalized.palette.core.slice(0, 3).join(", ")}.`,
       merchantName: "ToneMatch",
       merchantSource: "openrouter-analysis",
     }));
@@ -688,12 +1091,14 @@ export async function fetchCatalogFeed(userId?: string | null): Promise<Recommen
     }));
   }
 
-  return mockStyleProfile.recommendations.map((item, index) => ({
+  const previewProfile = applyStablePalette(mockStyleProfile);
+
+  return previewProfile.recommendations.map((item, index) => ({
     ...item,
     id: `rec-${item.id ?? index + 1}`,
     isPremium: index % 2 === 0,
-    colorFamily: "warm earthy",
-    description: "Scan your face to get personalized recommendations.",
+    colorFamily: previewProfile.palette.core.slice(0, 2).join(" / "),
+    description: `Preview feed tuned to ${previewProfile.undertone} x ${previewProfile.contrast}. Scan your face to replace it with your latest analysis.`,
     merchantName: "ToneMatch",
     merchantSource: "default",
   }));

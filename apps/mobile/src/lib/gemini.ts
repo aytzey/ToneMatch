@@ -114,7 +114,6 @@ Return ONLY valid JSON in this exact format:
 export async function analyzeSelfie(imageUri: string): Promise<SelfieAnalysisResult> {
   const rawJson = await callGemini(SELFIE_PROMPT, imageUri);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let parsed: any;
   try {
     parsed = JSON.parse(rawJson);
@@ -220,7 +219,7 @@ Return ONLY valid JSON in this exact format:
   "colorFamily": "Earth Tone",
   "clothingCheck": {
     "visible_colors": ["Terracotta", "Rust"],
-    "verdict": "uyuyor",
+    "verdict": "matches",
     "explanation": "This garment's warm tones harmonize with your palette...",
     "suggestion": "Pair with deep olive bottoms for a complete autumn look."
   }
@@ -234,7 +233,6 @@ export async function analyzeClothing(
   const prompt = buildClothingPrompt(profile);
   const rawJson = await callGemini(prompt, imageUri);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let parsed: any;
   try {
     parsed = JSON.parse(rawJson);
@@ -251,7 +249,7 @@ export async function analyzeClothing(
     colorFamily: parsed.colorFamily ?? "Neutral",
     clothingCheck: {
       visible_colors: parsed.clothingCheck?.visible_colors ?? [],
-      verdict: parsed.clothingCheck?.verdict ?? "uyuyor",
+      verdict: parsed.clothingCheck?.verdict ?? "matches",
       explanation: parsed.clothingCheck?.explanation ?? "",
       suggestion: parsed.clothingCheck?.suggestion ?? "",
     },

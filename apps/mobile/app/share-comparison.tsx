@@ -1,10 +1,14 @@
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, Share, StyleSheet, Text, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { MaterialIcons } from "@expo/vector-icons";
 
 import { PrimaryButton } from "@/src/components/primary-button";
 import { Screen } from "@/src/components/screen";
+import { SurfaceCard } from "@/src/components/surface-card";
+import { useStyleProfile } from "@/src/features/style/use-style-profile";
+import { hexForColorName } from "@/src/lib/color-name-hex";
+import { buildEditorialStory } from "@/src/lib/style-story";
 import { palette } from "@/src/theme/palette";
 import { spacing, radius } from "@/src/theme/spacing";
 import { type } from "@/src/theme/type";
@@ -15,13 +19,21 @@ import { type } from "@/src/theme/type";
 
 export default function ShareComparisonScreen() {
   const router = useRouter();
+  const { data: profile } = useStyleProfile();
+  const story = buildEditorialStory(profile);
+  const rightColors = profile?.palette.core.slice(0, 2).map((color) => hexForColorName(color)) ?? [palette.primary, palette.swatch3];
+  const wrongColors =
+    profile?.palette.avoid.slice(0, 2).map((color) => hexForColorName(color)) ??
+    [palette.swatch1, palette.swatch4];
 
   const handleBack = () => {
     router.back();
   };
 
-  const handleShare = () => {
-    // Share logic would go here
+  const handleShare = async () => {
+    await Share.share({
+      message: `ToneMatch comparison: ${story.seasonTitle}. Best results came from ${story.paletteLead.join(", ")} instead of ${story.cautionLead.join(", ")}.`,
+    });
   };
 
   const handleUnlock = () => {
@@ -32,7 +44,12 @@ export default function ShareComparisonScreen() {
     <Screen scrollable contentContainerStyle={styles.content}>
       {/* ---- Header ---- */}
       <View style={styles.header}>
-        <Pressable onPress={handleBack} style={styles.backButton} hitSlop={8}>
+        <Pressable
+          accessibilityLabel="Go back"
+          accessibilityRole="button"
+          onPress={handleBack}
+          style={styles.backButton}
+        >
           <MaterialIcons name="arrow-back" size={22} color={palette.ink} />
         </Pressable>
         <View style={styles.headerCenter}>
@@ -40,9 +57,10 @@ export default function ShareComparisonScreen() {
           <Text style={styles.headerSubtitle}>Digital Atelier</Text>
         </View>
         <Pressable
+          accessibilityLabel="Share comparison"
+          accessibilityRole="button"
           onPress={handleShare}
           style={styles.shareCircle}
-          hitSlop={8}
         >
           <MaterialIcons name="share" size={18} color={palette.primary} />
         </Pressable>
@@ -53,34 +71,43 @@ export default function ShareComparisonScreen() {
         {/* Match Score Pill */}
         <View style={styles.matchPill}>
           <MaterialIcons name="verified" size={16} color={palette.primary} />
-          <Text style={styles.matchPillText}>MATCH SCORE 98%</Text>
+          <Text style={styles.matchPillText}>
+            MATCH SCORE {profile ? `${Math.round(profile.confidence * 100)}%` : "LIVE"}
+          </Text>
         </View>
 
         <Text style={styles.summaryHeading}>
           Your Seasonal Essence:{" "}
-          <Text style={styles.summaryHighlight}>Rich & Radiant</Text>
+          <Text style={styles.summaryHighlight}>{story.essenceTitle}</Text>
         </Text>
-        <Text style={styles.summarySubtitle}>Deep Autumn Palette Selection</Text>
+        <Text style={styles.summarySubtitle}>{story.seasonTitle} Palette Selection</Text>
       </View>
 
       {/* ---- Before Card ---- */}
       <View style={styles.beforeCard}>
-        <Image source={require("../assets/images/portrait_cool.png")} style={styles.beforePlaceholder} resizeMode="cover" />
+        <LinearGradient
+          colors={[wrongColors[0], wrongColors[1] ?? wrongColors[0], palette.overlayStrong]}
+          style={styles.beforePlaceholder}
+        />
+        <View style={styles.cardSwatchRail}>
+          {wrongColors.map((color, index) => (
+            <View key={`${color}-${index}`} style={[styles.cardSwatch, { backgroundColor: color }]} />
+          ))}
+        </View>
 
         {/* Top-left badge */}
         <View style={styles.beforeBadge}>
           <MaterialIcons name="cancel" size={14} color={palette.red} />
-          <Text style={styles.beforeBadgeText}>MUTED & COOL (WRONG)</Text>
+          <Text style={styles.beforeBadgeText}>{story.cautionLead.join(" + ")} (LOWER FIT)</Text>
         </View>
 
         {/* Bottom gradient overlay */}
         <LinearGradient
-          colors={["transparent", "rgba(0,0,0,0.65)"]}
+          colors={["transparent", palette.overlayMedium]}
           style={styles.cardGradient}
         >
           <Text style={styles.cardOverlayText}>
-            The cool blue undertone creates a sallow effect and washes out your
-            natural warmth.
+            {story.cautionLead.join(" and ")} are the caution colors currently most likely to flatten your face zone.
           </Text>
         </LinearGradient>
       </View>
@@ -97,7 +124,15 @@ export default function ShareComparisonScreen() {
       {/* ---- After Card ---- */}
       <View style={styles.afterCardOuter}>
         <View style={styles.afterCard}>
-          <Image source={require("../assets/images/portrait_warm.png")} style={styles.afterPlaceholder} resizeMode="cover" />
+          <LinearGradient
+            colors={[rightColors[0], rightColors[1] ?? rightColors[0], palette.overlayMedium]}
+            style={styles.afterPlaceholder}
+          />
+          <View style={styles.cardSwatchRail}>
+            {rightColors.map((color, index) => (
+              <View key={`${color}-${index}`} style={[styles.cardSwatch, { backgroundColor: color }]} />
+            ))}
+          </View>
 
           {/* Top-left badge */}
           <View style={styles.afterBadge}>
@@ -106,32 +141,31 @@ export default function ShareComparisonScreen() {
               size={14}
               color={palette.surface}
             />
-            <Text style={styles.afterBadgeText}>DEEP & WARM (RIGHT)</Text>
+            <Text style={styles.afterBadgeText}>{story.paletteLead.join(" + ")} (BEST FIT)</Text>
           </View>
 
           {/* Bottom gradient overlay */}
           <LinearGradient
-            colors={["transparent", "rgba(0,0,0,0.65)"]}
+            colors={["transparent", palette.overlayMedium]}
             style={styles.cardGradient}
           >
-            <Text style={styles.cardOverlayText}>
-              Copper tones harmonize with your melanin levels, creating a
-              luminous, healthy glow.
-            </Text>
-          </LinearGradient>
-        </View>
+          <Text style={styles.cardOverlayText}>
+            {profile?.summary.description || story.tagline}
+          </Text>
+        </LinearGradient>
+      </View>
       </View>
 
       {/* ---- Analysis Grid ---- */}
       <View style={styles.analysisGrid}>
-        <View style={styles.analysisCard}>
+        <SurfaceCard style={styles.analysisCard} tone="muted">
           <Text style={styles.analysisOverline}>UNDERTONE</Text>
-          <Text style={styles.analysisValue}>Golden-Copper</Text>
-        </View>
-        <View style={styles.analysisCard}>
+          <Text style={styles.analysisValue}>{story.undertoneLabel}</Text>
+        </SurfaceCard>
+        <SurfaceCard style={styles.analysisCard} tone="muted">
           <Text style={styles.analysisOverline}>CONTRAST</Text>
-          <Text style={styles.analysisValue}>High/Rich</Text>
-        </View>
+          <Text style={styles.analysisValue}>{story.contrastLabel}</Text>
+        </SurfaceCard>
       </View>
 
       {/* ---- CTA ---- */}
@@ -164,8 +198,8 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.md,
   },
   backButton: {
-    width: 40,
-    height: 40,
+    width: 44,
+    height: 44,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -180,13 +214,13 @@ const styles = StyleSheet.create({
   },
   headerSubtitle: {
     ...type.overline,
-    fontSize: 9,
+    fontSize: 12,
     color: palette.muted,
     letterSpacing: 2,
   },
   shareCircle: {
-    width: 40,
-    height: 40,
+    width: 44,
+    height: 44,
     borderRadius: radius.full,
     backgroundColor: palette.primarySoft,
     alignItems: "center",
@@ -211,7 +245,7 @@ const styles = StyleSheet.create({
   },
   matchPillText: {
     ...type.overline,
-    fontSize: 11,
+    fontSize: 12,
     color: palette.primary,
     letterSpacing: 1.5,
   },
@@ -241,7 +275,19 @@ const styles = StyleSheet.create({
   },
   beforePlaceholder: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: "#6b9ac4",
+  },
+  cardSwatchRail: {
+    position: "absolute",
+    right: spacing.md,
+    top: spacing.md,
+    gap: spacing.xs,
+  },
+  cardSwatch: {
+    width: 18,
+    height: 18,
+    borderRadius: radius.full,
+    borderWidth: 1,
+    borderColor: palette.surfaceTintLine,
   },
   beforeBadge: {
     position: "absolute",
@@ -250,14 +296,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: spacing.xs,
-    backgroundColor: "rgba(0,0,0,0.80)",
+    backgroundColor: palette.overlayStrong,
     borderRadius: radius.full,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
   },
   beforeBadgeText: {
     ...type.overline,
-    fontSize: 9,
+    fontSize: 12,
     color: palette.surface,
     letterSpacing: 1,
   },
@@ -322,7 +368,6 @@ const styles = StyleSheet.create({
   },
   afterPlaceholder: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: "#b87332",
   },
   afterBadge: {
     position: "absolute",
@@ -338,7 +383,7 @@ const styles = StyleSheet.create({
   },
   afterBadgeText: {
     ...type.overline,
-    fontSize: 9,
+    fontSize: 12,
     color: palette.surface,
     letterSpacing: 1,
   },
@@ -351,17 +396,10 @@ const styles = StyleSheet.create({
   },
   analysisCard: {
     flex: 1,
-    backgroundColor: palette.primaryMuted,
-    borderRadius: radius.xl,
-    borderWidth: 1,
-    borderColor: palette.border,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.lg,
-    gap: spacing.xs,
   },
   analysisOverline: {
     ...type.overline,
-    fontSize: 9,
+    fontSize: 12,
     color: palette.muted,
     letterSpacing: 2,
   },

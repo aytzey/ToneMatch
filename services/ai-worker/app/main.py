@@ -16,6 +16,56 @@ async def healthz():
     return {"ok": True, "service": "tone-match-ai-worker"}
 
 
+def build_analysis_snapshot(result, session_id: str) -> dict:
+    return {
+        "undertone": result.style_profile.undertone_label,
+        "contrast": result.style_profile.contrast_label,
+        "confidence": result.confidence_score,
+        "summary": {
+            "title": f"{result.style_profile.undertone_label} / {result.style_profile.contrast_label}",
+            "description": result.style_profile.fit_explanation,
+        },
+        "focusItems": [
+            {
+                "title": "Latest analysis result",
+                "copy": result.style_profile.fit_explanation,
+            },
+            {
+                "title": "Saved palette",
+                "copy": "Core colors: "
+                + ", ".join(result.style_profile.palette_json.get("core", [])[:3])
+                + ". Avoid: "
+                + ", ".join(result.style_profile.avoid_colors_json[:3])
+                + ".",
+            },
+        ],
+        "palette": {
+            "core": result.style_profile.palette_json.get("core", []),
+            "avoid": result.style_profile.avoid_colors_json,
+        },
+        "recommendations": [
+            {
+                "title": item.title,
+                "category": item.category,
+                "reason": item.reason,
+                "score": item.score,
+                "price": item.price_label,
+                "merchantUrl": item.merchant_url,
+            }
+            for item in result.recommendation_items
+        ],
+        "capturedAt": payload_timestamp(),
+        "sourceSessionId": session_id,
+        "rawSignals": result.raw_signals or {},
+    }
+
+
+def payload_timestamp() -> str:
+    from datetime import datetime, timezone
+
+    return datetime.now(timezone.utc).isoformat()
+
+
 @app.post("/jobs/analyze")
 async def analyze_job(payload: AnalyzeJobRequest, x_shared_secret: str = Header(default="")):
     ensure_secret(x_shared_secret)
@@ -49,6 +99,7 @@ async def analyze_job(payload: AnalyzeJobRequest, x_shared_secret: str = Header(
         return {"ok": True, "mode": "dry-run", "result": result.model_dump()}
 
     headers = build_rest_headers()
+    analysis_snapshot = build_analysis_snapshot(result, payload.session_id)
 
     async with httpx.AsyncClient(timeout=settings.storage_request_timeout) as client:
         session_update = await client.patch(
@@ -59,6 +110,7 @@ async def analyze_job(payload: AnalyzeJobRequest, x_shared_secret: str = Header(
                 "quality_score": result.quality_score,
                 "light_score": result.light_score,
                 "confidence_score": result.confidence_score,
+                "result_json": analysis_snapshot,
             },
         )
         session_update.raise_for_status()
@@ -75,6 +127,7 @@ async def analyze_job(payload: AnalyzeJobRequest, x_shared_secret: str = Header(
                 "palette_json": result.style_profile.palette_json,
                 "avoid_colors_json": result.style_profile.avoid_colors_json,
                 "fit_explanation": result.style_profile.fit_explanation,
+                "analysis_snapshot_json": analysis_snapshot,
                 "source_analysis_session_id": payload.session_id,
             },
         )
@@ -94,6 +147,11 @@ async def analyze_job(payload: AnalyzeJobRequest, x_shared_secret: str = Header(
                 "avoid_explained": result.llm_interpretation.get("avoid_explained"),
                 "pro_tips": result.llm_interpretation.get("pro_tips"),
                 "confidence_note": result.llm_interpretation.get("confidence_note"),
+                "analysis_snapshot": analysis_snapshot,
+            }
+        else:
+            recommendation_set_payload["metadata"] = {
+                "analysis_snapshot": analysis_snapshot,
             }
 
         recommendation_set = await client.post(
@@ -113,7 +171,12 @@ async def analyze_job(payload: AnalyzeJobRequest, x_shared_secret: str = Header(
                 "score": item.score,
                 "price_label": item.price_label,
                 "merchant_url": item.merchant_url,
-                "metadata": item.metadata,
+                "metadata": {
+                    **item.metadata,
+                    "undertone": analysis_snapshot["undertone"],
+                    "contrast": analysis_snapshot["contrast"],
+                    "paletteCore": analysis_snapshot["palette"]["core"][:4],
+                },
             }
             for item in result.recommendation_items
         ]

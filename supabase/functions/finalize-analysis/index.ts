@@ -14,6 +14,66 @@ type FinalizePayload = {
   assetId: string;
 };
 
+type AnalysisSnapshot = {
+  undertone: string;
+  contrast: string;
+  confidence: number;
+  summary: { title: string; description: string };
+  focusItems: { title: string; copy: string }[];
+  palette: { core: string[]; avoid: string[] };
+  recommendations: {
+    title: string;
+    category: string;
+    reason: string;
+    score: number;
+    price: string;
+  }[];
+  capturedAt: string;
+  sourceSessionId: string;
+};
+
+function buildAnalysisSnapshot(
+  result: SelfieAnalysisResult,
+  sessionId: string,
+): AnalysisSnapshot {
+  const confidence = Math.round(
+    ((result.undertone_confidence + result.contrast_confidence) / 2) * 100,
+  ) / 100;
+
+  return {
+    undertone: result.undertone_label,
+    contrast: result.contrast_label,
+    confidence,
+    summary: {
+      title: `${result.undertone_label} / ${result.contrast_label}`,
+      description: result.fit_explanation,
+    },
+    focusItems: [
+      {
+        title: "Latest analysis result",
+        copy: result.fit_explanation,
+      },
+      {
+        title: "Saved palette",
+        copy: `Core colors: ${result.palette_json.core.slice(0, 3).join(", ")}. Avoid: ${result.avoid_colors_json.slice(0, 3).join(", ")}.`,
+      },
+    ],
+    palette: {
+      core: result.palette_json.core,
+      avoid: result.avoid_colors_json,
+    },
+    recommendations: result.recommendations.map((item) => ({
+      title: item.title,
+      category: item.category,
+      reason: item.reason,
+      score: item.score,
+      price: item.price_label,
+    })),
+    capturedAt: new Date().toISOString(),
+    sourceSessionId: sessionId,
+  };
+}
+
 async function persistAIAnalysis(
   adminClient: ReturnType<typeof createClient>,
   sessionId: string,
@@ -21,6 +81,8 @@ async function persistAIAnalysis(
   assetId: string,
   result: SelfieAnalysisResult,
 ) {
+  const analysisSnapshot = buildAnalysisSnapshot(result, sessionId);
+
   await adminClient
     .from("analysis_sessions")
     .update({
@@ -30,6 +92,7 @@ async function persistAIAnalysis(
       confidence_score: Math.round(
         ((result.undertone_confidence + result.contrast_confidence) / 2) * 100
       ) / 100,
+      result_json: analysisSnapshot,
     })
     .eq("id", sessionId);
 
@@ -45,6 +108,7 @@ async function persistAIAnalysis(
         palette_json: result.palette_json,
         avoid_colors_json: result.avoid_colors_json,
         fit_explanation: result.fit_explanation,
+        analysis_snapshot_json: analysisSnapshot,
         source_analysis_session_id: sessionId,
       },
       { onConflict: "user_id" },
@@ -57,6 +121,10 @@ async function persistAIAnalysis(
         user_id: userId,
         analysis_session_id: sessionId,
         context: "home",
+        metadata: {
+          source: "openrouter-gemini",
+          analysis_snapshot: analysisSnapshot,
+        },
       })
       .select("id")
       .single();
@@ -73,7 +141,12 @@ async function persistAIAnalysis(
             score: item.score,
             price_label: item.price_label,
             merchant_url: `https://example.com/products/${assetId}/${index}`,
-            metadata: { source: "openrouter-gemini" },
+            metadata: {
+              source: "openrouter-gemini",
+              undertone: analysisSnapshot.undertone,
+              contrast: analysisSnapshot.contrast,
+              paletteCore: analysisSnapshot.palette.core.slice(0, 4),
+            },
           })),
         );
     }
