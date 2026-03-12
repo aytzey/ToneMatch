@@ -2,8 +2,8 @@ import { useState } from "react";
 import { Alert, StyleSheet, Text, View } from "react-native";
 
 import { PrimaryButton } from "@/src/components/primary-button";
-import { palette } from "@/src/theme/palette";
 import { spacing } from "@/src/theme/spacing";
+import { useThemedStyles } from "@/src/theme/use-themed-styles";
 import { type } from "@/src/theme/type";
 
 export function FeedbackStrip({
@@ -11,6 +11,7 @@ export function FeedbackStrip({
 }: {
   onSubmit: (signal: string) => Promise<unknown>;
 }) {
+  const styles = useThemedStyles(createStyles);
   const [selected, setSelected] = useState<string | null>(null);
 
   const handleSubmit = async (signal: string) => {
@@ -41,17 +42,20 @@ export function FeedbackStrip({
   );
 }
 
-const styles = StyleSheet.create({
-  wrapper: {
-    marginTop: spacing.md,
-    gap: spacing.sm,
-  },
-  label: {
-    ...type.caption,
-    color: palette.muted,
-  },
-  row: {
-    flexDirection: "row",
-    gap: spacing.sm,
-  },
-});
+const createStyles = (
+  palette: import("@/src/theme/palette").ThemePalette,
+) =>
+  StyleSheet.create({
+    wrapper: {
+      marginTop: spacing.md,
+      gap: spacing.sm,
+    },
+    label: {
+      ...type.caption,
+      color: palette.muted,
+    },
+    row: {
+      flexDirection: "row",
+      gap: spacing.sm,
+    },
+  });

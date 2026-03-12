@@ -10,6 +10,7 @@ import {
   LOW_MATCH_THRESHOLD,
   type EditorialStory,
 } from "@/src/lib/style-story";
+import { editorialGuideBackgrounds } from "@/src/theme/palette";
 import type { StyleExperience } from "@/src/types/tonematch";
 
 export type GuideVariant = "primary" | "secondary";
@@ -86,20 +87,20 @@ type ContrastSeed = {
 };
 
 const STYLE_VISUALS = [
-  require("@/assets/images/discover_hero.png"),
-  require("@/assets/images/discover_office.png"),
-  require("@/assets/images/discover_datenight.png"),
-  require("@/assets/images/discover_smartcasual.png"),
-  require("@/assets/images/gift_hero.png"),
-  require("@/assets/images/home_hero.png"),
-  require("@/assets/images/gift_cashmere_silver.png"),
-  require("@/assets/images/gift_silk_gold.png"),
+  require("@/assets/images/discover_hero.jpg"),
+  require("@/assets/images/discover_office.jpg"),
+  require("@/assets/images/discover_datenight.jpg"),
+  require("@/assets/images/discover_smartcasual.jpg"),
+  require("@/assets/images/gift_hero.jpg"),
+  require("@/assets/images/home_hero.jpg"),
+  require("@/assets/images/gift_cashmere_silver.jpg"),
+  require("@/assets/images/gift_silk_gold.jpg"),
 ] as const;
 
 const OCCASION_VISUALS = [
-  require("@/assets/images/occasion_office_hero.png"),
-  require("@/assets/images/occasion_date_hero.png"),
-  require("@/assets/images/occasion_weekend_hero.png"),
+  require("@/assets/images/occasion_office_hero.jpg"),
+  require("@/assets/images/occasion_date_hero.jpg"),
+  require("@/assets/images/occasion_weekend_hero.jpg"),
   require("@/assets/images/seasons/winter_office_hero.jpg"),
   require("@/assets/images/seasons/spring_date_hero.jpg"),
   require("@/assets/images/seasons/summer_weekend_hero.jpg"),
@@ -192,7 +193,7 @@ function buildDirectionCards(story: EditorialStory) {
   const paletteNeutrals = stable.neutrals;
   const paletteAccents = stable.accents;
 
-  const backgrounds = ["#f1e4d7", "#ece2d7", "#e6ddd6", "#ede7dc", "#efe3d3"];
+  const backgrounds = editorialGuideBackgrounds;
 
   return [
     {
@@ -377,7 +378,7 @@ function buildOccasionGuides(story: EditorialStory) {
       title: "Desk-to-meeting formula",
       subtitle: "Use when you need polish, calm authority, and zero palette drift.",
       image: pickImage(OCCASION_VISUALS, 0),
-      backgroundColor: "#ede3d8",
+      backgroundColor: editorialGuideBackgrounds[0],
       palette: [stable.core[0], stable.neutrals[1], stable.accents[0]],
       anchorPieces: [
         `${stable.core[0]} blazer or knit jacket`,
@@ -406,7 +407,7 @@ function buildOccasionGuides(story: EditorialStory) {
       title: "Soft focus, strong face framing",
       subtitle: "Designed for dinner, drinks, rooftop evenings, and low light.",
       image: pickImage(OCCASION_VISUALS, 1),
-      backgroundColor: "#ead8cf",
+      backgroundColor: editorialGuideBackgrounds[1],
       palette: [stable.core[1], stable.accents[0], stable.accents[1]],
       anchorPieces: [
         `${stable.core[1]} slip, dress, blouse, or compact knit`,
@@ -435,7 +436,7 @@ function buildOccasionGuides(story: EditorialStory) {
       title: "Brunch, errands, and social ease",
       subtitle: "Comfort-first looks that still photograph like a matched wardrobe.",
       image: pickImage(OCCASION_VISUALS, 2),
-      backgroundColor: "#ece5db",
+      backgroundColor: editorialGuideBackgrounds[2],
       palette: [stable.neutrals[0], stable.core[2], stable.accents[1]],
       anchorPieces: [
         `${stable.neutrals[0]} base layer or knit`,
@@ -464,7 +465,7 @@ function buildOccasionGuides(story: EditorialStory) {
       title: "Wedding guest, gallery opening, or dressy dinner",
       subtitle: "More elevated than date night, but still analysis-led.",
       image: pickImage(OCCASION_VISUALS, 3),
-      backgroundColor: "#e8ddd3",
+      backgroundColor: editorialGuideBackgrounds[3],
       palette: [stable.core[0], stable.accents[0], stable.neutrals[2]],
       anchorPieces: [
         `${stable.core[0]} or ${stable.accents[0]} as the hero fabric`,
@@ -493,7 +494,7 @@ function buildOccasionGuides(story: EditorialStory) {
       title: "Functional layers that still look matched",
       subtitle: "Airport, train, road trip, or full-day movement.",
       image: pickImage(OCCASION_VISUALS, 4),
-      backgroundColor: "#efe8df",
+      backgroundColor: editorialGuideBackgrounds[4],
       palette: [stable.neutrals[1], stable.core[0], stable.core[2]],
       anchorPieces: [
         `${stable.neutrals[1]} set, knit, or jersey base`,
@@ -522,7 +523,7 @@ function buildOccasionGuides(story: EditorialStory) {
       title: "Photos, content shoots, and profile-picture moments",
       subtitle: "For any day where the outfit needs to hold up on screen and in stills.",
       image: pickImage(OCCASION_VISUALS, 5),
-      backgroundColor: "#e9e0d8",
+      backgroundColor: editorialGuideBackgrounds[5],
       palette: [stable.core[0], stable.accents[0], stable.neutrals[0]],
       anchorPieces: [
         `${stable.core[0]} or ${stable.accents[0]} nearest the face`,

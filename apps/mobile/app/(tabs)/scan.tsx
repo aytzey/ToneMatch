@@ -15,9 +15,11 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { CameraView, useCameraPermissions } from "expo-camera";
 
 import { useScanFlow } from "@/src/features/scan/use-scan-flow";
-import { palette } from "@/src/theme/palette";
+import { motionUseNativeDriver } from "@/src/lib/motion";
 import { radius, spacing } from "@/src/theme/spacing";
+import { useAppTheme } from "@/src/theme/theme-provider";
 import { type } from "@/src/theme/type";
+import { useThemedStyles } from "@/src/theme/use-themed-styles";
 
 const OVAL_RATIO = 1.32;
 const MAX_OVAL_WIDTH = 248;
@@ -30,6 +32,8 @@ const BOTTOM_BTN = 52;
 export default function ScanScreen() {
   const insets = useSafeAreaInsets();
   const { width: viewportWidth } = useWindowDimensions();
+  const { palette } = useAppTheme();
+  const styles = useThemedStyles(createStyles);
   const router = useRouter();
   const { pickFromLibrary, captureWithCamera } = useScanFlow();
   const [permission, requestPermission] = useCameraPermissions();
@@ -50,13 +54,13 @@ export default function ScanScreen() {
           toValue: 1.2,
           duration: 1200,
           easing: Easing.inOut(Easing.ease),
-          useNativeDriver: true,
+          useNativeDriver: motionUseNativeDriver,
         }),
         Animated.timing(pulseAnim, {
           toValue: 1,
           duration: 1200,
           easing: Easing.inOut(Easing.ease),
-          useNativeDriver: true,
+          useNativeDriver: motionUseNativeDriver,
         }),
       ]),
     );
@@ -103,10 +107,12 @@ export default function ScanScreen() {
           </Pressable>
         )}
 
-        {showPrivacyShade ? <View pointerEvents="none" style={styles.privacyShade} /> : null}
+        {showPrivacyShade ? (
+          <View style={[styles.privacyShade, styles.pointerEventsNone]} />
+        ) : null}
 
         <View style={[styles.headerBar, { paddingTop: insets.top + spacing.xs }]}>
-          <View pointerEvents="none" style={styles.headerBackdrop} />
+          <View style={[styles.headerBackdrop, styles.pointerEventsNone]} />
 
           <Pressable
             accessibilityLabel="Close scanner"
@@ -132,7 +138,7 @@ export default function ScanScreen() {
         </View>
 
         {showGuide ? (
-          <View style={styles.ovalContainer} pointerEvents="none">
+          <View style={[styles.ovalContainer, styles.pointerEventsNone]}>
             <View
               style={[
                 styles.oval,
@@ -271,7 +277,10 @@ export default function ScanScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (
+  palette: import("@/src/theme/palette").ThemePalette,
+) =>
+  StyleSheet.create({
   root: {
     flex: 1,
     backgroundColor: palette.charcoal,
@@ -296,6 +305,9 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     backgroundColor: palette.overlay,
     zIndex: 1,
+  },
+  pointerEventsNone: {
+    pointerEvents: "none",
   },
   headerBar: {
     alignItems: "center",
@@ -510,4 +522,4 @@ const styles = StyleSheet.create({
     letterSpacing: 1.2,
     textAlign: "center",
   },
-});
+  });

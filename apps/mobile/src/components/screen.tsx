@@ -1,5 +1,12 @@
 import { PropsWithChildren } from "react";
-import { ScrollView, StyleProp, StyleSheet, View, ViewStyle } from "react-native";
+import {
+  ScrollView,
+  StyleProp,
+  StyleSheet,
+  View,
+  ViewStyle,
+  type Role,
+} from "react-native";
 import { Edge, SafeAreaView } from "react-native-safe-area-context";
 
 import { useThemedStyles } from "@/src/theme/use-themed-styles";
@@ -10,6 +17,8 @@ type ScreenProps = PropsWithChildren<{
   keyboardShouldPersistTaps?: "always" | "handled" | "never";
   keyboardDismissMode?: "none" | "interactive" | "on-drag";
   edges?: Edge[];
+  role?: Role;
+  accessibilityLabel?: string;
 }>;
 
 export function Screen({
@@ -19,12 +28,19 @@ export function Screen({
   keyboardShouldPersistTaps = "handled",
   keyboardDismissMode = "on-drag",
   edges,
+  role,
+  accessibilityLabel,
 }: ScreenProps) {
   const styles = useThemedStyles(createStyles);
 
   if (scrollable) {
     return (
-      <SafeAreaView edges={edges} style={styles.safe}>
+      <SafeAreaView
+        accessibilityLabel={accessibilityLabel}
+        edges={edges}
+        role={role}
+        style={styles.safe}
+      >
         <ScrollView
           automaticallyAdjustKeyboardInsets
           contentInsetAdjustmentBehavior="automatic"
@@ -40,7 +56,12 @@ export function Screen({
   }
 
   return (
-    <SafeAreaView edges={edges} style={styles.safe}>
+    <SafeAreaView
+      accessibilityLabel={accessibilityLabel}
+      edges={edges}
+      role={role}
+      style={styles.safe}
+    >
       <View style={[{ flex: 1 }, contentContainerStyle]}>{children}</View>
     </SafeAreaView>
   );

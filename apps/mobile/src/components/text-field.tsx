@@ -8,28 +8,52 @@ import { useThemedStyles } from "@/src/theme/use-themed-styles";
 
 type TextFieldProps = TextInputProps & {
   label: string;
+  error?: string;
+  hint?: string;
+  required?: boolean;
 };
 
-export function TextField({ label, style, ...props }: TextFieldProps) {
+export function TextField({
+  error,
+  hint,
+  label,
+  required = false,
+  style,
+  ...props
+}: TextFieldProps) {
   const fallbackId = useId().replace(/:/g, "");
   const inputId = props.nativeID ?? `field-${fallbackId}`;
   const labelId = `${inputId}-label`;
+  const hintId = hint ? `${inputId}-hint` : undefined;
+  const errorId = error ? `${inputId}-error` : undefined;
   const { palette } = useAppTheme();
   const styles = useThemedStyles(createStyles);
 
   return (
     <View style={styles.wrapper}>
-      <Text nativeID={labelId} style={styles.label}>
-        {label}
-      </Text>
+      <View style={styles.labelRow}>
+        <Text nativeID={labelId} style={styles.label}>
+          {label}
+        </Text>
+        {required ? <Text style={styles.required}>Required</Text> : null}
+      </View>
       <TextInput
         accessibilityLabel={props.accessibilityLabel ?? label}
         accessibilityLabelledBy={labelId}
         nativeID={inputId}
         placeholderTextColor={palette.muted}
-        style={[styles.input, style]}
+        style={[styles.input, error && styles.inputError, style]}
         {...props}
       />
+      {error ? (
+        <Text nativeID={errorId} style={styles.errorText}>
+          {error}
+        </Text>
+      ) : hint ? (
+        <Text nativeID={hintId} style={styles.hintText}>
+          {hint}
+        </Text>
+      ) : null}
     </View>
   );
 }
@@ -41,9 +65,21 @@ const createStyles = (
     wrapper: {
       gap: spacing.xs,
     },
+    labelRow: {
+      alignItems: "center",
+      flexDirection: "row",
+      gap: spacing.sm,
+      justifyContent: "space-between",
+    },
     label: {
       ...type.caption,
       color: palette.muted,
+    },
+    required: {
+      ...type.caption,
+      color: palette.subtle,
+      letterSpacing: 0.7,
+      textTransform: "uppercase",
     },
     input: {
       ...type.body,
@@ -55,5 +91,19 @@ const createStyles = (
       minHeight: 52,
       paddingHorizontal: spacing.md,
       paddingVertical: spacing.md,
+    },
+    inputError: {
+      backgroundColor: palette.dangerSoft,
+      borderColor: palette.red,
+    },
+    hintText: {
+      ...type.caption,
+      color: palette.subtle,
+      lineHeight: 18,
+    },
+    errorText: {
+      ...type.caption,
+      color: palette.red,
+      lineHeight: 18,
     },
   });

@@ -9,6 +9,7 @@ import {
   Pressable,
   StyleSheet,
   Text,
+  type ViewStyle,
   View,
 } from "react-native";
 
@@ -17,13 +18,19 @@ import { Screen } from "@/src/components/screen";
 import { SurfaceCard } from "@/src/components/surface-card";
 import { useAuth } from "@/src/features/auth/use-auth";
 import { backendConfigured } from "@/src/lib/env";
-import { motionDuration, motionEasing, useReducedMotion } from "@/src/lib/motion";
+import {
+  motionDuration,
+  motionEasing,
+  motionUseNativeDriver,
+  useReducedMotion,
+} from "@/src/lib/motion";
 import { useAppCopy } from "@/src/providers/copy-provider";
 import { supabase } from "@/src/lib/supabase";
 import { useAppStore } from "@/src/store/app-store";
-import { palette } from "@/src/theme/palette";
 import { radius, spacing } from "@/src/theme/spacing";
+import { useAppTheme } from "@/src/theme/theme-provider";
 import { type } from "@/src/theme/type";
+import { useThemedStyles } from "@/src/theme/use-themed-styles";
 
 const SHIMMER_TRAVEL = Dimensions.get("window").width - spacing.lg * 2;
 
@@ -97,26 +104,27 @@ function buildRevealStyle(
   end: number,
   distance = 20,
   scaleFrom = 1,
-) {
-  const transforms: { translateY?: Animated.AnimatedInterpolation<number>; scale?: Animated.AnimatedInterpolation<number> }[] = [
-    {
-      translateY: progress.interpolate({
-        inputRange: [start, end],
-        outputRange: [distance, 0],
-        extrapolate: "clamp",
-      }),
-    },
-  ];
-
-  if (scaleFrom !== 1) {
-    transforms.unshift({
-      scale: progress.interpolate({
-        inputRange: [start, end],
-        outputRange: [scaleFrom, 1],
-        extrapolate: "clamp",
-      }),
-    });
-  }
+) : Animated.WithAnimatedValue<ViewStyle> {
+  const translateTransform = {
+    translateY: progress.interpolate({
+      inputRange: [start, end],
+      outputRange: [distance, 0],
+      extrapolate: "clamp",
+    }),
+  };
+  const transforms =
+    scaleFrom !== 1
+      ? [
+          {
+            scale: progress.interpolate({
+              inputRange: [start, end],
+              outputRange: [scaleFrom, 1],
+              extrapolate: "clamp",
+            }),
+          },
+          translateTransform,
+        ]
+      : [translateTransform];
 
   return {
     opacity: progress.interpolate({
@@ -125,11 +133,13 @@ function buildRevealStyle(
       extrapolate: "clamp",
     }),
     transform: transforms,
-  };
+  } as Animated.WithAnimatedValue<ViewStyle>;
 }
 
 export default function AnalysisLoadingScreen() {
   const router = useRouter();
+  const { palette } = useAppTheme();
+  const styles = useThemedStyles(createStyles);
   const { user } = useAuth();
   const copy = useAppCopy().analysisLoading;
   const reducedMotion = useReducedMotion();
@@ -212,7 +222,7 @@ export default function AnalysisLoadingScreen() {
       toValue: 1,
       duration: 760,
       easing: motionEasing.enter,
-      useNativeDriver: true,
+      useNativeDriver: motionUseNativeDriver,
     }).start();
   }, [introProgress, reducedMotion]);
 
@@ -230,13 +240,13 @@ export default function AnalysisLoadingScreen() {
           toValue: 1,
           duration: 1600,
           easing: motionEasing.settle,
-          useNativeDriver: true,
+          useNativeDriver: motionUseNativeDriver,
         }),
         Animated.timing(ambientProgress, {
           toValue: 0,
           duration: 1600,
           easing: motionEasing.settle,
-          useNativeDriver: true,
+          useNativeDriver: motionUseNativeDriver,
         }),
       ]),
     );
@@ -251,7 +261,7 @@ export default function AnalysisLoadingScreen() {
       toValue: progress,
       duration: motionDuration(reducedMotion, status === "ready" ? 360 : 520),
       easing: motionEasing.settle,
-      useNativeDriver: true,
+      useNativeDriver: motionUseNativeDriver,
     }).start();
   }, [progress, progressAnim, reducedMotion, status]);
 
@@ -268,7 +278,7 @@ export default function AnalysisLoadingScreen() {
         toValue: 1,
         duration: 1800,
         easing: Easing.linear,
-        useNativeDriver: true,
+        useNativeDriver: motionUseNativeDriver,
       }),
     );
 
@@ -405,7 +415,12 @@ export default function AnalysisLoadingScreen() {
   });
 
   return (
-    <Screen scrollable contentContainerStyle={styles.content}>
+    <Screen
+      scrollable
+      role="main"
+      accessibilityLabel="Analysis loading screen"
+      contentContainerStyle={styles.content}
+    >
       <View style={styles.header}>
         <Pressable
           accessibilityLabel="Close analysis"
@@ -421,10 +436,16 @@ export default function AnalysisLoadingScreen() {
 
       <Animated.View style={[styles.portraitContainer, portraitShellStyle]}>
         <Animated.Image
+          accessibilityLabel={
+            previewUri
+              ? "Preview of the selfie being analyzed"
+              : "Blurred portrait placeholder while analysis is running"
+          }
+          accessibilityRole="image"
           source={
             previewUri
               ? { uri: previewUri }
-              : require("../assets/images/analysis_blur.png")
+              : require("../assets/images/analysis_blur.jpg")
           }
           style={[styles.portraitPlaceholder, portraitBreathStyle]}
           resizeMode="cover"
@@ -432,8 +453,11 @@ export default function AnalysisLoadingScreen() {
         />
 
         <Animated.View
-          pointerEvents="none"
-          style={[styles.portraitGlow, portraitGlowStyle]}
+          style={[
+            styles.portraitGlow,
+            styles.pointerEventsNone,
+            portraitGlowStyle,
+          ]}
         />
 
         <LinearGradient
@@ -506,9 +530,9 @@ export default function AnalysisLoadingScreen() {
               />
               {!reducedMotion && status !== "ready" ? (
                 <Animated.View
-                  pointerEvents="none"
                   style={[
                     styles.progressShimmer,
+                    styles.pointerEventsNone,
                     { transform: [{ translateX: shimmerTranslateX }] },
                   ]}
                 />
@@ -610,7 +634,10 @@ export default function AnalysisLoadingScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (
+  palette: import("@/src/theme/palette").ThemePalette,
+) =>
+  StyleSheet.create({
   content: {
     padding: spacing.lg,
     gap: spacing.lg,
@@ -660,6 +687,9 @@ const styles = StyleSheet.create({
     height: "68%",
     borderRadius: radius.full,
     backgroundColor: palette.surfaceTintMild,
+  },
+  pointerEventsNone: {
+    pointerEvents: "none",
   },
   analyzingPill: {
     backgroundColor: palette.surfaceTintGlass,
@@ -810,4 +840,4 @@ const styles = StyleSheet.create({
   dot3: {
     backgroundColor: palette.primarySoft,
   },
-});
+  });

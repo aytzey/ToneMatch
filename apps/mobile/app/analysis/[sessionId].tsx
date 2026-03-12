@@ -8,6 +8,7 @@ import {
   Share,
   StyleSheet,
   Text,
+  type ViewStyle,
   useWindowDimensions,
   View,
 } from "react-native";
@@ -17,13 +18,18 @@ import { PrimaryButton } from "@/src/components/primary-button";
 import { Screen } from "@/src/components/screen";
 import { SurfaceCard } from "@/src/components/surface-card";
 import { useStyleProfile } from "@/src/features/style/use-style-profile";
-import { motionEasing, useReducedMotion } from "@/src/lib/motion";
+import {
+  motionEasing,
+  motionUseNativeDriver,
+  useReducedMotion,
+} from "@/src/lib/motion";
 import { buildEditorialMatchPair } from "@/src/lib/style-story";
 import { hexForColorName } from "@/src/lib/color-name-hex";
 import { useAppCopy } from "@/src/providers/copy-provider";
-import { palette } from "@/src/theme/palette";
 import { radius, spacing } from "@/src/theme/spacing";
+import { useAppTheme } from "@/src/theme/theme-provider";
 import { type } from "@/src/theme/type";
+import { useThemedStyles } from "@/src/theme/use-themed-styles";
 
 type ColorSwatchProps = {
   name: string;
@@ -36,6 +42,7 @@ function ColorSwatch({
   swatchSize,
   subduedLabel = false,
 }: ColorSwatchProps) {
+  const swatchStyles = useThemedStyles(createSwatchStyles);
   const bg = hexForColorName(name);
 
   return (
@@ -67,26 +74,27 @@ function buildRevealStyle(
   end: number,
   distance = 16,
   scaleFrom = 1,
-) {
-  const transforms: { translateY?: Animated.AnimatedInterpolation<number>; scale?: Animated.AnimatedInterpolation<number> }[] = [
-    {
-      translateY: progress.interpolate({
-        inputRange: [start, end],
-        outputRange: [distance, 0],
-        extrapolate: "clamp",
-      }),
-    },
-  ];
-
-  if (scaleFrom !== 1) {
-    transforms.unshift({
-      scale: progress.interpolate({
-        inputRange: [start, end],
-        outputRange: [scaleFrom, 1],
-        extrapolate: "clamp",
-      }),
-    });
-  }
+) : Animated.WithAnimatedValue<ViewStyle> {
+  const translateTransform = {
+    translateY: progress.interpolate({
+      inputRange: [start, end],
+      outputRange: [distance, 0],
+      extrapolate: "clamp",
+    }),
+  };
+  const transforms =
+    scaleFrom !== 1
+      ? [
+          {
+            scale: progress.interpolate({
+              inputRange: [start, end],
+              outputRange: [scaleFrom, 1],
+              extrapolate: "clamp",
+            }),
+          },
+          translateTransform,
+        ]
+      : [translateTransform];
 
   return {
     opacity: progress.interpolate({
@@ -95,10 +103,13 @@ function buildRevealStyle(
       extrapolate: "clamp",
     }),
     transform: transforms,
-  };
+  } as Animated.WithAnimatedValue<ViewStyle>;
 }
 
-const swatchStyles = StyleSheet.create({
+const createSwatchStyles = (
+  palette: import("@/src/theme/palette").ThemePalette,
+) =>
+  StyleSheet.create({
   wrapper: {
     alignItems: "center",
     gap: spacing.sm,
@@ -120,10 +131,12 @@ const swatchStyles = StyleSheet.create({
   labelSmall: {
     color: palette.muted,
   },
-});
+  });
 
 export default function AnalysisResultScreen() {
   const { width } = useWindowDimensions();
+  const { palette } = useAppTheme();
+  const styles = useThemedStyles(createStyles);
   const { sessionId } = useLocalSearchParams<{ sessionId: string }>();
   const { data, isLoading, error } = useStyleProfile();
   const copy = useAppCopy().analysisResult;
@@ -155,7 +168,7 @@ export default function AnalysisResultScreen() {
       toValue: 1,
       duration: 840,
       easing: motionEasing.enter,
-      useNativeDriver: true,
+      useNativeDriver: motionUseNativeDriver,
     }).start();
   }, [data, isLoading, reducedMotion, revealProgress]);
 
@@ -187,7 +200,12 @@ export default function AnalysisResultScreen() {
 
   if (isLoading) {
     return (
-      <Screen scrollable contentContainerStyle={styles.content}>
+      <Screen
+        scrollable
+        role="main"
+        accessibilityLabel="Analysis result screen"
+        contentContainerStyle={styles.content}
+      >
         {header}
         <View style={styles.centeredFill}>
           <ActivityIndicator size="large" color={palette.primary} />
@@ -198,7 +216,12 @@ export default function AnalysisResultScreen() {
 
   if (error) {
     return (
-      <Screen scrollable contentContainerStyle={styles.content}>
+      <Screen
+        scrollable
+        role="main"
+        accessibilityLabel="Analysis result screen"
+        contentContainerStyle={styles.content}
+      >
         {header}
         <View style={styles.centeredFill}>
           <Text style={styles.errorText}>
@@ -212,7 +235,12 @@ export default function AnalysisResultScreen() {
 
   if (!data) {
     return (
-      <Screen scrollable contentContainerStyle={styles.content}>
+      <Screen
+        scrollable
+        role="main"
+        accessibilityLabel="Analysis result screen"
+        contentContainerStyle={styles.content}
+      >
         {header}
         <View style={styles.centeredFill}>
           <Text style={styles.errorText}>
@@ -301,16 +329,23 @@ export default function AnalysisResultScreen() {
       };
 
   return (
-    <Screen scrollable contentContainerStyle={styles.content}>
+    <Screen
+      scrollable
+      role="main"
+      accessibilityLabel="Analysis result screen"
+      contentContainerStyle={styles.content}
+    >
       {header}
 
       <Animated.View style={[styles.avatarSection, avatarRevealStyle]}>
-        <Animated.View pointerEvents="none" style={[styles.avatarAura, auraStyle]} />
+        <Animated.View
+          style={[styles.avatarAura, styles.pointerEventsNone, auraStyle]}
+        />
 
         <View style={styles.avatarRing}>
           <View style={styles.avatarInner}>
             <Image
-              source={require("../../assets/images/profile_avatar.png")}
+              source={require("../../assets/images/profile_avatar.jpg")}
               style={styles.avatarImage}
               resizeMode="cover"
             />
@@ -473,7 +508,10 @@ export default function AnalysisResultScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (
+  palette: import("@/src/theme/palette").ThemePalette,
+) =>
+  StyleSheet.create({
   content: {
     paddingHorizontal: spacing.lg,
     paddingBottom: 120,
@@ -526,6 +564,9 @@ const styles = StyleSheet.create({
     height: 176,
     borderRadius: radius.full,
     backgroundColor: palette.primarySoft,
+  },
+  pointerEventsNone: {
+    pointerEvents: "none",
   },
   avatarRing: {
     width: 120,
@@ -652,4 +693,4 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
     paddingBottom: spacing.xl,
   },
-});
+  });

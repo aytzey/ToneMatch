@@ -18,9 +18,10 @@ import { useAuth } from "@/src/features/auth/use-auth";
 import { useStyleProfile } from "@/src/features/style/use-style-profile";
 import { buildEditorialStory } from "@/src/lib/style-story";
 import { deleteAccountData, exportAccountData } from "@/src/lib/tonematch-api";
-import { palette } from "@/src/theme/palette";
 import { radius, spacing } from "@/src/theme/spacing";
+import { useAppTheme } from "@/src/theme/theme-provider";
 import { type } from "@/src/theme/type";
+import { useThemedStyles } from "@/src/theme/use-themed-styles";
 
 /* ------------------------------------------------------------------ */
 /*  Profile Screen — matches profile_style_signature design           */
@@ -28,6 +29,8 @@ import { type } from "@/src/theme/type";
 
 export default function ProfileScreen() {
   const router = useRouter();
+  const { palette } = useAppTheme();
+  const styles = useThemedStyles(createStyles);
   const { user, signOut } = useAuth();
   const { data: profile } = useStyleProfile();
   const { data: subscription } = useSubscriptionState();
@@ -112,10 +115,17 @@ export default function ProfileScreen() {
   /* ---------- render ---------- */
 
   return (
-    <Screen scrollable contentContainerStyle={styles.content}>
+    <Screen
+      scrollable
+      role="main"
+      accessibilityLabel="Profile screen"
+      contentContainerStyle={styles.content}
+    >
       {/* ---- Header ---- */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Profile</Text>
+        <Text accessibilityRole="header" style={styles.headerTitle}>
+          Profile
+        </Text>
         <Pressable
           accessibilityLabel="Open profile settings"
           accessibilityRole="button"
@@ -132,7 +142,9 @@ export default function ProfileScreen() {
         <View style={styles.avatarWrapper}>
           <View style={styles.avatarRing}>
             <Image
-              source={require("../../assets/images/profile_avatar.png")}
+              accessibilityLabel="Profile portrait preview"
+              accessibilityRole="image"
+              source={require("../../assets/images/profile_avatar.jpg")}
               style={styles.avatar}
             />
           </View>
@@ -179,7 +191,9 @@ export default function ProfileScreen() {
           </View>
 
           <Image
-            source={require("../../assets/images/paywall_hero.png")}
+            accessibilityLabel="Premium membership preview artwork"
+            accessibilityRole="image"
+            source={require("../../assets/images/paywall_hero.jpg")}
             style={styles.promoImage}
           />
         </View>
@@ -280,6 +294,9 @@ function SettingsRow({
   value?: string;
   showBorder?: boolean;
 }) {
+  const { palette } = useAppTheme();
+  const styles = useThemedStyles(createStyles);
+
   return (
     <Pressable
       accessibilityLabel={value ? `${label}, ${value}` : label}
@@ -306,7 +323,10 @@ function SettingsRow({
 const AVATAR_SIZE = 128;
 const RING_WIDTH = 4;
 
-const styles = StyleSheet.create({
+const createStyles = (
+  palette: import("@/src/theme/palette").ThemePalette,
+) =>
+  StyleSheet.create({
   content: {
     paddingBottom: 120,
   },
@@ -550,4 +570,4 @@ const styles = StyleSheet.create({
   deleteText: {
     color: palette.red,
   },
-});
+  });

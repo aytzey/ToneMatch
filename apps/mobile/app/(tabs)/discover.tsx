@@ -9,6 +9,7 @@ import {
   Text,
   TextInput,
   View,
+  type ViewStyle,
   useWindowDimensions,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
@@ -21,15 +22,17 @@ import { hexForColorName } from "@/src/lib/color-name-hex";
 import {
   motionDuration,
   motionEasing,
+  motionUseNativeDriver,
   useReducedMotion,
 } from "@/src/lib/motion";
 import type {
   RecommendationCard,
   StyleExperience,
 } from "@/src/types/tonematch";
-import { palette } from "@/src/theme/palette";
 import { spacing, radius } from "@/src/theme/spacing";
+import { useAppTheme } from "@/src/theme/theme-provider";
 import { type } from "@/src/theme/type";
+import { useThemedStyles } from "@/src/theme/use-themed-styles";
 
 const FILTER_CHIPS = [
   { id: "analysis", label: "Analysis Match" },
@@ -38,14 +41,14 @@ const FILTER_CHIPS = [
 ];
 
 const OCCASION_IMAGES = [
-  require("@/assets/images/discover_office.png"),
-  require("@/assets/images/discover_datenight.png"),
-  require("@/assets/images/discover_smartcasual.png"),
+  require("@/assets/images/discover_office.jpg"),
+  require("@/assets/images/discover_datenight.jpg"),
+  require("@/assets/images/discover_smartcasual.jpg"),
 ] as const;
 
 const PRODUCT_IMAGES = [
-  require("@/assets/images/discover_product1.png"),
-  require("@/assets/images/discover_product2.png"),
+  require("@/assets/images/discover_product1.jpg"),
+  require("@/assets/images/discover_product2.jpg"),
 ] as const;
 
 type FilterChipProps = {
@@ -183,7 +186,10 @@ function buildBadgeCopy(item: RecommendationCard) {
   return "Use as a secondary piece";
 }
 
-function heroGradient(profile: StyleExperience | null | undefined) {
+function heroGradient(
+  profile: StyleExperience | null | undefined,
+  palette: import("@/src/theme/palette").ThemePalette,
+) {
   if (!profile || profile.palette.core.length === 0) {
     return [palette.swatch1, palette.swatch2, palette.swatch3] as const;
   }
@@ -204,29 +210,27 @@ function buildRevealStyle(
   end: number,
   distance = 16,
   scaleFrom = 1,
-) {
-  const transforms: {
-    translateY?: Animated.AnimatedInterpolation<number>;
-    scale?: Animated.AnimatedInterpolation<number>;
-  }[] = [
-    {
-      translateY: progress.interpolate({
-        inputRange: [start, end],
-        outputRange: [distance, 0],
-        extrapolate: "clamp",
-      }),
-    },
-  ];
-
-  if (scaleFrom !== 1) {
-    transforms.unshift({
-      scale: progress.interpolate({
-        inputRange: [start, end],
-        outputRange: [scaleFrom, 1],
-        extrapolate: "clamp",
-      }),
-    });
-  }
+) : Animated.WithAnimatedValue<ViewStyle> {
+  const translateTransform = {
+    translateY: progress.interpolate({
+      inputRange: [start, end],
+      outputRange: [distance, 0],
+      extrapolate: "clamp",
+    }),
+  };
+  const transforms =
+    scaleFrom !== 1
+      ? [
+          {
+            scale: progress.interpolate({
+              inputRange: [start, end],
+              outputRange: [scaleFrom, 1],
+              extrapolate: "clamp",
+            }),
+          },
+          translateTransform,
+        ]
+      : [translateTransform];
 
   return {
     opacity: progress.interpolate({
@@ -235,7 +239,7 @@ function buildRevealStyle(
       extrapolate: "clamp",
     }),
     transform: transforms,
-  };
+  } as Animated.WithAnimatedValue<ViewStyle>;
 }
 
 function FilterChip({
@@ -246,6 +250,8 @@ function FilterChip({
   reducedMotion,
   revealProgress,
 }: FilterChipProps) {
+  const { palette } = useAppTheme();
+  const styles = useThemedStyles(createStyles);
   const activeProgress = useRef(new Animated.Value(isActive ? 1 : 0)).current;
 
   useEffect(() => {
@@ -258,7 +264,7 @@ function FilterChip({
       toValue: isActive ? 1 : 0,
       duration: motionDuration(reducedMotion, 220),
       easing: motionEasing.settle,
-      useNativeDriver: true,
+      useNativeDriver: motionUseNativeDriver,
     }).start();
   }, [activeProgress, isActive, reducedMotion]);
 
@@ -347,6 +353,8 @@ function FavoriteToggleButton({
   onPress,
   reducedMotion,
 }: FavoriteToggleButtonProps) {
+  const { palette } = useAppTheme();
+  const styles = useThemedStyles(createStyles);
   const scale = useRef(new Animated.Value(1)).current;
   const halo = useRef(new Animated.Value(0)).current;
 
@@ -367,13 +375,13 @@ function FavoriteToggleButton({
             toValue: 1.16,
             duration: 140,
             easing: motionEasing.enter,
-            useNativeDriver: true,
+            useNativeDriver: motionUseNativeDriver,
           }),
           Animated.timing(scale, {
             toValue: 1,
             duration: 180,
             easing: motionEasing.settle,
-            useNativeDriver: true,
+            useNativeDriver: motionUseNativeDriver,
           }),
         ]),
         Animated.sequence([
@@ -381,13 +389,13 @@ function FavoriteToggleButton({
             toValue: 1,
             duration: 140,
             easing: motionEasing.enter,
-            useNativeDriver: true,
+            useNativeDriver: motionUseNativeDriver,
           }),
           Animated.timing(halo, {
             toValue: 0,
             duration: 220,
             easing: motionEasing.settle,
-            useNativeDriver: true,
+            useNativeDriver: motionUseNativeDriver,
           }),
         ]),
       ]).start();
@@ -400,13 +408,13 @@ function FavoriteToggleButton({
         toValue: 0.96,
         duration: 100,
         easing: motionEasing.settle,
-        useNativeDriver: true,
+        useNativeDriver: motionUseNativeDriver,
       }),
       Animated.timing(scale, {
         toValue: 1,
         duration: 120,
         easing: motionEasing.settle,
-        useNativeDriver: true,
+        useNativeDriver: motionUseNativeDriver,
       }),
     ]).start();
   }, [active, halo, reducedMotion, scale]);
@@ -445,7 +453,9 @@ function FavoriteToggleButton({
         pressed && styles.favoritePressed,
       ]}
     >
-      <Animated.View pointerEvents="none" style={[styles.favoriteHalo, haloStyle]} />
+      <Animated.View
+        style={[styles.favoriteHalo, styles.pointerEventsNone, haloStyle]}
+      />
       <Animated.View style={[styles.favoriteButton, buttonStyle]}>
         <MaterialIcons
           name={active ? "favorite" : "favorite-border"}
@@ -459,6 +469,9 @@ function FavoriteToggleButton({
 
 export default function DiscoverScreen() {
   const { width } = useWindowDimensions();
+  const { palette } = useAppTheme();
+  const styles = useThemedStyles(createStyles);
+  const isWide = width >= 1080;
   const [searchText, setSearchText] = useState("");
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [activeChip, setActiveChip] = useState("analysis");
@@ -478,13 +491,15 @@ export default function DiscoverScreen() {
   const visibleFeed = filteredFeed.length > 0 ? filteredFeed : feed;
   const topPick = visibleFeed[0];
   const occasions = buildOccasions(profile, feed);
-  const contentWidth = width - spacing.lg * 2;
-  const occasionCardWidth = Math.min(172, Math.max(148, contentWidth * 0.44));
-  const productCardWidth = Math.max(
-    128,
-    Math.min(220, (contentWidth - spacing.md) / 2),
-  );
-  const gradientColors = heroGradient(profile);
+  const contentWidth = Math.min(width - spacing.lg * 2, 1180);
+  const columnCount = isWide ? 3 : 2;
+  const occasionCardWidth = isWide
+    ? Math.max(184, Math.min(260, (contentWidth - spacing.md * 2) / 3))
+    : Math.min(172, Math.max(148, contentWidth * 0.44));
+  const productCardWidth = isWide
+    ? Math.max(200, Math.min(320, (contentWidth - spacing.lg * 2) / 3))
+    : Math.max(128, Math.min(220, (contentWidth - spacing.md) / 2));
+  const gradientColors = heroGradient(profile, palette);
   const badgeLabel = profile
     ? `${profile.undertone.toUpperCase()} / ${profile.contrast.toUpperCase()}`
     : "NO ANALYSIS";
@@ -502,7 +517,7 @@ export default function DiscoverScreen() {
       toValue: 1,
       duration: 820,
       easing: motionEasing.enter,
-      useNativeDriver: true,
+      useNativeDriver: motionUseNativeDriver,
     }).start();
   }, [reducedMotion, revealProgress]);
 
@@ -511,7 +526,7 @@ export default function DiscoverScreen() {
       toValue: isSearchFocused || searchText.length > 0 ? 1 : 0,
       duration: motionDuration(reducedMotion, 240),
       easing: motionEasing.settle,
-      useNativeDriver: true,
+      useNativeDriver: motionUseNativeDriver,
     }).start();
   }, [isSearchFocused, reducedMotion, searchFocus, searchText.length]);
 
@@ -526,7 +541,7 @@ export default function DiscoverScreen() {
       toValue: 1,
       duration: 340,
       easing: motionEasing.settle,
-      useNativeDriver: true,
+      useNativeDriver: motionUseNativeDriver,
     }).start();
   };
 
@@ -597,10 +612,12 @@ export default function DiscoverScreen() {
       };
 
   const headerContent = (
-    <View style={styles.headerContent}>
+    <View style={[styles.headerContent, isWide && styles.headerContentWide]}>
       <Animated.View style={buildRevealStyle(revealProgress, 0.02, 0.16, 10)}>
         <View style={styles.headerRow}>
-          <Text style={styles.title}>Discover</Text>
+          <Text accessibilityRole="header" style={styles.title}>
+            Discover
+          </Text>
           <Pressable
             accessibilityLabel="Reset discover filters"
             accessibilityRole="button"
@@ -623,8 +640,11 @@ export default function DiscoverScreen() {
         ]}
       >
         <Animated.View
-          pointerEvents="none"
-          style={[styles.searchGlow, searchGlowStyle]}
+          style={[
+            styles.searchGlow,
+            styles.pointerEventsNone,
+            searchGlowStyle,
+          ]}
         />
         <View
           style={[
@@ -673,73 +693,83 @@ export default function DiscoverScreen() {
         ))}
       </ScrollView>
 
-      <Animated.View
-        style={[
-          styles.sectionHeader,
-          buildRevealStyle(revealProgress, 0.24, 0.38, 12),
-        ]}
-      >
-        <Text style={styles.sectionTitle}>Today For You</Text>
-        <Text style={styles.sectionBadge}>{badgeLabel}</Text>
-      </Animated.View>
-
-      <Animated.View
-        style={[
-          styles.heroCard,
-          buildRevealStyle(revealProgress, 0.3, 0.5, 20, 0.98),
-        ]}
-      >
-        <Animated.Image
-          source={require("@/assets/images/discover_hero.png")}
-          style={[styles.heroImagePlaceholder, heroImageStyle]}
-          resizeMode="cover"
-        />
-        <LinearGradient
-          colors={[
-            "transparent",
-            `${gradientColors[0]}99`,
-            `${gradientColors[1]}CC`,
-            palette.overlayHeavy,
-          ]}
-          style={styles.heroGradient}
-        />
-        <Animated.View style={[styles.heroTint, heroTintStyle]}>
-          <LinearGradient
-            colors={[
-              `${gradientColors[0]}66`,
-              `${gradientColors[1]}22`,
-              `${gradientColors[2]}11`,
+      <View style={[styles.heroBand, isWide && styles.heroBandWide]}>
+        <View style={styles.heroBandPrimary}>
+          <Animated.View
+            style={[
+              styles.sectionHeader,
+              buildRevealStyle(revealProgress, 0.24, 0.38, 12),
             ]}
-            style={StyleSheet.absoluteFillObject}
-          />
-        </Animated.View>
+          >
+            <Text accessibilityRole="header" style={styles.sectionTitle}>
+              Today For You
+            </Text>
+            <Text style={styles.sectionBadge}>{badgeLabel}</Text>
+          </Animated.View>
+
+          <Animated.View
+            style={[
+              styles.heroCard,
+              isWide && styles.heroCardWide,
+              buildRevealStyle(revealProgress, 0.3, 0.5, 20, 0.98),
+            ]}
+          >
+            <Animated.Image
+              accessibilityLabel="Editorial preview of your latest analysis feed"
+              accessibilityRole="image"
+              source={require("@/assets/images/discover_hero.jpg")}
+              style={[styles.heroImagePlaceholder, heroImageStyle]}
+              resizeMode="cover"
+            />
+            <LinearGradient
+              colors={[
+                "transparent",
+                `${gradientColors[0]}99`,
+                `${gradientColors[1]}CC`,
+                palette.overlayHeavy,
+              ]}
+              style={styles.heroGradient}
+            />
+            <Animated.View style={[styles.heroTint, heroTintStyle]}>
+              <LinearGradient
+                colors={[
+                  `${gradientColors[0]}66`,
+                  `${gradientColors[1]}22`,
+                  `${gradientColors[2]}11`,
+                ]}
+                style={StyleSheet.absoluteFillObject}
+              />
+            </Animated.View>
+            <Animated.View
+              style={[
+                styles.heroOverlay,
+                buildRevealStyle(revealProgress, 0.36, 0.58, 12),
+              ]}
+            >
+              <Text style={styles.heroOverline}>Latest analysis feed</Text>
+              <Text accessibilityRole="header" style={styles.heroTitle}>
+                {topPick?.title ?? profile?.summary.title ?? "Your personalized feed"}
+              </Text>
+              <Text style={styles.heroCopy}>{buildHeroCopy(profile, topPick)}</Text>
+            </Animated.View>
+          </Animated.View>
+        </View>
+
         <Animated.View
           style={[
-            styles.heroOverlay,
-            buildRevealStyle(revealProgress, 0.36, 0.58, 12),
+            styles.signalCard,
+            isWide && styles.signalCardWide,
+            buildRevealStyle(revealProgress, 0.44, 0.62, 14),
           ]}
         >
-          <Text style={styles.heroOverline}>LATEST ANALYSIS FEED</Text>
-          <Text style={styles.heroTitle}>
-            {topPick?.title ?? profile?.summary.title ?? "Your personalized feed"}
+          <Text style={styles.signalLabel}>Why these pieces are here</Text>
+          <Text style={styles.signalCopy}>
+            {profile
+              ? `${profile.summary.description} The explore feed is currently anchored to ${profile.palette.core.slice(0, 4).join(", ")} and actively flags ${profile.palette.avoid.slice(0, 3).join(", ")} as lower-priority near-face colors.`
+              : "Your feed will become analysis-aware after the first match."}
           </Text>
-          <Text style={styles.heroCopy}>{buildHeroCopy(profile, topPick)}</Text>
         </Animated.View>
-      </Animated.View>
-
-      <Animated.View
-        style={[
-          styles.signalCard,
-          buildRevealStyle(revealProgress, 0.44, 0.62, 14),
-        ]}
-      >
-        <Text style={styles.signalLabel}>WHY THESE PIECES ARE HERE</Text>
-        <Text style={styles.signalCopy}>
-          {profile
-            ? `${profile.summary.description} The explore feed is currently anchored to ${profile.palette.core.slice(0, 4).join(", ")} and actively flags ${profile.palette.avoid.slice(0, 3).join(", ")} as lower-priority near-face colors.`
-            : "Your feed will become analysis-aware after the first match."}
-        </Text>
-      </Animated.View>
+      </View>
 
       <Animated.View
         style={[
@@ -751,36 +781,69 @@ export default function DiscoverScreen() {
         <Text style={styles.viewAllText}>Feed aligned</Text>
       </Animated.View>
 
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.occasionsList}
-      >
-        {occasions.map((item, index) => (
-          <Animated.View
-            key={item.id}
-            style={buildRevealStyle(
-              revealProgress,
-              0.56 + index * 0.06,
-              0.78 + index * 0.06,
-              14,
-              0.97,
-            )}
-          >
-            <View style={[styles.occasionCard, { width: occasionCardWidth }]}>
-              <Image
-                source={item.image}
-                style={[styles.occasionImage, { width: occasionCardWidth }]}
-                resizeMode="cover"
-              />
-              <View>
-                <Text style={styles.occasionTitle}>{item.title}</Text>
-                <Text style={styles.occasionSubtitle}>{item.subtitle}</Text>
+      {isWide ? (
+        <View style={styles.occasionsGrid}>
+          {occasions.map((item, index) => (
+            <Animated.View
+              key={item.id}
+              style={buildRevealStyle(
+                revealProgress,
+                0.56 + index * 0.06,
+                0.78 + index * 0.06,
+                14,
+                0.97,
+              )}
+            >
+              <View style={[styles.occasionCard, { width: occasionCardWidth }]}>
+                <Image
+                  accessibilityLabel={`${item.title} styling preview`}
+                  accessibilityRole="image"
+                  source={item.image}
+                  style={[styles.occasionImage, { width: occasionCardWidth }]}
+                  resizeMode="cover"
+                />
+                <View>
+                  <Text style={styles.occasionTitle}>{item.title}</Text>
+                  <Text style={styles.occasionSubtitle}>{item.subtitle}</Text>
+                </View>
               </View>
-            </View>
-          </Animated.View>
-        ))}
-      </ScrollView>
+            </Animated.View>
+          ))}
+        </View>
+      ) : (
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.occasionsList}
+        >
+          {occasions.map((item, index) => (
+            <Animated.View
+              key={item.id}
+              style={buildRevealStyle(
+                revealProgress,
+                0.56 + index * 0.06,
+                0.78 + index * 0.06,
+                14,
+                0.97,
+              )}
+            >
+              <View style={[styles.occasionCard, { width: occasionCardWidth }]}>
+                <Image
+                  accessibilityLabel={`${item.title} styling preview`}
+                  accessibilityRole="image"
+                  source={item.image}
+                  style={[styles.occasionImage, { width: occasionCardWidth }]}
+                  resizeMode="cover"
+                />
+                <View>
+                  <Text style={styles.occasionTitle}>{item.title}</Text>
+                  <Text style={styles.occasionSubtitle}>{item.subtitle}</Text>
+                </View>
+              </View>
+            </Animated.View>
+          ))}
+        </ScrollView>
+      )}
 
       <Animated.View style={buildRevealStyle(revealProgress, 0.68, 0.82, 12)}>
         <Text style={styles.sectionTitle}>Analysis-Matched Picks</Text>
@@ -804,7 +867,11 @@ export default function DiscoverScreen() {
   );
 
   return (
-    <Screen contentContainerStyle={styles.screen}>
+    <Screen
+      accessibilityLabel="Discover screen"
+      contentContainerStyle={styles.screen}
+      role="main"
+    >
       <FlatList
         contentContainerStyle={styles.content}
         data={isLoading ? [] : visibleProducts}
@@ -814,7 +881,7 @@ export default function DiscoverScreen() {
         ListEmptyComponent={emptyState}
         ListFooterComponent={<View style={styles.listFooter} />}
         ListHeaderComponent={headerContent}
-        numColumns={2}
+        numColumns={columnCount}
         renderItem={({ item: product, index }: { item: RecommendationCard; index: number }) => {
           const isLiked = likedIds.includes(product.id);
 
@@ -834,6 +901,8 @@ export default function DiscoverScreen() {
               >
                 <View style={styles.productImageContainer}>
                   <Image
+                    accessibilityLabel={`${product.title} product preview`}
+                    accessibilityRole="image"
                     source={PRODUCT_IMAGES[index % PRODUCT_IMAGES.length]}
                     style={styles.productImage}
                     resizeMode="cover"
@@ -887,13 +956,16 @@ export default function DiscoverScreen() {
         }}
         showsVerticalScrollIndicator={false}
         style={styles.list}
-        columnWrapperStyle={styles.productRow}
+        columnWrapperStyle={columnCount > 1 ? styles.productRow : undefined}
       />
     </Screen>
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (
+  palette: import("@/src/theme/palette").ThemePalette,
+) =>
+  StyleSheet.create({
   screen: {
     flex: 1,
   },
@@ -905,8 +977,14 @@ const styles = StyleSheet.create({
     paddingBottom: 120,
   },
   headerContent: {
+    alignSelf: "center",
     gap: spacing.lg,
+    maxWidth: 1180,
     paddingBottom: spacing.lg,
+    width: "100%",
+  },
+  headerContentWide: {
+    gap: spacing.xl,
   },
   headerRow: {
     flexDirection: "row",
@@ -939,6 +1017,9 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     borderRadius: radius.xl,
     backgroundColor: palette.primarySoft,
+  },
+  pointerEventsNone: {
+    pointerEvents: "none",
   },
   searchBar: {
     flexDirection: "row",
@@ -1001,6 +1082,17 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "baseline",
   },
+  heroBand: {
+    gap: spacing.lg,
+  },
+  heroBandWide: {
+    alignItems: "stretch",
+    flexDirection: "row",
+  },
+  heroBandPrimary: {
+    flex: 1.18,
+    gap: spacing.md,
+  },
   sectionTitle: {
     ...type.h2,
     color: palette.charcoal,
@@ -1024,6 +1116,10 @@ const styles = StyleSheet.create({
     aspectRatio: 4 / 5,
     position: "relative",
     backgroundColor: palette.swatch1,
+  },
+  heroCardWide: {
+    aspectRatio: 1.3,
+    minHeight: 420,
   },
   heroImagePlaceholder: {
     ...StyleSheet.absoluteFillObject,
@@ -1070,6 +1166,10 @@ const styles = StyleSheet.create({
     padding: spacing.lg,
     gap: spacing.sm,
   },
+  signalCardWide: {
+    flex: 0.82,
+    minHeight: 420,
+  },
   signalLabel: {
     ...type.overline,
     color: palette.primary,
@@ -1080,6 +1180,11 @@ const styles = StyleSheet.create({
   },
   occasionsList: {
     gap: spacing.md,
+  },
+  occasionsGrid: {
+    flexDirection: "row",
+    gap: spacing.md,
+    justifyContent: "space-between",
   },
   occasionCard: {
     gap: spacing.sm,
@@ -1201,4 +1306,4 @@ const styles = StyleSheet.create({
   listFooter: {
     height: spacing.xl,
   },
-});
+  });

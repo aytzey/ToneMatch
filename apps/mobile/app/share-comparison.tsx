@@ -9,9 +9,10 @@ import { SurfaceCard } from "@/src/components/surface-card";
 import { useStyleProfile } from "@/src/features/style/use-style-profile";
 import { hexForColorName } from "@/src/lib/color-name-hex";
 import { buildEditorialStory } from "@/src/lib/style-story";
-import { palette } from "@/src/theme/palette";
 import { spacing, radius } from "@/src/theme/spacing";
+import { useAppTheme } from "@/src/theme/theme-provider";
 import { type } from "@/src/theme/type";
+import { useThemedStyles } from "@/src/theme/use-themed-styles";
 
 /* ------------------------------------------------------------------ */
 /*  Share Comparison Screen                                            */
@@ -19,6 +20,8 @@ import { type } from "@/src/theme/type";
 
 export default function ShareComparisonScreen() {
   const router = useRouter();
+  const { palette } = useAppTheme();
+  const styles = useThemedStyles(createStyles);
   const { data: profile } = useStyleProfile();
   const story = buildEditorialStory(profile);
   const rightColors = profile?.palette.core.slice(0, 2).map((color) => hexForColorName(color)) ?? [palette.primary, palette.swatch3];
@@ -41,7 +44,12 @@ export default function ShareComparisonScreen() {
   };
 
   return (
-    <Screen scrollable contentContainerStyle={styles.content}>
+    <Screen
+      scrollable
+      role="main"
+      accessibilityLabel="Share comparison screen"
+      contentContainerStyle={styles.content}
+    >
       {/* ---- Header ---- */}
       <View style={styles.header}>
         <Pressable
@@ -76,7 +84,7 @@ export default function ShareComparisonScreen() {
           </Text>
         </View>
 
-        <Text style={styles.summaryHeading}>
+        <Text accessibilityRole="header" style={styles.summaryHeading}>
           Your Seasonal Essence:{" "}
           <Text style={styles.summaryHighlight}>{story.essenceTitle}</Text>
         </Text>
@@ -184,7 +192,10 @@ export default function ShareComparisonScreen() {
 /*  Styles                                                             */
 /* ------------------------------------------------------------------ */
 
-const styles = StyleSheet.create({
+const createStyles = (
+  palette: import("@/src/theme/palette").ThemePalette,
+) =>
+  StyleSheet.create({
   content: {
     paddingHorizontal: spacing.md,
     paddingBottom: spacing.xxl,
@@ -412,4 +423,4 @@ const styles = StyleSheet.create({
   ctaSection: {
     paddingVertical: spacing.sm,
   },
-});
+  });

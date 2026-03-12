@@ -7,9 +7,10 @@ import { SurfaceCard } from "@/src/components/surface-card";
 import { useStyleProfile } from "@/src/features/style/use-style-profile";
 import { hexForColorName } from "@/src/lib/color-name-hex";
 import { buildEditorialStory } from "@/src/lib/style-story";
-import { palette } from "@/src/theme/palette";
 import { spacing, radius } from "@/src/theme/spacing";
+import { useAppTheme } from "@/src/theme/theme-provider";
 import { type } from "@/src/theme/type";
+import { useThemedStyles } from "@/src/theme/use-themed-styles";
 
 /* ------------------------------------------------------------------ */
 /*  Data                                                               */
@@ -17,6 +18,8 @@ import { type } from "@/src/theme/type";
 
 export default function ShareResultsScreen() {
   const router = useRouter();
+  const { palette } = useAppTheme();
+  const styles = useThemedStyles(createStyles);
   const { data: profile } = useStyleProfile();
   const story = buildEditorialStory(profile);
   const swatches = profile?.palette.core.slice(0, 5).map((color) => hexForColorName(color)) ?? [
@@ -46,10 +49,15 @@ export default function ShareResultsScreen() {
   };
 
   return (
-    <Screen scrollable contentContainerStyle={styles.content}>
+    <Screen
+      scrollable
+      role="main"
+      accessibilityLabel="Share results screen"
+      contentContainerStyle={styles.content}
+    >
       {/* ---- Top Bar ---- */}
       <View style={styles.topBar}>
-        <View style={styles.logoRow}>
+        <View role="banner" style={styles.logoRow}>
           <MaterialIcons name="auto-awesome" size={20} color={palette.primary} />
           <Text style={styles.logoText}>TONEMATCH</Text>
         </View>
@@ -98,7 +106,9 @@ export default function ShareResultsScreen() {
 
       {/* ---- Title Area ---- */}
       <View style={styles.titleArea}>
-        <Text style={styles.seasonTitle}>{story.seasonTitle}</Text>
+        <Text accessibilityRole="header" style={styles.seasonTitle}>
+          {story.seasonTitle}
+        </Text>
         <View style={styles.titleDivider} />
         <Text style={styles.paletteOverline}>SIGNATURE PALETTE</Text>
       </View>
@@ -167,7 +177,10 @@ export default function ShareResultsScreen() {
 /*  Styles                                                             */
 /* ------------------------------------------------------------------ */
 
-const styles = StyleSheet.create({
+const createStyles = (
+  palette: import("@/src/theme/palette").ThemePalette,
+) =>
+  StyleSheet.create({
   content: {
     paddingHorizontal: spacing.md,
     paddingBottom: spacing.xxl,
@@ -411,4 +424,4 @@ const styles = StyleSheet.create({
     ...type.h3,
     color: palette.primary,
   },
-});
+  });

@@ -18,9 +18,10 @@ import { SurfaceCard } from "@/src/components/surface-card";
 import { useStyleProfile } from "@/src/features/style/use-style-profile";
 import { buildEditorialStory } from "@/src/lib/style-story";
 import { runQuickCheck } from "@/src/lib/tonematch-api";
-import { palette } from "@/src/theme/palette";
 import { radius, spacing } from "@/src/theme/spacing";
+import { useAppTheme } from "@/src/theme/theme-provider";
 import { type } from "@/src/theme/type";
+import { useThemedStyles } from "@/src/theme/use-themed-styles";
 import type { QuickCheckView } from "@/src/types/tonematch";
 
 /* ------------------------------------------------------------------ */
@@ -37,6 +38,8 @@ const SUGGESTED_USAGE: { icon: keyof typeof MaterialIcons.glyphMap; label: strin
 /* ------------------------------------------------------------------ */
 export default function QuickCheckScreen() {
   const router = useRouter();
+  const { palette } = useAppTheme();
+  const styles = useThemedStyles(createStyles);
   const { data: profile } = useStyleProfile();
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<QuickCheckView | null>(null);
@@ -84,7 +87,12 @@ export default function QuickCheckScreen() {
     result?.label?.toLowerCase().includes("good");
 
   return (
-    <Screen scrollable contentContainerStyle={styles.content}>
+    <Screen
+      scrollable
+      role="main"
+      accessibilityLabel="Quick check screen"
+      contentContainerStyle={styles.content}
+    >
       {/* ── Header ─────────────────────────────────────────────── */}
       <View style={styles.header}>
         <Pressable
@@ -95,7 +103,9 @@ export default function QuickCheckScreen() {
         >
           <MaterialIcons name="arrow-back" size={24} color={palette.charcoal} />
         </Pressable>
-        <Text style={styles.headerTitle}>Quick Check</Text>
+        <Text accessibilityRole="header" style={styles.headerTitle}>
+          Quick Check
+        </Text>
         {/* Spacer to center title */}
         <View style={styles.headerSpacer} />
       </View>
@@ -261,7 +271,10 @@ export default function QuickCheckScreen() {
 /* ------------------------------------------------------------------ */
 /*  Styles                                                             */
 /* ------------------------------------------------------------------ */
-const styles = StyleSheet.create({
+const createStyles = (
+  palette: import("@/src/theme/palette").ThemePalette,
+) =>
+  StyleSheet.create({
   content: {
     padding: spacing.lg,
     gap: spacing.lg,
@@ -446,4 +459,4 @@ const styles = StyleSheet.create({
   actionStack: {
     gap: spacing.sm,
   },
-});
+  });

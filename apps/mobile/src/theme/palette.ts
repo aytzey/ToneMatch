@@ -12,10 +12,10 @@ const lightPalette = {
   // Text
   charcoal: "#191410",
   muted: "#745d44",
-  subtle: "#8a7158",
+  subtle: "#745842",
 
   // Brand
-  primary: "#8a5624",
+  primary: "#7b4b1b",
   onPrimary: "#ffffff",
   primarySoft: "rgba(138, 86, 36, 0.12)",
   primaryMuted: "rgba(138, 86, 36, 0.06)",
@@ -127,3 +127,12 @@ const darkPalette: ThemePalette = {
 export { darkPalette, lightPalette };
 
 export const palette = lightPalette;
+
+export const editorialGuideBackgrounds = [
+  "#f1e4d7",
+  "#ece2d7",
+  "#e6ddd6",
+  "#ede7dc",
+  "#efe3d3",
+  "#e9e0d8",
+] as const;

@@ -16,8 +16,8 @@ import {
   type GuideVariant,
   type OccasionPlaybook,
 } from "@/src/lib/editorial-guides";
-import { palette } from "@/src/theme/palette";
 import { radius, spacing } from "@/src/theme/spacing";
+import { useThemedStyles } from "@/src/theme/use-themed-styles";
 import { type } from "@/src/theme/type";
 
 function PlaybookCard({
@@ -27,6 +27,8 @@ function PlaybookCard({
   occasion: OccasionPlaybook;
   wide: boolean;
 }) {
+  const styles = useThemedStyles(createStyles);
+
   return (
     <SurfaceCard tone="default">
       <View style={[styles.playbookIntro, wide && styles.playbookIntroWide]}>
@@ -42,7 +44,13 @@ function PlaybookCard({
         </View>
 
         <View style={[styles.playbookVisual, { backgroundColor: occasion.backgroundColor }]}>
-          <Image source={occasion.image} style={styles.playbookImage} resizeMode="cover" />
+          <Image
+            accessibilityLabel={`${occasion.title} occasion playbook preview`}
+            accessibilityRole="image"
+            source={occasion.image}
+            style={styles.playbookImage}
+            resizeMode="cover"
+          />
         </View>
       </View>
 
@@ -61,6 +69,7 @@ function PlaybookCard({
 
 export default function OccasionGuideScreen() {
   const { width } = useWindowDimensions();
+  const styles = useThemedStyles(createStyles);
   const isWide = width >= 720;
   const { data: profile } = useStyleProfile();
   const params = useLocalSearchParams<{ variant?: GuideVariant; focus?: string }>();
@@ -92,7 +101,12 @@ export default function OccasionGuideScreen() {
   };
 
   return (
-    <Screen scrollable contentContainerStyle={styles.content}>
+    <Screen
+      scrollable
+      role="main"
+      accessibilityLabel="Occasion guide screen"
+      contentContainerStyle={styles.content}
+    >
       <GuideHeader
         title="OCCASION GUIDE"
         onBack={() => router.back()}
@@ -101,7 +115,13 @@ export default function OccasionGuideScreen() {
 
       <View style={styles.storyboard}>
         <View style={[styles.storyboardHero, { backgroundColor: hero.backgroundColor }]}>
-          <Image source={hero.image} style={styles.storyboardImage} resizeMode="cover" />
+          <Image
+            accessibilityLabel={`${hero.title} occasion guide hero`}
+            accessibilityRole="image"
+            source={hero.image}
+            style={styles.storyboardImage}
+            resizeMode="cover"
+          />
           <View style={styles.storyboardRibbon}>
             <Text style={styles.introOverline}>Scenario playbooks</Text>
             <Text style={styles.storyboardTitle}>{hero.title}</Text>
@@ -199,7 +219,10 @@ export default function OccasionGuideScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (
+  palette: import("@/src/theme/palette").ThemePalette,
+) =>
+  StyleSheet.create({
   content: {
     paddingHorizontal: spacing.lg,
     paddingBottom: spacing.xxl,
@@ -420,4 +443,4 @@ const styles = StyleSheet.create({
     ...type.body,
     color: palette.charcoal,
   },
-});
+  });

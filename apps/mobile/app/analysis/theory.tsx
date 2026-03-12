@@ -14,9 +14,10 @@ import { SurfaceCard } from "@/src/components/surface-card";
 import { useStyleProfile } from "@/src/features/style/use-style-profile";
 import { buildStablePalette } from "@/src/lib/style-profile-normalizer";
 import { generateStyleTheory } from "@/src/lib/tonematch-api";
-import { palette } from "@/src/theme/palette";
 import { radius, spacing } from "@/src/theme/spacing";
+import { useAppTheme } from "@/src/theme/theme-provider";
 import { type } from "@/src/theme/type";
+import { useThemedStyles } from "@/src/theme/use-themed-styles";
 
 function MetaPill({
   label,
@@ -25,6 +26,8 @@ function MetaPill({
   label: string;
   tone?: "dark" | "light";
 }) {
+  const styles = useThemedStyles(createStyles);
+
   return (
     <View style={[styles.metaPill, tone === "light" ? styles.metaPillLight : styles.metaPillDark]}>
       <Text style={[styles.metaPillText, tone === "light" ? styles.metaPillTextLight : styles.metaPillTextDark]}>
@@ -36,6 +39,8 @@ function MetaPill({
 
 export default function AnalysisTheoryScreen() {
   const params = useLocalSearchParams<{ sessionId?: string }>();
+  const { palette } = useAppTheme();
+  const styles = useThemedStyles(createStyles);
   const { data: profile, isLoading, error } = useStyleProfile();
 
   const theoryQueryKey = useMemo(
@@ -66,7 +71,12 @@ export default function AnalysisTheoryScreen() {
 
   if (isLoading) {
     return (
-      <Screen scrollable contentContainerStyle={styles.content}>
+      <Screen
+        scrollable
+        role="main"
+        accessibilityLabel="Analysis theory screen"
+        contentContainerStyle={styles.content}
+      >
         {header}
         <View style={styles.centeredFill}>
           <ActivityIndicator size="large" color={palette.primary} />
@@ -81,7 +91,12 @@ export default function AnalysisTheoryScreen() {
 
   if (error || !profile) {
     return (
-      <Screen scrollable contentContainerStyle={styles.content}>
+      <Screen
+        scrollable
+        role="main"
+        accessibilityLabel="Analysis theory screen"
+        contentContainerStyle={styles.content}
+      >
         {header}
         <View style={styles.centeredFill}>
           <Text style={styles.errorTitle}>Method note is not available yet</Text>
@@ -95,7 +110,12 @@ export default function AnalysisTheoryScreen() {
 
   if (theoryQuery.isLoading || !theoryQuery.data) {
     return (
-      <Screen scrollable contentContainerStyle={styles.content}>
+      <Screen
+        scrollable
+        role="main"
+        accessibilityLabel="Analysis theory screen"
+        contentContainerStyle={styles.content}
+      >
         {header}
         <View style={styles.centeredFill}>
           <ActivityIndicator size="large" color={palette.primary} />
@@ -113,7 +133,12 @@ export default function AnalysisTheoryScreen() {
   const stable = buildStablePalette(profile.undertone, profile.contrast);
 
   return (
-    <Screen scrollable contentContainerStyle={styles.content}>
+    <Screen
+      scrollable
+      role="main"
+      accessibilityLabel="Analysis theory screen"
+      contentContainerStyle={styles.content}
+    >
       {header}
 
       <SurfaceCard tone="accent">
@@ -188,7 +213,10 @@ export default function AnalysisTheoryScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (
+  palette: import("@/src/theme/palette").ThemePalette,
+) =>
+  StyleSheet.create({
   content: {
     paddingHorizontal: spacing.lg,
     paddingBottom: spacing.xxl,
@@ -333,4 +361,4 @@ const styles = StyleSheet.create({
     ...type.body,
     color: palette.onPrimary,
   },
-});
+  });

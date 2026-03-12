@@ -162,7 +162,7 @@ async function isBackendReachable(): Promise<boolean> {
   }
 }
 
-function useOpenRouterFallback(): boolean {
+function shouldUseOpenRouterFallback(): boolean {
   return openrouterConfigured;
 }
 
@@ -255,28 +255,46 @@ function parseRecommendations(value: unknown): RecommendationCard[] {
     return [];
   }
 
-  return value
-    .map((item, index) => {
-      if (!isRecord(item)) {
-        return null;
-      }
+  const recommendations: RecommendationCard[] = [];
 
-      return {
-        id: typeof item.id === "string" ? item.id : `snapshot-rec-${index + 1}`,
-        title: typeof item.title === "string" ? item.title : "Recommended piece",
-        category: typeof item.category === "string" ? item.category : "Style pick",
-        description: typeof item.description === "string" ? item.description : undefined,
-        reason: typeof item.reason === "string" ? item.reason : "",
-        score: Number(item.score ?? 0),
-        price: typeof item.price === "string" ? item.price : "",
-        merchantUrl: typeof item.merchantUrl === "string" ? item.merchantUrl : null,
-        merchantName: typeof item.merchantName === "string" ? item.merchantName : null,
-        merchantSource: typeof item.merchantSource === "string" ? item.merchantSource : null,
-        isPremium: typeof item.isPremium === "boolean" ? item.isPremium : undefined,
-        colorFamily: typeof item.colorFamily === "string" ? item.colorFamily : undefined,
-      } satisfies RecommendationCard;
-    })
-    .filter((item): item is RecommendationCard => Boolean(item));
+  value.forEach((item, index) => {
+    if (!isRecord(item)) {
+      return;
+    }
+
+    recommendations.push({
+      id: typeof item.id === "string" ? item.id : `snapshot-rec-${index + 1}`,
+      title:
+        typeof item.title === "string" ? item.title : "Recommended piece",
+      category:
+        typeof item.category === "string" ? item.category : "Style pick",
+      description:
+        typeof item.description === "string" ? item.description : undefined,
+      reason: typeof item.reason === "string" ? item.reason : "",
+      score: Number(item.score ?? 0),
+      price: typeof item.price === "string" ? item.price : "",
+      merchantUrl:
+        typeof item.merchantUrl === "string" ? item.merchantUrl : null,
+      merchantName:
+        typeof item.merchantName === "string" ? item.merchantName : null,
+      merchantSource:
+        typeof item.merchantSource === "string" ? item.merchantSource : null,
+      isPremium:
+        typeof item.isPremium === "boolean" ? item.isPremium : undefined,
+      colorFamily:
+        typeof item.colorFamily === "string" ? item.colorFamily : undefined,
+    });
+  });
+
+  return recommendations;
+}
+
+function normalizeSubscriptionPlan(
+  plan: string | null | undefined,
+): SubscriptionPlan {
+  return plan === "free" || plan === "plus" || plan === "pro"
+    ? plan
+    : useAppStore.getState().previewPlan;
 }
 
 function parseAnalysisSnapshot(value: unknown): AnalysisSnapshot | null {
@@ -478,7 +496,7 @@ function buildFallbackTheory(profile: StyleExperience): StyleTheoryView {
 export async function generateStyleTheory(profile: StyleExperience): Promise<StyleTheoryView> {
   const normalizedProfile = applyStablePalette(profile);
 
-  if (!useOpenRouterFallback()) {
+  if (!shouldUseOpenRouterFallback()) {
     return buildFallbackTheory(normalizedProfile);
   }
 
@@ -508,7 +526,7 @@ export async function uploadAndAnalyzeSelfie(asset: ImagePickerAsset) {
   }
 
   /* OpenRouter direct analysis */
-  if (useOpenRouterFallback()) {
+  if (shouldUseOpenRouterFallback()) {
     console.log("[uploadAndAnalyzeSelfie] → openrouter path");
     const normalizedAsset = await compressForAnalysis(asset);
     const result = await analyzeSelfie(normalizedAsset.uri, { originalImageUri: asset.uri });
@@ -641,7 +659,7 @@ export async function fetchStyleExperience(userId?: string | null): Promise<Styl
   /* Fallback to mock */
   return applyStablePalette({
     ...mockStyleProfile,
-    plan: useAppStore.getState().previewPlan,
+    plan: normalizeSubscriptionPlan(useAppStore.getState().previewPlan),
   });
 }
 
@@ -709,7 +727,9 @@ async function fetchStyleExperienceFromBackend(userId: string): Promise<StyleExp
   if (!profileResponse.data) {
     return applyStablePalette({
       ...mockStyleProfile,
-      plan: (planResponse.data?.plan as SubscriptionPlan) ?? useAppStore.getState().previewPlan,
+      plan: normalizeSubscriptionPlan(
+        planResponse.data?.plan ?? useAppStore.getState().previewPlan,
+      ),
     });
   }
   const stablePalette = buildStablePalette(
@@ -721,14 +741,16 @@ async function fetchStyleExperienceFromBackend(userId: string): Promise<StyleExp
     return styleExperienceFromSnapshot({
       ...snapshot,
       recommendations: recommendations.length > 0 ? recommendations : snapshot.recommendations,
-    }, (planResponse.data?.plan as SubscriptionPlan) ?? useAppStore.getState().previewPlan);
+    }, normalizeSubscriptionPlan(
+      planResponse.data?.plan ?? useAppStore.getState().previewPlan,
+    ));
   }
 
   return applyStablePalette({
     undertone: profileResponse.data.undertone_label,
     contrast: profileResponse.data.contrast_label,
     confidence: averageConfidence(Number(profileResponse.data.undertone_confidence ?? 0), Number(profileResponse.data.contrast_confidence ?? 0)),
-    plan: planResponse.data?.plan ?? "free",
+    plan: normalizeSubscriptionPlan(planResponse.data?.plan ?? "free"),
     summary: {
       title: `${profileResponse.data.undertone_label} / ${profileResponse.data.contrast_label}`,
       description: profileResponse.data.fit_explanation ?? "Yeni stil profilin hazir.",
@@ -753,7 +775,7 @@ export async function runQuickCheck(asset: ImagePickerAsset): Promise<QuickCheck
   }
 
   /* OpenRouter direct clothing analysis */
-  if (useOpenRouterFallback()) {
+  if (shouldUseOpenRouterFallback()) {
     const stored = await loadProfile();
     const profile = stored
       ? {
@@ -1091,7 +1113,10 @@ export async function fetchCatalogFeed(userId?: string | null): Promise<Recommen
     }));
   }
 
-  const previewProfile = applyStablePalette(mockStyleProfile);
+  const previewProfile = applyStablePalette({
+    ...mockStyleProfile,
+    plan: normalizeSubscriptionPlan(mockStyleProfile.plan),
+  });
 
   return previewProfile.recommendations.map((item, index) => ({
     ...item,

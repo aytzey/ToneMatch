@@ -3,11 +3,12 @@ import { Redirect, Tabs } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useAuth } from "@/src/features/auth/use-auth";
-import { palette } from "@/src/theme/palette";
+import { useAppTheme } from "@/src/theme/theme-provider";
 
 export default function TabsLayout() {
   const { isAuthenticated, ready } = useAuth();
   const insets = useSafeAreaInsets();
+  const { palette } = useAppTheme();
 
   if (!ready) {
     return null;

@@ -17,15 +17,16 @@ import { useStyleProfile } from "@/src/features/style/use-style-profile";
 import { useWardrobeItems } from "@/src/features/wardrobe/use-wardrobe-items";
 import { hexForColorName } from "@/src/lib/color-name-hex";
 import type { StyleExperience, WardrobeItemView } from "@/src/types/tonematch";
-import { palette } from "@/src/theme/palette";
 import { spacing, radius } from "@/src/theme/spacing";
+import { useAppTheme } from "@/src/theme/theme-provider";
 import { type } from "@/src/theme/type";
+import { useThemedStyles } from "@/src/theme/use-themed-styles";
 
 const ITEM_IMAGES = [
-  require("../../assets/images/wardrobe_blazer.png"),
-  require("../../assets/images/wardrobe_blouse.png"),
-  require("../../assets/images/wardrobe_knit.png"),
-  require("../../assets/images/wardrobe_skirt.png"),
+  require("../../assets/images/wardrobe_blazer.jpg"),
+  require("../../assets/images/wardrobe_blouse.jpg"),
+  require("../../assets/images/wardrobe_knit.jpg"),
+  require("../../assets/images/wardrobe_skirt.jpg"),
 ] as const;
 
 const TAB_FILTERS = [
@@ -119,6 +120,8 @@ function buildInsightCopy(profile: StyleExperience | null | undefined) {
 
 export default function WardrobeScreen() {
   const router = useRouter();
+  const { palette } = useAppTheme();
+  const styles = useThemedStyles(createStyles);
   const [activeTab, setActiveTab] = useState("analysis-led");
   const profileQuery = useStyleProfile();
   const wardrobeQuery = useWardrobeItems();
@@ -130,7 +133,12 @@ export default function WardrobeScreen() {
   const swatches = profile?.palette.core.slice(0, 4) ?? ["Petrol", "Ecru", "Olive", "Warm Navy"];
 
   return (
-    <Screen scrollable contentContainerStyle={styles.content}>
+    <Screen
+      scrollable
+      role="main"
+      accessibilityLabel="Wardrobe screen"
+      contentContainerStyle={styles.content}
+    >
       <View style={styles.header}>
         <View style={styles.headerLeft}>
           <Text style={styles.logoText}>TONEMATCH</Text>
@@ -271,6 +279,8 @@ export default function WardrobeScreen() {
             <View key={item.id} style={styles.itemCard}>
               <View style={[styles.itemVisual, { backgroundColor: item.color }]}>
                 <Image
+                  accessibilityLabel={`${item.title} wardrobe preview`}
+                  accessibilityRole="image"
                   source={item.image}
                   style={StyleSheet.absoluteFillObject}
                   resizeMode="cover"
@@ -306,7 +316,10 @@ export default function WardrobeScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (
+  palette: import("@/src/theme/palette").ThemePalette,
+) =>
+  StyleSheet.create({
   content: {
     padding: spacing.lg,
     paddingBottom: 120,
@@ -563,4 +576,4 @@ const styles = StyleSheet.create({
     ...type.body,
     color: palette.muted,
   },
-});
+  });

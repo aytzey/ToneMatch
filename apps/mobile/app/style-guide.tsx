@@ -18,9 +18,10 @@ import {
   type OccasionPlaybook,
   type StyleDirectionCard,
 } from "@/src/lib/editorial-guides";
-import { palette } from "@/src/theme/palette";
 import { radius, spacing } from "@/src/theme/spacing";
+import { useAppTheme } from "@/src/theme/theme-provider";
 import { type } from "@/src/theme/type";
+import { useThemedStyles } from "@/src/theme/use-themed-styles";
 
 function DirectionCard({
   card,
@@ -29,6 +30,8 @@ function DirectionCard({
   card: StyleDirectionCard;
   wide: boolean;
 }) {
+  const styles = useThemedStyles(createStyles);
+
   return (
     <SurfaceCard tone="default">
       <View style={[styles.directionIntro, wide && styles.directionIntroWide]}>
@@ -44,7 +47,13 @@ function DirectionCard({
         </View>
 
         <View style={[styles.directionVisual, { backgroundColor: card.backgroundColor }]}>
-          <Image source={card.image} style={styles.directionImage} resizeMode="cover" />
+          <Image
+            accessibilityLabel={`${card.title} outfit direction preview`}
+            accessibilityRole="image"
+            source={card.image}
+            style={styles.directionImage}
+            resizeMode="cover"
+          />
           <View style={styles.directionCaption}>
             <Text style={styles.directionCaptionLabel}>Built for repeat wear</Text>
             <Text style={styles.directionCaptionText}>
@@ -72,6 +81,9 @@ function OccasionPreview({
   variant: GuideVariant;
   wide: boolean;
 }) {
+  const { palette } = useAppTheme();
+  const styles = useThemedStyles(createStyles);
+
   return (
     <Pressable
       accessibilityLabel={`Open ${item.title} occasion playbook`}
@@ -89,7 +101,13 @@ function OccasionPreview({
       ]}
     >
       <View style={[styles.previewImageWrap, { backgroundColor: item.backgroundColor }]}>
-        <Image source={item.image} style={styles.previewImage} resizeMode="cover" />
+        <Image
+          accessibilityLabel={`${item.title} occasion preview`}
+          accessibilityRole="image"
+          source={item.image}
+          style={styles.previewImage}
+          resizeMode="cover"
+        />
       </View>
       <View style={styles.previewContent}>
         <Text style={styles.previewEyebrow}>{item.eyebrow}</Text>
@@ -106,6 +124,7 @@ function OccasionPreview({
 
 export default function StyleGuideScreen() {
   const { width } = useWindowDimensions();
+  const styles = useThemedStyles(createStyles);
   const isWide = width >= 720;
   const { data: profile } = useStyleProfile();
   const params = useLocalSearchParams<{ variant?: GuideVariant }>();
@@ -114,7 +133,12 @@ export default function StyleGuideScreen() {
   const heroCard = bundle.styleDirections[0];
 
   return (
-    <Screen scrollable contentContainerStyle={styles.content}>
+    <Screen
+      scrollable
+      role="main"
+      accessibilityLabel="Style guide screen"
+      contentContainerStyle={styles.content}
+    >
       <GuideHeader title="STYLE GUIDE" onBack={() => router.back()} />
 
       <View style={[styles.masthead, isWide && styles.mastheadWide]}>
@@ -125,7 +149,13 @@ export default function StyleGuideScreen() {
             { backgroundColor: heroCard.backgroundColor },
           ]}
         >
-          <Image source={heroCard.image} style={styles.mastheadImage} resizeMode="cover" />
+          <Image
+            accessibilityLabel={`${bundle.story.seasonTitle} editorial style guide hero`}
+            accessibilityRole="image"
+            source={heroCard.image}
+            style={styles.mastheadImage}
+            resizeMode="cover"
+          />
           <View style={styles.mastheadOverlay}>
             <Text style={styles.introOverline}>Editorial blueprint</Text>
             <Text style={styles.mastheadTitle}>{bundle.story.seasonTitle}</Text>
@@ -246,7 +276,10 @@ export default function StyleGuideScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (
+  palette: import("@/src/theme/palette").ThemePalette,
+) =>
+  StyleSheet.create({
   content: {
     paddingHorizontal: spacing.lg,
     paddingBottom: spacing.xxl,
@@ -533,4 +566,4 @@ const styles = StyleSheet.create({
     ...type.label,
     color: palette.primary,
   },
-});
+  });

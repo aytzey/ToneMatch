@@ -11,9 +11,10 @@ import { useCatalogFeed } from "@/src/features/catalog/use-catalog-feed";
 import { useStyleProfile } from "@/src/features/style/use-style-profile";
 import { hexForColorName } from "@/src/lib/color-name-hex";
 import { buildEditorialStory } from "@/src/lib/style-story";
-import { palette } from "@/src/theme/palette";
 import { radius, spacing } from "@/src/theme/spacing";
+import { useAppTheme } from "@/src/theme/theme-provider";
 import { type } from "@/src/theme/type";
+import { useThemedStyles } from "@/src/theme/use-themed-styles";
 
 type GiftCard = {
   id: string;
@@ -27,13 +28,15 @@ type GiftCard = {
 };
 
 const GIFT_IMAGES = [
-  require("@/assets/images/gift_hero.png"),
-  require("@/assets/images/gift_silk_gold.png"),
-  require("@/assets/images/gift_cashmere_silver.png"),
+  require("@/assets/images/gift_hero.jpg"),
+  require("@/assets/images/gift_silk_gold.jpg"),
+  require("@/assets/images/gift_cashmere_silver.jpg"),
 ] as const;
 
 export default function GiftGuideScreen() {
   const { width } = useWindowDimensions();
+  const { palette } = useAppTheme();
+  const styles = useThemedStyles(createStyles);
   const isWide = width >= 720;
   const { data: profile } = useStyleProfile();
   const { data: feed } = useCatalogFeed();
@@ -100,7 +103,12 @@ export default function GiftGuideScreen() {
   });
 
   return (
-    <Screen scrollable contentContainerStyle={styles.content}>
+    <Screen
+      scrollable
+      role="main"
+      accessibilityLabel="Gift guide screen"
+      contentContainerStyle={styles.content}
+    >
       <GuideHeader title="GIFT EDIT" onBack={() => router.back()} />
 
       <View style={[styles.giftLead, isWide && styles.giftLeadWide]}>
@@ -125,7 +133,13 @@ export default function GiftGuideScreen() {
 
         <View style={styles.giftPreviewColumn}>
           <View style={styles.introImageCard}>
-            <Image source={GIFT_IMAGES[0]} style={styles.introImage} resizeMode="cover" />
+            <Image
+              accessibilityLabel="Editorial gift guide hero preview"
+              accessibilityRole="image"
+              source={GIFT_IMAGES[0]}
+              style={styles.introImage}
+              resizeMode="cover"
+            />
           </View>
           <View style={styles.giftPaletteStrip}>
             {story.paletteLead.slice(0, 3).map((tone) => (
@@ -185,7 +199,13 @@ export default function GiftGuideScreen() {
             <SurfaceCard key={card.id} tone="default">
               <View style={[styles.giftCard, isWide && styles.giftCardWide]}>
                 <View style={[styles.giftImageWrap, { backgroundColor: card.imageBg }]}>
-                  <Image source={card.image} style={styles.giftImage} resizeMode="cover" />
+                  <Image
+                    accessibilityLabel={`${card.title} gift preview`}
+                    accessibilityRole="image"
+                    source={card.image}
+                    style={styles.giftImage}
+                    resizeMode="cover"
+                  />
                 </View>
 
                 <View style={styles.giftContent}>
@@ -240,7 +260,10 @@ export default function GiftGuideScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (
+  palette: import("@/src/theme/palette").ThemePalette,
+) =>
+  StyleSheet.create({
   content: {
     paddingHorizontal: spacing.lg,
     paddingBottom: spacing.xxl,
@@ -465,4 +488,4 @@ const styles = StyleSheet.create({
   buttonGroupWide: {
     flexDirection: "row",
   },
-});
+  });

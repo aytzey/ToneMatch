@@ -11,9 +11,10 @@ import {
 import { PrimaryButton } from "@/src/components/primary-button";
 import { Screen } from "@/src/components/screen";
 import { useScanFlow } from "@/src/features/scan/use-scan-flow";
-import { palette } from "@/src/theme/palette";
 import { radius, spacing } from "@/src/theme/spacing";
+import { useAppTheme } from "@/src/theme/theme-provider";
 import { type } from "@/src/theme/type";
+import { useThemedStyles } from "@/src/theme/use-themed-styles";
 
 /* ------------------------------------------------------------------ */
 /*  Quality check items                                                */
@@ -34,6 +35,8 @@ const QUALITY_CHECKS: {
 
 export default function ScanReviewScreen() {
   const router = useRouter();
+  const { palette } = useAppTheme();
+  const styles = useThemedStyles(createStyles);
   const { state, startAnalysis } = useScanFlow();
 
   const previewUri = state.previewUri;
@@ -51,7 +54,12 @@ export default function ScanReviewScreen() {
   };
 
   return (
-    <Screen scrollable contentContainerStyle={styles.content}>
+    <Screen
+      scrollable
+      role="main"
+      accessibilityLabel="Scan review screen"
+      contentContainerStyle={styles.content}
+    >
       {/* -- Header -- */}
       <View style={styles.header}>
         <Pressable
@@ -63,17 +71,21 @@ export default function ScanReviewScreen() {
         >
           <MaterialIcons name="arrow-back" size={24} color={palette.charcoal} />
         </Pressable>
-        <Text style={styles.headerTitle}>Scan Review</Text>
+        <Text accessibilityRole="header" style={styles.headerTitle}>
+          Scan Review
+        </Text>
         <View style={styles.headerSpacer} />
       </View>
 
       {/* -- Selfie preview -- */}
       <View style={styles.previewContainer}>
         <Image
+          accessibilityLabel="Captured selfie preview for review before analysis"
+          accessibilityRole="image"
           source={
             previewUri
               ? { uri: previewUri }
-              : require("../assets/images/scan_selfie.png")
+              : require("../assets/images/scan_selfie.jpg")
           }
           style={styles.previewPlaceholder}
           resizeMode="cover"
@@ -140,134 +152,137 @@ export default function ScanReviewScreen() {
 /*  Styles                                                             */
 /* ------------------------------------------------------------------ */
 
-const styles = StyleSheet.create({
-  content: {
-    padding: spacing.lg,
-    gap: spacing.lg,
-    paddingBottom: 120,
-  },
+const createStyles = (
+  palette: import("@/src/theme/palette").ThemePalette,
+) =>
+  StyleSheet.create({
+    content: {
+      padding: spacing.lg,
+      gap: spacing.lg,
+      paddingBottom: 120,
+    },
 
-  /* Header */
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: spacing.sm,
-  },
-  backBtn: {
-    width: 44,
-    height: 44,
-    borderRadius: radius.full,
-    backgroundColor: palette.surface,
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 1,
-    borderColor: palette.border,
-  },
-  headerTitle: {
-    ...type.h2,
-    color: palette.charcoal,
-    fontStyle: "italic",
-    flex: 1,
-    textAlign: "center",
-  },
-  headerSpacer: {
-    width: 40,
-  },
+    /* Header */
+    header: {
+      flexDirection: "row",
+      alignItems: "center",
+      paddingVertical: spacing.sm,
+    },
+    backBtn: {
+      width: 44,
+      height: 44,
+      borderRadius: radius.full,
+      backgroundColor: palette.surface,
+      alignItems: "center",
+      justifyContent: "center",
+      borderWidth: 1,
+      borderColor: palette.border,
+    },
+    headerTitle: {
+      ...type.h2,
+      color: palette.charcoal,
+      fontStyle: "italic",
+      flex: 1,
+      textAlign: "center",
+    },
+    headerSpacer: {
+      width: 40,
+    },
 
-  /* Selfie preview */
-  previewContainer: {
-    width: "100%",
-    aspectRatio: 3 / 4,
-    borderRadius: radius.xl,
-    overflow: "hidden",
-    position: "relative",
-    borderWidth: 1,
-    borderColor: palette.border,
-  },
-  previewPlaceholder: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: palette.clay,
-  },
+    /* Selfie preview */
+    previewContainer: {
+      width: "100%",
+      aspectRatio: 3 / 4,
+      borderRadius: radius.xl,
+      overflow: "hidden",
+      position: "relative",
+      borderWidth: 1,
+      borderColor: palette.border,
+    },
+    previewPlaceholder: {
+      ...StyleSheet.absoluteFillObject,
+      backgroundColor: palette.clay,
+    },
 
-  /* Quality status badge */
-  statusBadge: {
-    position: "absolute",
-    bottom: spacing.md,
-    left: spacing.md,
-    right: spacing.md,
-    backgroundColor: palette.surfaceTintStrong,
-    borderRadius: radius.lg,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.md,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  statusBadgeLeft: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing.sm,
-  },
-  statusBadgeTextColumn: {
-    gap: 2,
-  },
-  statusOverline: {
-    ...type.overline,
-    fontSize: 12,
-    color: palette.primary,
-    letterSpacing: 1.5,
-  },
-  statusTitle: {
-    ...type.label,
-    color: palette.charcoal,
-    fontWeight: "700",
-  },
-  statusPill: {
-    backgroundColor: palette.primaryMuted,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs,
-    borderRadius: radius.full,
-  },
-  statusPillText: {
-    ...type.caption,
-    color: palette.green,
-    fontWeight: "700",
-  },
+    /* Quality status badge */
+    statusBadge: {
+      position: "absolute",
+      bottom: spacing.md,
+      left: spacing.md,
+      right: spacing.md,
+      backgroundColor: palette.surfaceTintStrong,
+      borderRadius: radius.lg,
+      paddingHorizontal: spacing.md,
+      paddingVertical: spacing.md,
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+    },
+    statusBadgeLeft: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: spacing.sm,
+    },
+    statusBadgeTextColumn: {
+      gap: 2,
+    },
+    statusOverline: {
+      ...type.overline,
+      fontSize: 12,
+      color: palette.primary,
+      letterSpacing: 1.5,
+    },
+    statusTitle: {
+      ...type.label,
+      color: palette.charcoal,
+      fontWeight: "700",
+    },
+    statusPill: {
+      backgroundColor: palette.primaryMuted,
+      paddingHorizontal: spacing.md,
+      paddingVertical: spacing.xs,
+      borderRadius: radius.full,
+    },
+    statusPillText: {
+      ...type.caption,
+      color: palette.green,
+      fontWeight: "700",
+    },
 
-  /* Quality check section */
-  qualitySection: {
-    gap: spacing.md,
-  },
-  qualitySectionTitle: {
-    ...type.h3,
-    color: palette.charcoal,
-    fontStyle: "italic",
-  },
-  checkList: {
-    gap: spacing.md,
-  },
-  checkRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing.md,
-  },
-  checkIconCircle: {
-    width: 36,
-    height: 36,
-    borderRadius: radius.full,
-    backgroundColor: palette.primarySoft,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  checkLabel: {
-    ...type.body,
-    color: palette.charcoal,
-    flex: 1,
-  },
+    /* Quality check section */
+    qualitySection: {
+      gap: spacing.md,
+    },
+    qualitySectionTitle: {
+      ...type.h3,
+      color: palette.charcoal,
+      fontStyle: "italic",
+    },
+    checkList: {
+      gap: spacing.md,
+    },
+    checkRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: spacing.md,
+    },
+    checkIconCircle: {
+      width: 36,
+      height: 36,
+      borderRadius: radius.full,
+      backgroundColor: palette.primarySoft,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    checkLabel: {
+      ...type.body,
+      color: palette.charcoal,
+      flex: 1,
+    },
 
-  /* CTA buttons */
-  ctaSection: {
-    gap: spacing.sm,
-    marginTop: spacing.sm,
-  },
-});
+    /* CTA buttons */
+    ctaSection: {
+      gap: spacing.sm,
+      marginTop: spacing.sm,
+    },
+  });

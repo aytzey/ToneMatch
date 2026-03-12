@@ -8,12 +8,15 @@ import { SurfaceCard } from "@/src/components/surface-card";
 import { useAuth } from "@/src/features/auth/use-auth";
 import { useAppCopy } from "@/src/providers/copy-provider";
 import { useAppStore } from "@/src/store/app-store";
-import { palette } from "@/src/theme/palette";
 import { spacing } from "@/src/theme/spacing";
+import { useAppTheme } from "@/src/theme/theme-provider";
 import { type } from "@/src/theme/type";
+import { useThemedStyles } from "@/src/theme/use-themed-styles";
 
 export default function WelcomeScreen() {
   const router = useRouter();
+  const { palette } = useAppTheme();
+  const styles = useThemedStyles(createStyles);
   const copy = useAppCopy().welcome;
   const { isAuthenticated, isDevSingleUserMode, ready } = useAuth();
   const completeOnboarding = useAppStore((state) => state.completeOnboarding);
@@ -35,10 +38,19 @@ export default function WelcomeScreen() {
   };
 
   return (
-    <Screen scrollable contentContainerStyle={styles.content}>
+    <Screen
+      scrollable
+      role="main"
+      accessibilityLabel="Welcome screen"
+      contentContainerStyle={styles.content}
+    >
       <LinearGradient colors={[palette.canvas, palette.surface, palette.accentSoft]} style={styles.hero}>
-        <Text style={styles.eyebrow}>{copy.eyebrow}</Text>
-        <Text style={styles.title}>{copy.title}</Text>
+        <Text accessibilityRole="header" style={styles.eyebrow}>
+          {copy.eyebrow}
+        </Text>
+        <Text accessibilityRole="header" style={styles.title}>
+          {copy.title}
+        </Text>
         <Text style={styles.copy}>{copy.body}</Text>
       </LinearGradient>
 
@@ -75,69 +87,72 @@ export default function WelcomeScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  content: {
-    padding: spacing.lg,
-    gap: spacing.lg,
-  },
-  hero: {
-    borderRadius: 32,
-    padding: spacing.xl,
-    gap: spacing.md,
-    minHeight: 280,
-    justifyContent: "flex-end",
-  },
-  eyebrow: {
-    ...type.overline,
-    color: palette.muted,
-  },
-  title: {
-    ...type.hero,
-    color: palette.ink,
-  },
-  copy: {
-    ...type.body,
-    color: palette.muted,
-  },
-  sectionTitle: {
-    ...type.h3,
-    color: palette.ink,
-    marginBottom: spacing.sm,
-  },
-  sectionTitleDark: {
-    ...type.h3,
-    color: palette.surface,
-    marginBottom: spacing.sm,
-  },
-  copyDark: {
-    ...type.body,
-    color: palette.clay,
-  },
-  stack: {
-    gap: spacing.sm,
-  },
-  row: {
-    flexDirection: "row",
-    gap: spacing.sm,
-    alignItems: "flex-start",
-  },
-  dot: {
-    width: 10,
-    height: 10,
-    borderRadius: 999,
-    backgroundColor: palette.primary,
-    marginTop: 7,
-  },
-  rowText: {
-    ...type.body,
-    color: palette.ink,
-    flex: 1,
-  },
-  link: {
-    fontSize: 14,
-    lineHeight: 18,
-    fontWeight: "600" as const,
-    color: palette.primary,
-    textAlign: "center" as const,
-  },
-});
+const createStyles = (
+  palette: import("@/src/theme/palette").ThemePalette,
+) =>
+  StyleSheet.create({
+    content: {
+      padding: spacing.lg,
+      gap: spacing.lg,
+    },
+    hero: {
+      borderRadius: 32,
+      padding: spacing.xl,
+      gap: spacing.md,
+      minHeight: 280,
+      justifyContent: "flex-end",
+    },
+    eyebrow: {
+      ...type.overline,
+      color: palette.muted,
+    },
+    title: {
+      ...type.hero,
+      color: palette.ink,
+    },
+    copy: {
+      ...type.body,
+      color: palette.muted,
+    },
+    sectionTitle: {
+      ...type.h3,
+      color: palette.ink,
+      marginBottom: spacing.sm,
+    },
+    sectionTitleDark: {
+      ...type.h3,
+      color: palette.surface,
+      marginBottom: spacing.sm,
+    },
+    copyDark: {
+      ...type.body,
+      color: palette.clay,
+    },
+    stack: {
+      gap: spacing.sm,
+    },
+    row: {
+      flexDirection: "row",
+      gap: spacing.sm,
+      alignItems: "flex-start",
+    },
+    dot: {
+      width: 10,
+      height: 10,
+      borderRadius: 999,
+      backgroundColor: palette.primary,
+      marginTop: 7,
+    },
+    rowText: {
+      ...type.body,
+      color: palette.ink,
+      flex: 1,
+    },
+    link: {
+      fontSize: 14,
+      lineHeight: 18,
+      fontWeight: "600" as const,
+      color: palette.primary,
+      textAlign: "center" as const,
+    },
+  });

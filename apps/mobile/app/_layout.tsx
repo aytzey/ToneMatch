@@ -14,14 +14,16 @@ import {
 import { Stack, SplashScreen } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
-import { ActivityIndicator, View } from "react-native";
+import { ActivityIndicator, View, useColorScheme } from "react-native";
 
 import { AppProviders } from "@/src/providers/app-providers";
+import { darkPalette, lightPalette } from "@/src/theme/palette";
 import { useAppTheme } from "@/src/theme/theme-provider";
 
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+  const colorScheme = useColorScheme();
   const [fontsLoaded] = useFonts({
     CormorantGaramond_500Medium,
     CormorantGaramond_600SemiBold,
@@ -39,17 +41,19 @@ export default function RootLayout() {
     }
   }, [fontsLoaded]);
 
+  const splashPalette = colorScheme === "dark" ? darkPalette : lightPalette;
+
   if (!fontsLoaded) {
     return (
       <View
         style={{
           flex: 1,
-          backgroundColor: "#f7f2eb",
+          backgroundColor: splashPalette.canvas,
           alignItems: "center",
           justifyContent: "center",
         }}
       >
-        <ActivityIndicator color="#8b4f2f" size="large" />
+        <ActivityIndicator color={splashPalette.primary} size="large" />
       </View>
     );
   }
