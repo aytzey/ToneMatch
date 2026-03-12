@@ -875,6 +875,7 @@ export default function DiscoverScreen() {
       <FlatList
         contentContainerStyle={styles.content}
         data={isLoading ? [] : visibleProducts}
+        key={`discover-feed-${columnCount}`}
         keyExtractor={(item: RecommendationCard) => item.id}
         keyboardDismissMode="on-drag"
         keyboardShouldPersistTaps="handled"
